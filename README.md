@@ -19,14 +19,19 @@ SportLink je platforma namjenjena rekreativnim sportašima svih uzrasta za otkri
 > Svi podaci o korisnicima skriveni su od ostalih korisnika i zlonamjernih napadača. Jedini vidljivi podaci su ime i prezime korisnika pri ostavljanju recenzije.  
 
 
-# Tehnologije
-
+# Tehnologije i Alati
+> - Frontend: React.js, Vite, TypeScript, Mantine UI component library
+> - Backend: .NET, Entity Framework
+> - Dizajn: Figma, Pretine 7 (Mantine UI design base)
+> - DB: PostgreSQL
+> - QA / test: Selenium, Postman
+> - DevOps: Azure, Docker
 
 # Članovi tima
-> Teo Ivančević teo.ivancevic@fer.hr - Voditelj  
-> Barbara Cvitanović barbara.cvitanovic@fer.hr - Frontend developer  
-> Lovro Cvitanović lovro.cvitanovic@fer.hr - Frontend developer  
-> Roko Jakaša roko.jakasa@fer.hr - Backend developer  
-> Rita Zonjić rita.zonjic@fer.hr - Backend developer  
-> Fran Horvat fran.horvat@fer.hr - Dizajner + Ispitivanje  
-> Vito Anić vito.anic@fer.hr - DevOps  
+> Teo Ivančević teo.ivancevic@fer.unizg.hr - Voditelj  
+> Barbara Cvitanović barbara.cvitanovic@fer.unizg.hr - Frontend developer  
+> Lovro Cvitanović lovro.cvitanovic@fer.unizg.hr - Frontend developer  
+> Roko Jakaša roko.jakasa@fer.unizg.hr - Backend developer  
+> Rita Zonjić rita.zonjic@fer.unizg.hr - Backend developer  
+> Fran Horvat fran.horvat@fer.unizg.hr - Dizajner + Ispitivanje  
+> Vito Anić vito.anic@fer.unizg.hr - DevOps  
