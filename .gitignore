@@ -1,0 +1,22 @@
+# IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Environment
+.env
+*.local
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+
+# Dependencies & Build
+node_modules/
+[Bb]in/
+[Oo]bj/
+dist/
+build/
