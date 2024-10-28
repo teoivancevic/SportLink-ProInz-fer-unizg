@@ -1,0 +1,6 @@
+@SportLink.API_HostAddress = http://localhost:5033
+
+GET {{SportLink.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

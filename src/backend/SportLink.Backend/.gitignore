@@ -1,0 +1,57 @@
+# Backend .gitignore (/src/backend/SportLink.Backend/.gitignore)
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+
+# IDE
+.idea/
+*.sln.iml
+*.swp
+*.swo
+
+# .NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Environment files
+appsettings.Development.json
+appsettings.Production.json
+*.Development.json
+*.Production.json
+
+# Database
+*.mdf
+*.ldf
+*.ndf
+
+# Misc
+.DS_Store
+Thumbs.db
