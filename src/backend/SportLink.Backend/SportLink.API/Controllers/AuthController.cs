@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportLink.API.Services.User;
+using SportLink.Core.Models;
 
 namespace SportLink.API.Controllers;
 
@@ -20,9 +22,9 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    [HttpPost]
+    [HttpPost, AllowAnonymous]
     [Route("register")]
-    public async Task<IActionResult> RegisterUser()
+    public async Task<ActionResult<UserDto>> RegisterUser([FromBody] RegisterUserDto user)
     {
         throw new NotImplementedException();
     } 
@@ -32,9 +34,9 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <returns>JWT Bearer token</returns>
     /// <exception cref="NotImplementedException"></exception>
-    [HttpGet]
+    [HttpGet, AllowAnonymous]
     [Route("login")]
-    public async Task<IActionResult> Login()
+    public async Task<ActionResult<string>> Login([FromBody] LoginDto login)
     {
         throw new NotImplementedException();
     } 
