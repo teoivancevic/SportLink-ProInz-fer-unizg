@@ -1,0 +1,27 @@
+# Use the .NET SDK image for building the application
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+WORKDIR /app
+
+# Copy the CSPROJ file and restore dependencies
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy the rest of the application code
+COPY . ./
+
+# Build and publish the application
+RUN dotnet publish -c Release -o out
+
+# Use the ASP.NET runtime image for running the application
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+
+# Copy the published output from the build step
+COPY --from=build-env /app/out .
+
+# Expose the port your application listens on (adjust if necessary)
+EXPOSE 80
+
+# Set the entry point for the container
+ENTRYPOINT ["dotnet", "SportLink.Backend.dll"]
+
