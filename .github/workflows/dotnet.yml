@@ -1,0 +1,62 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "devOps-testing" ]
+  pull_request:
+    branches: [ "devOps-testing" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ACR_LOGIN_SERVER: sportlinkCR.azurecr.io
+      ACR_NAME: sportlinkCR
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./src/backend/SportLink.Backend
+
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./src/backend/SportLink.Backend
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./src/backend/SportLink.Backend
+
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ env.ACR_LOGIN_SERVER }}/sportlink-backend:${{ github.sha }} .
+      working-directory: ./src/backend/SportLink.Backend
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Set up ACR credentials
+      id: acr_credentials
+      run: |
+        echo "ACR_USERNAME=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')" >> $GITHUB_ENV
+        echo "ACR_PASSWORD=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')" >> $GITHUB_ENV
+
+    - name: Login to Azure Container Registry
+      run: |
+        echo "$ACR_PASSWORD" | docker login ${{ env.ACR_LOGIN_SERVER }} -u $ACR_USERNAME --password-stdin
+
+    - name: Push Docker image to ACR
+      run: |
+        docker push ${{ env.ACR_LOGIN_SERVER }}/sportlink-backend:${{ github.sha }}
+
