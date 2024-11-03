@@ -1,15 +1,16 @@
+// using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SportLink.API.Data;
 using SportLink.API.Services.Email;
 using SportLink.API.Services.OTPCode;
 using SportLink.API.Services.User;
+using SportLink.Core.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 
 var xmlDocsPath = Path.Combine(AppContext.BaseDirectory, typeof(Program).Assembly.GetName().Name + ".xml");
@@ -48,6 +49,9 @@ builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
+
+builder.Services.AddScoped<IAuthHandler, AuthHandler>();
+
 
 // Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
 // Console.WriteLine($"AppPassword: {builder.Configuration["EmailSettings:AppPassword"]}");

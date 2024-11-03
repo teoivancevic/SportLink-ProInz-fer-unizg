@@ -58,11 +58,11 @@ public class UserConfigurationBuilder : IEntityTypeConfiguration<User>
         builder.HasOne(x => x.Role)
             .WithMany(r => r.Users)
             .HasForeignKey(x => x.RoleId)
-            .OnDelete(DeleteBehavior.Restrict); // todo vidit jel ovo okej
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasMany(x => x.OTPCodes)
             .WithOne(r => r.User)
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Restrict); // todo vidit jel ovo okej
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

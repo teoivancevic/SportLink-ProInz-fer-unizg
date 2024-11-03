@@ -29,38 +29,36 @@ public class UserService : IUserService
         _emailService = emailService;
     }
 
-    public async Task<UserDto> RegisterUser(RegisterUserDto registerUserDto)
+    public async Task<UserDto> RegisterUser(RegisterUserDto registerUserDto, RolesEnum role)
     {
-        var userEntity = _mapper.Map<Data.Entities.User>(registerUserDto);
-        userEntity.Id = 0;
-        PasswordHelper.CreatePasswordHash(registerUserDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-        userEntity.PasswordHash = passwordHash;
-        userEntity.PasswordSalt = passwordSalt;
+        var userDto = await CreateUnverifiedUser(registerUserDto, role);
         
-        userEntity.RoleId = (int) RolesEnum.User;
-        
-        // userEntity.IsEmailVerified = false;
-        
-        
-        // userEntity.EmailVerificationToken = Guid.NewGuid(); // TODO PLACEHOLDER
+        string otp6DigitCode = await _otpCodeService.GenerateOTP(userDto.Id, OTPCodeTypeEnum.EmailVerification, 6);
+        // TODO handle ako null il nesto?
 
-        _context.Users.Add(userEntity);
-        await _context.SaveChangesAsync();
+        await _emailService.SendVerificationEmailAsync(userDto.Email, otp6DigitCode);
         
-        string otp6DigitCode = await _otpCodeService.GenerateOTP(userEntity.Id, OTPCodeTypeEnum.EmailVerification, 6);
-        // TODO handle ako null il nekaj?
-
-        // TODO send verification email with generated 6 digit code
-        await _emailService.SendVerificationEmailAsync(userEntity.Email, otp6DigitCode);
+        // _logger.LogInformation($"User {userDto.Id} OTP Code is: {otp6DigitCode}");
         
-        _logger.LogInformation($"User {userEntity.Id} OTP Code is: {otp6DigitCode}");
-        
-        var userDto = _mapper.Map<UserDto>(userEntity);
         return userDto;
     }
 
-    // TODO MAKE create DB user only function
+    public async Task<bool> LoginCheckCredentials(UserDto userDto, string password)
+    {
+        var userEntity = await _context.Users.FindAsync(userDto.Id);
+        if (userEntity is not null && PasswordHelper.VerifyPasswordHash(password, userEntity.PasswordHash, userEntity.PasswordSalt))
+        {
+            userEntity.LastLoginAt = DateTime.UtcNow;
+            _context.Users.Update(userEntity);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
 
+        return false;
+        
+    }
+    
     public async Task<bool> VerifyUserEmail(int userId, string code)
     {
         var result = await _otpCodeService.ValidateOTP(userId, OTPCodeTypeEnum.EmailVerification, code);
@@ -75,9 +73,17 @@ public class UserService : IUserService
         return result;
     }
     
-    public async Task<UserDto> GetUser(int id)
+    public async Task<UserDto> GetUserById(int id)
     {
         var user = await _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+        var userDto = _mapper.Map<UserDto>(user);
+        
+        return userDto;
+    }
+
+    public async Task<UserDto> GetUserByEmail(string email)
+    {
+        var user = await _context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
         var userDto = _mapper.Map<UserDto>(user);
         
         return userDto;
@@ -88,5 +94,22 @@ public class UserService : IUserService
         var users = await _context.Users.ToListAsync();
         var usersDto = _mapper.Map<List<UserDto>>(users);
         return usersDto;
+    }
+
+    public async Task<UserDto> CreateUnverifiedUser(RegisterUserDto createUserDto, RolesEnum role)
+    {
+        var userEntity = _mapper.Map<Data.Entities.User>(createUserDto);
+        userEntity.Id = 0;
+        PasswordHelper.CreatePasswordHash(createUserDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        userEntity.PasswordHash = passwordHash;
+        userEntity.PasswordSalt = passwordSalt;
+        
+        userEntity.RoleId = (int) RolesEnum.User;
+        
+        _context.Users.Add(userEntity);
+        await _context.SaveChangesAsync();
+        
+        var userDto = _mapper.Map<UserDto>(userEntity);
+        return userDto;
     }
 }

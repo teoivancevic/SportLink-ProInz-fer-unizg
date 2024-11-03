@@ -9,7 +9,6 @@ public class RegisterUserDto
     public string Email { get; set; }
 
     public string Password { get; set; }
-    // todo jos stvari
 }
 
 public class RegisterUserValidator : AbstractValidator<RegisterUserDto>

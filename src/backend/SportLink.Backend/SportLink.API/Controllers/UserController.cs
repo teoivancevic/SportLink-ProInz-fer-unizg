@@ -18,9 +18,9 @@ public class UserController : ControllerBase
     
     [HttpGet]
     [Route("{id}")]
-    public async Task<ActionResult<UserDto>> GetUsers(int id)
+    public async Task<ActionResult<UserDto>> GetUser(int id)
     {
-        var user = await _userService.GetUser(id);
+        var user = await _userService.GetUserById(id);
         if (user is null)
             return NotFound("User not found");
         
