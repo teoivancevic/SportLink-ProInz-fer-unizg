@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using SportLink.API.Data;
 using SportLink.Core.Models;
@@ -17,7 +18,8 @@ public class UserService : IUserService
     
     public async Task<UserDto> GetUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        // var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
         var userDto = _mapper.Map<UserDto>(user);
         
         return userDto;
