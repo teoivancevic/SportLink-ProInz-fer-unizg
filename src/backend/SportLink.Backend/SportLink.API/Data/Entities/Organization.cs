@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace SportLink.API.Data.Entities;
 
-public class Organization
+public class Organization : BaseEntity
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -13,9 +13,6 @@ public class Organization
     public string Location { get; set; }
     public int OwnerId { get; set; }
     public bool IsVerified { get; set; }
-    
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
     
     public virtual User Owner { get; set; }
 }
