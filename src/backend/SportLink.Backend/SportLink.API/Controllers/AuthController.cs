@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SportLink.API.Services.Auth;
 using SportLink.API.Services.User;
 using SportLink.Core.Enums;
 using SportLink.Core.Handlers;
@@ -15,13 +16,15 @@ public class AuthController : ControllerBase
     private readonly IAuthHandler _authHandler;
 
     private readonly IUserService _userService;
+    private readonly IAuthService _authService;
     
-    public AuthController(IUserService userService, IAuthHandler authHandler, IConfiguration configuration)
+    public AuthController(IUserService userService, IAuthService authService, IAuthHandler authHandler, IConfiguration configuration)
     {
         _configuration = configuration;
-        _userService = userService;
-
         _authHandler = authHandler;
+        
+        _userService = userService;
+        _authService = authService;
     }
 
     /// <summary>
@@ -33,7 +36,7 @@ public class AuthController : ControllerBase
     [Route("register")]
     public async Task<ActionResult<UserDto>> RegisterUser([FromBody] RegisterUserDto registerUser)
     {
-        var userDto = await _userService.RegisterUser(registerUser, RolesEnum.User);
+        var userDto = await _authService.RegisterUser(registerUser, RolesEnum.User);
         if (userDto is null)
             return BadRequest("User NOT created");
         return Ok(userDto);
@@ -49,7 +52,7 @@ public class AuthController : ControllerBase
     [Route("verify")]
     public async Task<ActionResult<bool>> VerifyUser(int userId, string otpCode)
     {
-        var result = await _userService.VerifyUserEmail(userId, otpCode);
+        var result = await _authService.VerifyUserEmail(userId, otpCode);
         if (!result)
             return BadRequest("Incorrect code");
 
@@ -73,13 +76,9 @@ public class AuthController : ControllerBase
         if (roleName is null)
             return BadRequest("Role not found.");
         
-        var verifyLogin = await _userService.LoginCheckCredentials(user, login.Password);
+        var verifyLogin = await _authService.LoginCheckCredentials(user, login.Password);
         if (!verifyLogin)
             return BadRequest("Wrong pasword.");
-
-        // var account = await _accountService.GetAccount(user.Id);
-        // var accountId = account is null ? 0 : account.Id;
-
         
 
         string token = _authHandler.CreateToken(

@@ -19,60 +19,13 @@ public class UserService : IUserService
     
     private readonly IOTPCodeService _otpCodeService;
     private readonly IEmailService _emailService;
-    public UserService(DataContext context, IMapper mapper, IOTPCodeService otpCodeService, ILogger<UserService> logger, IEmailService emailService)
+    public UserService(DataContext context, IMapper mapper, ILogger<UserService> logger)
     {
         _context = context;
         _mapper = mapper;
         _logger = logger;
-
-        _otpCodeService = otpCodeService;
-        _emailService = emailService;
     }
 
-    public async Task<UserDto> RegisterUser(RegisterUserDto registerUserDto, RolesEnum role)
-    {
-        var userDto = await CreateUnverifiedUser(registerUserDto, role);
-        
-        string otp6DigitCode = await _otpCodeService.GenerateOTP(userDto.Id, OTPCodeTypeEnum.EmailVerification, 6);
-        // TODO handle ako null il nesto?
-
-        await _emailService.SendVerificationEmailAsync(userDto.Email, otp6DigitCode);
-        
-        // _logger.LogInformation($"User {userDto.Id} OTP Code is: {otp6DigitCode}");
-        
-        return userDto;
-    }
-
-    public async Task<bool> LoginCheckCredentials(UserDto userDto, string password)
-    {
-        var userEntity = await _context.Users.FindAsync(userDto.Id);
-        if (userEntity is not null && PasswordHelper.VerifyPasswordHash(password, userEntity.PasswordHash, userEntity.PasswordSalt))
-        {
-            userEntity.LastLoginAt = DateTime.UtcNow;
-            _context.Users.Update(userEntity);
-            await _context.SaveChangesAsync();
-            
-            return true;
-        }
-
-        return false;
-        
-    }
-    
-    public async Task<bool> VerifyUserEmail(int userId, string code)
-    {
-        var result = await _otpCodeService.ValidateOTP(userId, OTPCodeTypeEnum.EmailVerification, code);
-        if (!result)
-            return false;
-            
-        var user = await _context.Users.FindAsync(userId);
-        if (user is null) return false;
-        user.IsEmailVerified = true;
-        await _context.SaveChangesAsync();
-        
-        return result;
-    }
-    
     public async Task<UserDto> GetUserById(int id)
     {
         var user = await _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
