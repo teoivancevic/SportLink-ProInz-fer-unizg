@@ -19,15 +19,29 @@ public class AuthController : ControllerBase
 
     /// <summary>
     /// Register new user
-    /// </summary>
+    /// </summary>s
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPost, AllowAnonymous]
     [Route("register")]
-    public async Task<ActionResult<UserDto>> RegisterUser([FromBody] RegisterUserDto user)
+    public async Task<ActionResult<UserDto>> RegisterUser([FromBody] RegisterUserDto registerUser)
     {
-        throw new NotImplementedException();
-    } 
+        var userDto = await _userService.RegisterUser(registerUser);
+        if (userDto is null)
+            return BadRequest("User NOT created");
+        return Ok(userDto);
+    }
+
+    [HttpPut, AllowAnonymous]
+    [Route("verify")]
+    public async Task<ActionResult<bool>> VerifyUser(int userId, string otpCode)
+    {
+        var result = await _userService.VerifyUserEmail(userId, otpCode);
+        if (!result)
+            return BadRequest("Incorrect code");
+
+        return Ok($"User {userId} verified");
+    }
     
     /// <summary>
     /// Login user

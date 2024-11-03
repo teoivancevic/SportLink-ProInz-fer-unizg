@@ -9,7 +9,6 @@ public class User
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
-    public string Username { get; set; }
     public int RoleId { get; set; }
     
     
@@ -19,11 +18,10 @@ public class User
     public DateTime LastLoginAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public Guid? EmailVerificationToken { get; set; }
     public bool IsEmailVerified { get; set; }
     
     public virtual Role Role { get; set; }
-    // public virtual ICollection<Organization> Banks { get; set; }
+    public virtual ICollection<OTPCode> OTPCodes { get; set; }
 }
 
 public class UserConfigurationBuilder : IEntityTypeConfiguration<User>
@@ -36,10 +34,11 @@ public class UserConfigurationBuilder : IEntityTypeConfiguration<User>
             .IsRequired();
         builder.Property(x => x.LastName)
             .IsRequired();
+        
         builder.Property(x => x.Email)
             .IsRequired();
-        builder.Property(x => x.Username)
-            .IsRequired();
+        builder.HasIndex(x => x.Email)
+            .IsUnique();
         
         builder.Property(x => x.PasswordHash)
             .IsRequired();
@@ -52,8 +51,6 @@ public class UserConfigurationBuilder : IEntityTypeConfiguration<User>
             .IsRequired();
         builder.Property(x => x.UpdatedAt)
             .IsRequired();
-        builder.Property(x => x.EmailVerificationToken)
-            .IsRequired();
         builder.Property(x => x.IsEmailVerified)
             .HasDefaultValue(false)
             .IsRequired();
@@ -61,6 +58,11 @@ public class UserConfigurationBuilder : IEntityTypeConfiguration<User>
         builder.HasOne(x => x.Role)
             .WithMany(r => r.Users)
             .HasForeignKey(x => x.RoleId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Restrict); // todo vidit jel ovo okej
+        
+        builder.HasMany(x => x.OTPCodes)
+            .WithOne(r => r.User)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict); // todo vidit jel ovo okej
     }
 }
