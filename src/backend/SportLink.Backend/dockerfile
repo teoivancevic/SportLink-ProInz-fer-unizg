@@ -2,15 +2,19 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copy the CSPROJ file and restore dependencies
-COPY *.sln ./
-RUN dotnet restore
+# Copy the solution and project files
+COPY ["SportLink.Backend.sln", "./"]
+COPY ["SportLink.API/SportLink.API.csproj", "SportLink.API/"]
+COPY ["SportLink.Core/SportLink.Core.csproj", "SportLink.Core/"]
+
+# Restore dependencies
+RUN dotnet restore "SportLink.Backend.sln"
 
 # Copy the rest of the application code
 COPY . ./
 
 # Build and publish the application
-RUN dotnet publish -c Release -o out
+RUN dotnet publish "SportLink.API/SportLink.API.csproj" -c Release -o out
 
 # Use the ASP.NET runtime image for running the application
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
@@ -23,5 +27,5 @@ COPY --from=build-env /app/out .
 EXPOSE 80
 
 # Set the entry point for the container
-ENTRYPOINT ["dotnet", "SportLink.Backend.dll"]
+ENTRYPOINT ["dotnet", "SportLink.API.dll"]
 
