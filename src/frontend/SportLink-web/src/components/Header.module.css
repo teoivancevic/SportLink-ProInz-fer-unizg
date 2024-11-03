@@ -1,0 +1,48 @@
+*{
+  box-sizing: border-box;
+}
+
+.header {
+  height: 60px;
+  width: 100vw;
+  padding-left: var(--mantine-spacing-md);
+  padding-right: var(--mantine-spacing-md);
+  border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-left: var(--mantine-spacing-md);
+  padding-right: var(--mantine-spacing-md);
+  text-decoration: none;
+  color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+  font-weight: 500;
+  font-size: var(--mantine-font-size-sm);
+}
+
+/* Media query without SCSS variable */
+@media (max-width: 768px) { /* Replace $mantine-breakpoint-sm with actual value, e.g., 768px */
+  .header{
+    width: 100%;
+  }
+  .link {
+      height: 42px; /* Replace rem() with px */
+      width: 100%;
+  }
+}
+
+.link:hover {
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6)); /* Hover effect directly in CSS */
+}
+
+
+.dropdownFooter {
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
+  margin: calc(var(--mantine-spacing-md) * -1);
+  margin-top: var(--mantine-spacing-sm);
+  padding: var(--mantine-spacing-md) calc(var(--mantine-spacing-md) * 2);
+  padding-bottom: var(--mantine-spacing-xl);
+  border-top: 1px solid light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5)); /* Replace rem() with px */
+}

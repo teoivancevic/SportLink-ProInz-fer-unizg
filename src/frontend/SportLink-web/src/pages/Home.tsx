@@ -1,52 +1,14 @@
-// src/pages/Home.tsx
-import { Container, Image, Title, Stack, Button, Alert } from '@mantine/core';
-import { useGetData } from '../services/api';
+import { Text } from "@mantine/core";
+import { NavbarNested } from "../components/NavbarNested";
 
-interface DogApiResponse {
-  message: string;  // image URL
-  status: string;
-}
 
 export function Home() {
-  const { data, error, isLoading } = useGetData<DogApiResponse>();
+  return(
+    <div className='mainPage'>
+      <NavbarNested/>
+      <Text>SportLink je platforma namijenjena rekreativnim sportašima svih uzrasta za otkrivanje sportskih klubova, događanja i rezervacije termina.
+      </Text>
+    </div>
 
-  if (error) {
-    return (
-      <Container size="sm" py="xl">
-        <Alert title="Error" color="red" variant="filled">
-          {error.message}
-        </Alert>
-      </Container>
-    );
-  }
-
-  return (
-    <Container size="sm" py="xl">
-      <Stack align="center" gap="xl">
-        <Title order={1} size="h2">Random Dog Image</Title>
-        
-        {isLoading ? (
-          <Image
-            height={400}
-            radius="md"
-            src="https://placehold.co/400x400?text=Loading..."
-          />
-        ) : (
-          <Image
-            src={data?.message}
-            height={400}
-            radius="md"
-            fallbackSrc="https://placehold.co/400x400?text=No+Image"
-          />
-        )}
-
-        <Button 
-          onClick={() => window.location.reload()}
-          size="lg"
-        >
-          Get New Dog
-        </Button>
-      </Stack>
-    </Container>
   );
 }
