@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ACR_LOGIN_SERVER: sportlinkCR.azurecr.io
+      ACR_NAME: sportlinkCR
 
     steps:
     - uses: actions/checkout@v4
@@ -43,9 +44,8 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Login to Azure Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ${{ env.ACR_LOGIN_SERVER }}
+      run: |
+        az acr login --name ${{ env.ACR_NAME }}
 
     - name: Push Docker image to ACR
       run: |
