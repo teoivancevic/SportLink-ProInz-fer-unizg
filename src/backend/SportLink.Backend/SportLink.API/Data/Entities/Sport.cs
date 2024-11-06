@@ -9,6 +9,7 @@ public class Sport
     public string Name { get; set; }
     
     public virtual ICollection<Organization> Organizations { get; set; }
+    public virtual ICollection<TrainingGroup> TrainingGroups { get; set; }
 }
 
 public class SportConfigurationBuilder : IEntityTypeConfiguration<Sport>

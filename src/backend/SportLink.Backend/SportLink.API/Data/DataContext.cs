@@ -15,6 +15,7 @@ public class DataContext : DbContext
     public DbSet<Review> Reviews { get; set; }
     public DbSet<SocialNetwork> SocialNetworks { get; set; }
     public DbSet<Sport> Sports { get; set; }
+    public DbSet<TrainingGroup> TrainingGroups { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
