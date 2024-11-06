@@ -15,9 +15,13 @@ public class Organization : BaseEntity
     public bool IsVerified { get; set; }
     
     public virtual User Owner { get; set; }
+    
+    public virtual ICollection<Review> Reviews { get; set; }
+    public virtual ICollection<SocialNetwork> SocialNetworks { get; set; }
+    public virtual ICollection<Sport> Sports { get; set; }
 }
 
-public class UserConfigurationBuilder : IEntityTypeConfiguration<Organization>
+public class OrganizationConfigurationBuilder : IEntityTypeConfiguration<Organization>
 {
     public void Configure(EntityTypeBuilder<Organization> builder)
     {
@@ -49,6 +53,14 @@ public class UserConfigurationBuilder : IEntityTypeConfiguration<Organization>
             .WithMany(u => u.Organizations)
             .HasForeignKey(x => x.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasMany(x => x.Sports)
+            .WithMany(s => s.Organizations) // Assuming Sport entity has Organizations collection
+            .UsingEntity<Dictionary<string, object>>(
+                "OrganizationSport", // Join table name
+                j => j.HasOne<Sport>().WithMany().HasForeignKey("SportId"),
+                j => j.HasOne<Organization>().WithMany().HasForeignKey("OrganizationId")
+            );
 
     }
 }
