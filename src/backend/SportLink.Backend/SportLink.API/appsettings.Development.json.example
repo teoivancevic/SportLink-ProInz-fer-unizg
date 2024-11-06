@@ -1,0 +1,8 @@
+{
+  "EmailSettings": {
+    "AppPassword": "PITAJ_TEA_ZA_OVO"
+  },
+  "Jwt": {
+    "Key": "PITAJ_TEA_ZA_OVO_ISTO"
+  }
+}

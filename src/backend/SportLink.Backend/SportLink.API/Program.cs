@@ -1,12 +1,21 @@
+// using System.Security.Cryptography;
+
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SportLink.API.Data;
+using SportLink.API.Services.Auth;
+using SportLink.API.Services.Email;
+using SportLink.API.Services.OTPCode;
 using SportLink.API.Services.User;
+using SportLink.Core.Handlers;
+using SportLink.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 
 var xmlDocsPath = Path.Combine(AppContext.BaseDirectory, typeof(Program).Assembly.GetName().Name + ".xml");
@@ -39,8 +48,28 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddScoped<IUserService, UserService>();
+#region Validation
 
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
+
+#endregion
+
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+builder.Services.AddScoped<IAuthHandler, AuthHandler>();
+
+
+// Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
+// Console.WriteLine($"AppPassword: {builder.Configuration["EmailSettings:AppPassword"]}");
 
 var app = builder.Build();
 

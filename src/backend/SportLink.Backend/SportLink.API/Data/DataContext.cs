@@ -11,12 +11,16 @@ public class DataContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<OTPCode> OTPCodes { get; set; }
     public DbSet<Organization> Organizations { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        
+        SeedData.CreateData(modelBuilder);
     }
     
     public override int SaveChanges()

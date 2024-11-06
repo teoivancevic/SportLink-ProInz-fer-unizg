@@ -1,9 +1,20 @@
+using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
 namespace SportLink.API.Services.User;
 
 public interface IUserService
 {
-    Task<UserDto> GetUser(int id);
+    
+    
+    Task<UserDto> GetUserById(int id);
+    Task<UserDto> GetUserByEmail(string email);
+    Task<List<UserDto>> GetAllUsers();
+    
+
+    Task<UserDto> CreateUnverifiedUser(RegisterUserDto createUserDto, RolesEnum role);
+
+
+
 
 }

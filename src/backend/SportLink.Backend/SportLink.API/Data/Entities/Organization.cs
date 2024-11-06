@@ -17,7 +17,7 @@ public class Organization : BaseEntity
     public virtual User Owner { get; set; }
 }
 
-public class UserConfigurationBuilder : IEntityTypeConfiguration<Organization>
+public class OrganizationConfigurationBuilder : IEntityTypeConfiguration<Organization>
 {
     public void Configure(EntityTypeBuilder<Organization> builder)
     {
