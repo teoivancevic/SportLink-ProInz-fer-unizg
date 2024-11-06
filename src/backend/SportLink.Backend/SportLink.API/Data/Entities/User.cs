@@ -22,7 +22,7 @@ public class User : BaseEntity
     
     public virtual Role Role { get; set; }
     public virtual ICollection<OTPCode> OTPCodes { get; set; }
-//    public virtual ICollection<Organization> Organizations { get; set; }
+    public virtual ICollection<Organization> Organizations { get; set; }
 }
 
 public class UserConfigurationBuilder : IEntityTypeConfiguration<User>
@@ -65,10 +65,5 @@ public class UserConfigurationBuilder : IEntityTypeConfiguration<User>
             .WithOne(r => r.User)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-            
-//         builder.HasMany(x => x.Organizations)
-//             .WithOne(r => r.User)
-//             .HasForeignKey(x => x.OwnerId)
-//             .OnDelete(DeleteBehavior.Restrict);
     }
 }

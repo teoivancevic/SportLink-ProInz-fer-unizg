@@ -12,8 +12,8 @@ using SportLink.API.Data;
 namespace SportLink.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241103195045_Remove Username")]
-    partial class RemoveUsername
+    [Migration("20241106004719_NewInitial")]
+    partial class NewInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,55 @@ namespace SportLink.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("OTPCode", (string)null);
+                });
+
+            modelBuilder.Entity("SportLink.API.Data.Entities.Organization", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContactEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContactPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsVerified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Organization", (string)null);
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.Role", b =>
@@ -140,10 +189,6 @@ namespace SportLink.API.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -159,10 +204,21 @@ namespace SportLink.API.Migrations
                     b.HasOne("SportLink.API.Data.Entities.User", "User")
                         .WithMany("OTPCodes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SportLink.API.Data.Entities.Organization", b =>
+                {
+                    b.HasOne("SportLink.API.Data.Entities.User", "Owner")
+                        .WithMany("Organizations")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>
@@ -184,6 +240,8 @@ namespace SportLink.API.Migrations
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>
                 {
                     b.Navigation("OTPCodes");
+
+                    b.Navigation("Organizations");
                 });
 #pragma warning restore 612, 618
         }

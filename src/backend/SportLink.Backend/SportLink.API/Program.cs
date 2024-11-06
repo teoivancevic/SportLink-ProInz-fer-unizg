@@ -5,6 +5,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SportLink.API.Data;
+using SportLink.API.Services.Auth;
 using SportLink.API.Services.Email;
 using SportLink.API.Services.OTPCode;
 using SportLink.API.Services.User;
@@ -55,7 +56,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 
 #endregion
 
+
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
 
 builder.Services.Configure<EmailSettings>(
