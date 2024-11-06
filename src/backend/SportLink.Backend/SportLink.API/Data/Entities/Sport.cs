@@ -10,6 +10,8 @@ public class Sport
     
     public virtual ICollection<Organization> Organizations { get; set; }
     public virtual ICollection<TrainingGroup> TrainingGroups { get; set; }
+    public virtual ICollection<CourtBooking> CourtBookings { get; set; }
+    public virtual ICollection<Tournament> Tournaments { get; set; }
 }
 
 public class SportConfigurationBuilder : IEntityTypeConfiguration<Sport>

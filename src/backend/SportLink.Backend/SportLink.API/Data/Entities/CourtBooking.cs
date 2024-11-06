@@ -5,36 +5,32 @@ using SportLink.Core.Enums;
 
 namespace SportLink.API.Data.Entities;
 
-public class TrainingGroup : BaseEntity
+public class CourtBooking : BaseEntity
 {
     public int Id { get; set; }
-    public int AgeFrom { get; set; }
-    public int AgeTo { get; set; }
-    public SexEnum Sex { get; set; }
-    public int MonthlyPrice { get; set; }
+    public TimeSpan TimeFrom { get; set; }
+    public TimeSpan TimeTo { get; set; }
+    public decimal HourlyPrice { get; set; }
     public string Description { get; set; }
-    public int OrganizationId { get; set; }
+    public string Location { get; set; }
     public int SportId { get; set; }
+    public int OrganizationId { get; set; }
     
     public virtual Sport Sport { get; set; }
     public virtual Organization Organization { get; set; }
 }
 
-public class TrainingGroupConfigurationBuilder : IEntityTypeConfiguration<TrainingGroup>
+public class CourtBookingConfigurationBuilder : IEntityTypeConfiguration<CourtBooking>
 {
-    private readonly EnumToStringConverter<SexEnum> _converter = new EnumToStringConverter<SexEnum>();
-    public void Configure(EntityTypeBuilder<TrainingGroup> builder)
+    public void Configure(EntityTypeBuilder<CourtBooking> builder)
     {
-        builder.ToTable(nameof(TrainingGroup));
+        builder.ToTable(nameof(CourtBooking));
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.AgeFrom)
+        builder.Property(x => x.TimeFrom)
             .IsRequired();
-        builder.Property(x => x.AgeTo)
+        builder.Property(x => x.TimeTo)
             .IsRequired();
-        builder.Property(x => x.Sex)
-            .IsRequired()
-            .HasConversion(_converter);
-        builder.Property(x => x.MonthlyPrice)
+        builder.Property(x => x.HourlyPrice)
             .IsRequired();
         builder.Property(x => x.Description)
             .IsRequired();
@@ -45,13 +41,14 @@ public class TrainingGroupConfigurationBuilder : IEntityTypeConfiguration<Traini
             .IsRequired();
         
         builder.HasOne(x => x.Sport)
-            .WithMany(s => s.TrainingGroups)
+            .WithMany(s => s.CourtBookings)
             .HasForeignKey(x => x.SportId)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         builder.HasOne(x => x.Organization)
-            .WithMany(o => o.TrainingGroups)
+            .WithMany(o => o.CourtBookings)
             .HasForeignKey(x => x.OrganizationId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
+
