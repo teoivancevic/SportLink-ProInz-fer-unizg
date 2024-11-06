@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportLink.API.Services.User;
 using SportLink.Core.Models;
@@ -17,12 +18,20 @@ public class UserController : ControllerBase
     
     [HttpGet]
     [Route("{id}")]
-    public async Task<ActionResult<UserDto>> GetUsers(int id)
+    public async Task<ActionResult<UserDto>> GetUser(int id)
     {
-        var user = await _userService.GetUser(id);
+        var user = await _userService.GetUserById(id);
         if (user is null)
             return NotFound("User not found");
         
         return Ok(user);
+    }
+
+    [HttpGet]
+    // [Authorize]
+    public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+    {
+        var users = await _userService.GetAllUsers();
+        return Ok(users);
     }
 }
