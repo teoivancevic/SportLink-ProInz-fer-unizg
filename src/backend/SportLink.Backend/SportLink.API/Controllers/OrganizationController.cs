@@ -22,7 +22,6 @@ namespace SportLink.API.Controllers
             _organizationService = organizationService;
         }
 
-        // Post method for creating new organization
         [HttpPost, Authorize]
         [Route("CreateOrganization")]
         public async Task<ActionResult<OrganizationDto>> CreateOrganization([FromBody] OrganizationDto organization)
@@ -41,7 +40,7 @@ namespace SportLink.API.Controllers
         }
 
         [HttpGet, Authorize]
-        [Route("GetOrganizations?verified={isVerified}")]
+        [Route("Organizations?verified={isVerified}")]
         public async Task<ActionResult<OrganizationDto>> GetOrganizations([FromQuery] bool isVerified)
         {
             var result = await _organizationService.GetOrganizations(isVerified);
@@ -57,6 +56,18 @@ namespace SportLink.API.Controllers
             {
                 return Ok(result);
             }
+        }
+
+        [HttpGet, Authorize]
+        [Route("{id}")]
+        public async Task<ActionResult<OrganizationDto>> GetSingleOrganization(int id)
+        {
+            var organization = await _organizationService.GetSingleOrganization(id);
+            if (organization is null)
+            {
+                return NotFound("Organizacija ne postoji.");
+            }
+            return Ok(organization);
         }
     }
 }

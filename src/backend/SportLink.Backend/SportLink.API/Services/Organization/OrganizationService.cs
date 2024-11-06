@@ -60,5 +60,11 @@ namespace SportLink.API.Services.Organization
                 return _mapper.Map<OrganizationDto>(organizations);
             }
         }
+
+        public async Task<OrganizationDto> GetSingleOrganization(int id)
+        {
+            var organization = await _context.Organizations.FindAsync(id);
+            return _mapper.Map<OrganizationDto>(organization);
+        }
     }
 }
