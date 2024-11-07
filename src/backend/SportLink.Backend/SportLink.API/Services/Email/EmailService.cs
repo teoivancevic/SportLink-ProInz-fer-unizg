@@ -12,7 +12,7 @@ public class EmailService : IEmailService
     {
         _settings = settings.Value;
     }
-    
+
     public async Task SendVerificationEmailAsync(string to, string otpCode)
     {
         var subject = "[SportLink] - Verify Email";
@@ -25,7 +25,20 @@ public class EmailService : IEmailService
 
         await SendEmailAsync(to, subject, body);
     }
-    
+
+    public async Task SendRejectionEmailAsync(string to, string reason)
+    {
+        var subject = "[SportLink] - Organization Rejection";
+        var body = $"""
+                    Hi!
+                    We are sorry to inform you that your organization has been rejected.
+
+                    Reason: {reason}
+                    """;
+
+        await SendEmailAsync(to, subject, body);
+    }
+
     private async Task SendEmailAsync(string to, string subject, string body)
     {
         try

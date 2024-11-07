@@ -19,14 +19,13 @@ namespace SportLink.API.Services.Organization
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
-        //private readonly EmailService _emailService;
-        public OrganizationService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private readonly IEmailService _emailService;
+        public OrganizationService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IEmailService emailService)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-            //_emailService = emailService;
+            _emailService = emailService;
         }
 
         public async Task<ActionResult<OrganizationDto>> CreateOrganization(OrganizationDto organizationDto)
@@ -105,7 +104,7 @@ namespace SportLink.API.Services.Organization
             {
                 organization.VerificationStatus = VerificationStatusEnum.Rejected;
                 organization.RejectionResponse = reason;
-                //_emailService.SendEmailAsync(organization.ContactEmail, "Organization verification declined", reason);
+                await _emailService.SendRejectionEmailAsync(organization.ContactEmail, reason);
                 await _context.SaveChangesAsync();
                 return true;
             }
