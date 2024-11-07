@@ -36,7 +36,7 @@ namespace SportLink.API.Migrations
                     table.ForeignKey(
                         name: "FK_Review_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });

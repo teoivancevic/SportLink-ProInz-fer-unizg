@@ -1,5 +1,6 @@
 // using System.Security.Cryptography;
 
+using System.Reflection;
 using System.Text;
 using AutoMapper;
 using FluentValidation;
@@ -33,20 +34,40 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 
 var xmlDocsPath = Path.Combine(AppContext.BaseDirectory, typeof(Program).Assembly.GetName().Name + ".xml");
-// builder.Services.AddSwaggerGen(options => { options.IncludeXmlComments(xmlDocsPath); });
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    {
-        Description = "Standard Authorization header using the Bearer scheme (\"Bearer {token}\"",
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
-    });
+builder.Services.AddSwaggerGen(c =>
+  {
+      c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+      c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+      {
+          Description = @"JWT Authorization header using the Bearer scheme. 
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      Example: 'Bearer 12345abcdef'",
+          Name = "Authorization",
+          In = ParameterLocation.Header,
+          Type = SecuritySchemeType.ApiKey,
+          Scheme = "Bearer"
+      });
 
-    // options.OperationFilter<SecurityRequirementsOperationFilter>();
-    options.IncludeXmlComments(xmlDocsPath);
-});
+      c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+        {
+          {
+            new OpenApiSecurityScheme
+            {
+              Reference = new OpenApiReference
+                {
+                  Type = ReferenceType.SecurityScheme,
+                  Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+
+              },
+              new List<string>()
+            }
+          });
+      c.IncludeXmlComments(xmlDocsPath);
+  });
 
 builder.Services.AddControllers();
 

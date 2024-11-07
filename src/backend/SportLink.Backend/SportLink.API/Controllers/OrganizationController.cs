@@ -71,7 +71,7 @@ namespace SportLink.API.Controllers
         }
 
         [HttpPut, Authorize]
-        [Route("{Id}/verify")]
+        [Route("{id}/verify")]
         public async Task<ActionResult<bool>> VerifyOrganization(int id)
         {
             var result = await _organizationService.VerifyOrganization(id);
@@ -83,7 +83,7 @@ namespace SportLink.API.Controllers
         }
 
         [HttpPut, Authorize]
-        [Route("{Id}/decline")]
+        [Route("{id}/decline")]
         public async Task<ActionResult<bool>> DeclineOrganization(int id, [FromBody] string reason)
         {
             var result = await _organizationService.DeclineOrganization(id, reason);

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportLink.API.Data;
 using SportLink.API.Services.Email;
+using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
 namespace SportLink.API.Services.Organization
@@ -47,7 +48,7 @@ namespace SportLink.API.Services.Organization
             // }
             var userId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             //var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var owner = await _context.Users.FindAsync(userId);
+            var owner = await _context.Users.FindAsync(int.Parse(userId!));
             if (userId is not null && owner is not null)
             {
                 var organization = new Data.Entities.Organization
@@ -58,7 +59,7 @@ namespace SportLink.API.Services.Organization
                     ContactPhoneNumber = organizationDto.ContactPhoneNumber,
                     Location = organizationDto.Location,
                     OwnerId = int.Parse(userId),
-                    IsVerified = false,
+                    VerificationStatus = VerificationStatusEnum.Unverified,
                     Owner = owner
                 };
                 await _context.Organizations.AddAsync(organization);
@@ -78,12 +79,12 @@ namespace SportLink.API.Services.Organization
         {
             if (isVerified)
             {
-                var organizations = await _context.Organizations.Where(x => x.IsVerified == true).ToListAsync();
+                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Accepted).ToListAsync();
                 return _mapper.Map<List<OrganizationDto>>(organizations);
             }
             else
             {
-                var organizations = await _context.Organizations.Where(x => x.IsVerified == false).ToListAsync();
+                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Unverified).ToListAsync();
                 return _mapper.Map<List<OrganizationDto>>(organizations);
             }
         }
@@ -103,7 +104,7 @@ namespace SportLink.API.Services.Organization
             }
             else
             {
-                organization.IsVerified = true;
+                organization.VerificationStatus = VerificationStatusEnum.Accepted;
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -118,8 +119,8 @@ namespace SportLink.API.Services.Organization
             }
             else
             {
-                //organization.IsVerified = VerificationStatusEnum.Rejected;
-                //organization.VerificationResponse = reason;
+                organization.VerificationStatus = VerificationStatusEnum.Rejected;
+                organization.RejectionResponse = reason;
                 //_emailService.SendEmailAsync(organization.ContactEmail, "Organization verification declined", reason);
                 await _context.SaveChangesAsync();
                 return true;
