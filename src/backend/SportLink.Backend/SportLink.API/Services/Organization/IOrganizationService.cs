@@ -10,6 +10,9 @@ namespace SportLink.API.Services.Organization
     public interface IOrganizationService
     {
         Task<ActionResult<OrganizationDto>> CreateOrganization(OrganizationDto organization);
-        //Task<OrganizationDto> CreateOrganization(OrganizationDto organization);
+        Task<List<OrganizationDto>> GetOrganizations(bool isVerified);
+        Task<OrganizationDto> GetSingleOrganization(int id);
+        Task<bool> VerifyOrganization(int id);
+        Task<bool> DeclineOrganization(int id, string reason);
     }
 }

@@ -15,9 +15,9 @@ namespace SportLink.API.Controllers
     [Route("api/[controller]")]
     public class OrganizationController : ControllerBase
     {
-        private readonly OrganizationService _organizationService;
+        private readonly IOrganizationService _organizationService;
 
-        public OrganizationController(OrganizationService organizationService)
+        public OrganizationController(IOrganizationService organizationService)
         {
             _organizationService = organizationService;
         }
@@ -31,17 +31,17 @@ namespace SportLink.API.Controllers
                 var result = await _organizationService.CreateOrganization(organization);
                 if (result.Result is BadRequestObjectResult badRequest)
                 {
-                    ModelState.AddModelError(string.Empty, badRequest.Value.ToString());
-                    return BadRequest(ModelState);  // return View(organization)
+                    ModelState.AddModelError(string.Empty, badRequest?.Value!.ToString()!);
+                    return BadRequest(ModelState);
                 }
-                return RedirectToAction("Home"); //Ok(organization);
+                return Ok(organization);
             }
             return BadRequest(ModelState);
         }
 
         [HttpGet, Authorize]
-        [Route("Organizations?verified={isVerified}")]
-        public async Task<ActionResult<OrganizationDto>> GetOrganizations([FromQuery] bool isVerified)
+        [Route("Organizations")]
+        public async Task<ActionResult<List<OrganizationDto>>> GetOrganizations([FromQuery] bool isVerified)
         {
             var result = await _organizationService.GetOrganizations(isVerified);
             if (result is null && isVerified)
@@ -68,6 +68,30 @@ namespace SportLink.API.Controllers
                 return NotFound("Organizacija ne postoji.");
             }
             return Ok(organization);
+        }
+
+        [HttpPut, Authorize]
+        [Route("{Id}/verify")]
+        public async Task<ActionResult<bool>> VerifyOrganization(int id)
+        {
+            var result = await _organizationService.VerifyOrganization(id);
+            if (!result)
+            {
+                return BadRequest("Verifikacija nije uspjela.");
+            }
+            return Ok("Organizacija uspješno potvrđena.");
+        }
+
+        [HttpPut, Authorize]
+        [Route("{Id}/decline")]
+        public async Task<ActionResult<bool>> DeclineOrganization(int id, [FromBody] string reason)
+        {
+            var result = await _organizationService.DeclineOrganization(id, reason);
+            if (!result)
+            {
+                return BadRequest("Odbijanje nije uspjelo.");
+            }
+            return Ok("Organizacija uspješno odbijena.");
         }
     }
 }

@@ -1,12 +1,17 @@
 // using System.Security.Cryptography;
 
+using System.Text;
+using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SportLink.API.Data;
 using SportLink.API.Services.Auth;
 using SportLink.API.Services.Email;
+using SportLink.API.Services.Organization;
 using SportLink.API.Services.OTPCode;
 using SportLink.API.Services.User;
 using SportLink.Core.Handlers;
@@ -14,6 +19,15 @@ using SportLink.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -36,6 +50,19 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+
+builder.Services.AddAuthorization(options => { });
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
@@ -48,6 +75,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddHttpClient();
 
+
 #region Validation
 
 builder.Services.AddFluentValidationAutoValidation();
@@ -58,6 +86,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
 
@@ -66,6 +95,9 @@ builder.Services.Configure<EmailSettings>(
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IAuthHandler, AuthHandler>();
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IMapper, Mapper>();
 
 
 // Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
@@ -78,7 +110,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
-    {       
+    {
         options.EnableTryItOutByDefault();
     });
 }
