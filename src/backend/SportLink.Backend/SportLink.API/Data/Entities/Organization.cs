@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using SportLink.Core.Enums;
 
 namespace SportLink.API.Data.Entities;
 
@@ -12,13 +15,23 @@ public class Organization : BaseEntity
     public string ContactPhoneNumber { get; set; }
     public string Location { get; set; }
     public int OwnerId { get; set; }
-    public bool IsVerified { get; set; }
+    //public bool IsVerified { get; set; }
+    public VerificationStatusEnum VerificationStatus { get; set; }
+    public string? RejectionResponse { get; set; }
     
     public virtual User Owner { get; set; }
+    
+    public virtual ICollection<Review> Reviews { get; set; }
+    public virtual ICollection<SocialNetwork> SocialNetworks { get; set; }
+    public virtual ICollection<Sport> Sports { get; set; }
+    public virtual ICollection<TrainingGroup> TrainingGroups { get; set; }
+    public virtual ICollection<CourtBooking> CourtBookings { get; set; }
+    public virtual ICollection<Tournament> Tournaments { get; set; }
 }
 
 public class OrganizationConfigurationBuilder : IEntityTypeConfiguration<Organization>
 {
+    private readonly EnumToStringConverter<VerificationStatusEnum> _converter = new EnumToStringConverter<VerificationStatusEnum>();
     public void Configure(EntityTypeBuilder<Organization> builder)
     {
         builder.ToTable(nameof(Organization));
@@ -35,10 +48,13 @@ public class OrganizationConfigurationBuilder : IEntityTypeConfiguration<Organiz
             .IsRequired();
         builder.Property(x => x.OwnerId)
             .IsRequired();
-        
-        builder.Property(x => x.IsVerified)
-            .HasDefaultValue(false)
-            .IsRequired();
+
+        builder.Property(x => x.VerificationStatus)
+            .HasDefaultValue(VerificationStatusEnum.Unverified)
+            .IsRequired()
+            .HasConversion(_converter);
+        builder.Property(x => x.RejectionResponse)
+            .IsRequired(false);
         
         builder.Property(x => x.CreatedAt)
             .IsRequired();
@@ -49,6 +65,14 @@ public class OrganizationConfigurationBuilder : IEntityTypeConfiguration<Organiz
             .WithMany(u => u.Organizations)
             .HasForeignKey(x => x.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasMany(x => x.Sports)
+            .WithMany(s => s.Organizations) // Assuming Sport entity has Organizations collection
+            .UsingEntity<Dictionary<string, object>>(
+                "OrganizationSport", // Join table name
+                j => j.HasOne<Sport>().WithMany().HasForeignKey("SportId"),
+                j => j.HasOne<Organization>().WithMany().HasForeignKey("OrganizationId")
+            );
 
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SportLink.API.Data;
@@ -11,9 +12,11 @@ using SportLink.API.Data;
 namespace SportLink.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241106103006_Added_Sports_Reviews_SocialNetworks")]
+    partial class Added_Sports_Reviews_SocialNetworks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,52 +38,6 @@ namespace SportLink.API.Migrations
                     b.HasIndex("SportId");
 
                     b.ToTable("OrganizationSport");
-                });
-
-            modelBuilder.Entity("SportLink.API.Data.Entities.CourtBooking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("HourlyPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SportId")
-                        .HasColumnType("integer");
-
-                    b.Property<TimeSpan>("TimeFrom")
-                        .HasColumnType("interval");
-
-                    b.Property<TimeSpan>("TimeTo")
-                        .HasColumnType("interval");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("SportId");
-
-                    b.ToTable("CourtBooking", (string)null);
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.Organization", b =>
@@ -106,6 +63,11 @@ namespace SportLink.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsVerified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("text");
@@ -117,17 +79,8 @@ namespace SportLink.API.Migrations
                     b.Property<int>("OwnerId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("RejectionResponse")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("VerificationStatus")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("Unverified");
 
                     b.HasKey("Id");
 
@@ -213,94 +166,6 @@ namespace SportLink.API.Migrations
                     b.ToTable("Sport", (string)null);
                 });
 
-            modelBuilder.Entity("SportLink.API.Data.Entities.Tournament", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("EntryFee")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SportId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("TimeFrom")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("TimeTo")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("SportId");
-
-                    b.ToTable("Tournament", (string)null);
-                });
-
-            modelBuilder.Entity("SportLink.API.Data.Entities.TrainingGroup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AgeFrom")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("AgeTo")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("MonthlyPrice")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Sex")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("SportId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("SportId");
-
-                    b.ToTable("TrainingGroup", (string)null);
-                });
-
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -320,28 +185,12 @@ namespace SportLink.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsEmailVerified")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.Property<DateTime>("LastLoginAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -364,25 +213,6 @@ namespace SportLink.API.Migrations
                         .HasForeignKey("SportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SportLink.API.Data.Entities.CourtBooking", b =>
-                {
-                    b.HasOne("SportLink.API.Data.Entities.Organization", "Organization")
-                        .WithMany("CourtBookings")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SportLink.API.Data.Entities.Sport", "Sport")
-                        .WithMany("CourtBookings")
-                        .HasForeignKey("SportId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-
-                    b.Navigation("Sport");
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.Organization", b =>
@@ -426,64 +256,11 @@ namespace SportLink.API.Migrations
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("SportLink.API.Data.Entities.Tournament", b =>
-                {
-                    b.HasOne("SportLink.API.Data.Entities.Organization", "Organization")
-                        .WithMany("Tournaments")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SportLink.API.Data.Entities.Sport", "Sport")
-                        .WithMany("Tournaments")
-                        .HasForeignKey("SportId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-
-                    b.Navigation("Sport");
-                });
-
-            modelBuilder.Entity("SportLink.API.Data.Entities.TrainingGroup", b =>
-                {
-                    b.HasOne("SportLink.API.Data.Entities.Organization", "Organization")
-                        .WithMany("TrainingGroups")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SportLink.API.Data.Entities.Sport", "Sport")
-                        .WithMany("TrainingGroups")
-                        .HasForeignKey("SportId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-
-                    b.Navigation("Sport");
-                });
-
             modelBuilder.Entity("SportLink.API.Data.Entities.Organization", b =>
                 {
-                    b.Navigation("CourtBookings");
-
                     b.Navigation("Reviews");
 
                     b.Navigation("SocialNetworks");
-
-                    b.Navigation("Tournaments");
-
-                    b.Navigation("TrainingGroups");
-                });
-
-            modelBuilder.Entity("SportLink.API.Data.Entities.Sport", b =>
-                {
-                    b.Navigation("CourtBookings");
-
-                    b.Navigation("Tournaments");
-
-                    b.Navigation("TrainingGroups");
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>
