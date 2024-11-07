@@ -1,9 +1,9 @@
-import { Group, Code, ScrollArea, Title, Button } from '@mantine/core';
+import { Group, ScrollArea, Title, Button, Image } from '@mantine/core';
 import {
-  IconNotes,
-  IconCalendarStats,
-  IconPresentationAnalytics,
-  IconAdjustments,
+  // IconNotes,
+  // IconCalendarStats,
+  // IconPresentationAnalytics,
+  // IconAdjustments,
   IconHome,
   IconSearch
 } from '@tabler/icons-react';
@@ -11,6 +11,7 @@ import {
 import { LinksGroup } from './NavbarLinksGroup';
 //import { Logo } from './Logo';
 import classes from './NavbarNested.module.css';
+import duckImage from '../assets/duck.jpg';
 
 const mockdata = [
   { label: 'Početna', icon: IconHome },
@@ -23,21 +24,22 @@ const mockdata = [
       { label: 'Događanja', link: '/' },
       { label: 'Termini', link: '/' },
     ],
-  },
-  {
-    label: 'Kalendar',
-    icon: IconCalendarStats,
-    links: [
-      { label: 'Nadolazeći događaji', link: '/' },
-      { label: 'Prošli događaji', link: '/' }
-    ],
-  },
-  { label: 'Analiza', icon: IconPresentationAnalytics },
-  {
-    label: 'Ostavi komentar',
-    icon: IconNotes
-  },
-  { label: 'Postavke', icon: IconAdjustments }
+   } 
+   //ovo ce biti vidljivo tek kada se korisnik ulogira
+  // ,{
+  //   label: 'Kalendar',
+  //   icon: IconCalendarStats,
+  //   links: [
+  //     { label: 'Nadolazeći događaji', link: '/' },
+  //     { label: 'Prošli događaji', link: '/' }
+  //   ],
+  // },
+  // { label: 'Analiza', icon: IconPresentationAnalytics },
+  // {
+  //   label: 'Ostavi komentar',
+  //   icon: IconNotes
+  // },
+  // { label: 'Postavke', icon: IconAdjustments }
 ];
 
 export function NavbarNested() {
@@ -46,10 +48,12 @@ export function NavbarNested() {
   return (
     <nav className={classes.navbar}>
       <div className={classes.header}>
-        <Group justify="space-between">
+        <Group justify="space-around">
+          <div className={classes.logoContainer} >
+          <Image src={duckImage} alt="duck"></Image>
+          </div>
           <Title> SportLink </Title>
           {/* <Logo style={{ width: rem(120) }} /> */}
-          <Code fw={700}>v0.1.0</Code>
         </Group>
       </div>
 
@@ -58,8 +62,10 @@ export function NavbarNested() {
       </ScrollArea>
 
       <div className={classes.footer}>
-          <Button variant="default">Prijava</Button>
-          <Button>Registracija</Button>
+          <Button variant='outline' size='sm' radius='sm'
+          // onClick={}
+          >Prijava</Button>
+          <Button variant='light' size='sm' radius='sm'>Registracija</Button>
       </div>
     </nav>
   );

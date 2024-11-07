@@ -14,10 +14,10 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const items = (hasLinks ? links : []).map((link) => (
-    <div className='sublink'>
+    <div className={classes.sublink}>
     <Text<'a'>
       component="a"
-      className={classes.link}
+      // className={classes.link} //TO DO
       href={link.link}
       key={link.label}
       onClick={(event) => event.preventDefault()}
