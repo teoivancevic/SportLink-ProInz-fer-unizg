@@ -31,23 +31,7 @@ namespace SportLink.API.Services.Organization
 
         public async Task<ActionResult<OrganizationDto>> CreateOrganization(OrganizationDto organizationDto)
         {
-            // var authHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
-            // if (!string.IsNullOrEmpty(authHeader) && authHeader != "Bearer <token>")
-            // {
-            //     Console.WriteLine($"Authorization Header: {authHeader}");
-            // }
-            // else
-            // {
-            //     Console.WriteLine("Authorization header is missing.");
-            // }
-
-            // var claims = _httpContextAccessor.HttpContext?.User?.Claims;
-            // foreach (var claim in claims)
-            // {
-            //     Console.WriteLine($"{claim.Type}: {claim.Value}");
-            // }
             var userId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            //var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var owner = await _context.Users.FindAsync(int.Parse(userId!));
             if (userId is not null && owner is not null)
             {
