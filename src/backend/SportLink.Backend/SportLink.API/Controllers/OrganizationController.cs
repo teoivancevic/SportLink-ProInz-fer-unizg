@@ -58,7 +58,7 @@ namespace SportLink.API.Controllers
             }
         }
 
-        [HttpGet, Authorize]
+        [HttpGet, Authorize(Roles = "AppAdmin")]
         [Route("{id}")]
         public async Task<ActionResult<OrganizationDto>> GetSingleOrganization(int id)
         {
@@ -70,7 +70,7 @@ namespace SportLink.API.Controllers
             return Ok(organization);
         }
 
-        [HttpPut, Authorize]
+        [HttpPut, Authorize(Roles = "AppAdmin")]
         [Route("{id}/verify")]
         public async Task<ActionResult<bool>> VerifyOrganization(int id)
         {
@@ -82,7 +82,7 @@ namespace SportLink.API.Controllers
             return Ok("Organizacija uspješno potvrđena.");
         }
 
-        [HttpPut, Authorize]
+        [HttpPut, Authorize(Roles = "AppAdmin")]
         [Route("{id}/decline")]
         public async Task<ActionResult<bool>> DeclineOrganization(int id, [FromBody] string reason)
         {
