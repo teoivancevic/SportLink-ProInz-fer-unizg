@@ -34,6 +34,8 @@ public class CourtBookingConfigurationBuilder : IEntityTypeConfiguration<CourtBo
             .IsRequired();
         builder.Property(x => x.Description)
             .IsRequired();
+        builder.Property(x => x.Location)
+            .IsRequired();
 
         builder.Property(x => x.CreatedAt)
             .IsRequired();

@@ -231,6 +231,10 @@ namespace SportLink.API.Migrations
                     b.Property<decimal>("EntryFee")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
@@ -299,6 +303,25 @@ namespace SportLink.API.Migrations
                     b.HasIndex("SportId");
 
                     b.ToTable("TrainingGroup", (string)null);
+                });
+
+            modelBuilder.Entity("SportLink.API.Data.Entities.TrainingSchedule", b =>
+                {
+                    b.Property<int>("TrainingGroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.HasKey("TrainingGroupId", "DayOfWeek", "StartTime");
+
+                    b.ToTable("TrainingSchedule", (string)null);
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>
@@ -448,6 +471,17 @@ namespace SportLink.API.Migrations
                     b.Navigation("Sport");
                 });
 
+            modelBuilder.Entity("SportLink.API.Data.Entities.TrainingSchedule", b =>
+                {
+                    b.HasOne("SportLink.API.Data.Entities.TrainingGroup", "TrainingGroup")
+                        .WithMany("TrainingSchedules")
+                        .HasForeignKey("TrainingGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TrainingGroup");
+                });
+
             modelBuilder.Entity("SportLink.API.Data.Entities.Organization", b =>
                 {
                     b.Navigation("CourtBookings");
@@ -468,6 +502,11 @@ namespace SportLink.API.Migrations
                     b.Navigation("Tournaments");
 
                     b.Navigation("TrainingGroups");
+                });
+
+            modelBuilder.Entity("SportLink.API.Data.Entities.TrainingGroup", b =>
+                {
+                    b.Navigation("TrainingSchedules");
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>
