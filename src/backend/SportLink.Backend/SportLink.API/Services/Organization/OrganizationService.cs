@@ -60,6 +60,19 @@ namespace SportLink.API.Services.Organization
             }
         }
 
+        public async Task<OrganizationDto> GetSingleOrganization(int id)
+        {
+            var organization = await _context.Organizations.FindAsync(id);
+            return _mapper.Map<OrganizationDto>(organization);
+        }
+
+        public async Task<List<OrganizationDto>> GetMyOrganizations()
+        {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var organizations = await _context.Organizations.Where(x => x.OwnerId == int.Parse(ownerId!)).ToListAsync();
+            return _mapper.Map<List<OrganizationDto>>(organizations);
+        }
+
         public async Task<List<OrganizationDto>> GetOrganizations(bool isVerified)
         {
             if (isVerified)
@@ -74,17 +87,11 @@ namespace SportLink.API.Services.Organization
             }
         }
 
-        public async Task<OrganizationDto> GetSingleOrganization(int id)
-        {
-            var organization = await _context.Organizations.FindAsync(id);
-            return _mapper.Map<OrganizationDto>(organization);
-        }
-
         public async Task<bool> VerifyOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
-            var organizationOwner = await _context.Users.FindAsync(organization.OwnerId);
-            if (organizationOwner is not null && organization.VerificationStatus == VerificationStatusEnum.Unverified)
+            var organizationOwner = await _context.Users.FindAsync(organization?.OwnerId);
+            if (organizationOwner is not null && organization?.VerificationStatus == VerificationStatusEnum.Unverified)
             {
                 organizationOwner.RoleId = (int)RolesEnum.OrganizationOwner;
                 organization.UpdatedAt = DateTime.Now;

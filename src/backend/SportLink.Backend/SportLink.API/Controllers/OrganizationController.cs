@@ -39,7 +39,7 @@ namespace SportLink.API.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpGet, Authorize]
+        [HttpGet, Authorize(Roles = "AppAdmin")]
         [Route("Organizations")]
         public async Task<ActionResult<List<OrganizationDto>>> GetOrganizations([FromQuery] bool isVerified)
         {
@@ -58,7 +58,7 @@ namespace SportLink.API.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "AppAdmin")]
+        [HttpGet, Authorize]
         [Route("{id}")]
         public async Task<ActionResult<OrganizationDto>> GetSingleOrganization(int id)
         {
@@ -69,6 +69,22 @@ namespace SportLink.API.Controllers
             }
             return Ok(organization);
         }
+
+        [HttpGet, Authorize(Roles = "OrganizationOwner")]
+        [Route("myOrganizations")]
+        public async Task<ActionResult<List<OrganizationDto>>> GetMyOrganizations()
+        {
+            var organizations = await _organizationService.GetMyOrganizations();
+            if (organizations is null)
+            {
+                return NotFound("Nemate vlastitih organizacija.");
+            }
+            else
+            {
+                return Ok(organizations);
+            }
+        }
+
 
         [HttpPut, Authorize(Roles = "AppAdmin")]
         [Route("{id}/verify")]
