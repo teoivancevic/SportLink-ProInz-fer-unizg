@@ -1,0 +1,34 @@
+.message{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 313px;
+    height: 161px;
+    background-color: rgb(189, 189, 189, 0.2);
+    border-radius: 15px;
+    box-shadow: 0px 10px 10px -5px rgba(0,0,0,0.4);
+    
+}
+
+text{
+    font: roboto;
+}
+
+.confirmationText{
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: 600;
+}
+
+.backText{
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 400;
+}
+
+a{
+    color: #228be6;
+    font-weight: bold;
+    text-decoration: none;
+}
