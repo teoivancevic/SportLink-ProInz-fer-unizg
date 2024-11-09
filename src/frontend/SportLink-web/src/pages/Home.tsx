@@ -1,12 +1,14 @@
 // import { useGetData } from '../services/api';
-import { LoginBox } from '../components/LoginBox.tsx';
-import {VerificationBox} from '../components/VerificationBox.tsx'
+import {Button} from '@mantine/core'
+import { useNavigate } from 'react-router-dom';
 
-// interface DogApiResponse {
-//   message: string;  // image URL
-//   status: string;
-// }
 
 export function Home() {
-  return <LoginBox/>;
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate('/login');
+  };
+
+  return <Button onClick={handleNavigate}>Go to Login</Button>;
 }

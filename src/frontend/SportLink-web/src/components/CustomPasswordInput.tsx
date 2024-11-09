@@ -1,6 +1,11 @@
 import { PasswordInput, Text, Group, Anchor } from '@mantine/core';
 
-export function CustomPasswordInput() {
+interface CustomPasswordInputProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function CustomPasswordInput({ value, onChange }: CustomPasswordInputProps) {
   return (
     <>
       <Group justify="space-between" mb={5}>
@@ -12,7 +17,11 @@ export function CustomPasswordInput() {
           Zaboravili ste zaporku?
         </Anchor>
       </Group>
-      <PasswordInput placeholder="Password" id="your-password" />
+      <PasswordInput 
+        placeholder="Password" 
+        id="your-password" 
+        value={value}
+        onChange={(event) => onChange(event.currentTarget.value)}/>
     </>
   );
 }

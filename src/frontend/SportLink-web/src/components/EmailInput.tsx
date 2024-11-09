@@ -3,32 +3,35 @@ import { IconAlertTriangle, IconAt } from '@tabler/icons-react';
 import classes from './EmailInput.module.css';
 import { useState } from 'react';
 
-export function EmailInput() {
-    const [email, setEmail] = useState('');
+
+interface EmailInputProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function EmailInput({ value, onChange }: EmailInputProps) {
     const [isValid, setIsValid] = useState(true);
   
-    // Function to validate the email format
     const validateEmail = (value: string) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(value);
     };
-  
-    // Update the validity and email state on change
+
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.currentTarget.value;
-        setEmail(value);
-        setIsValid(validateEmail(value));
-    };
+      const value = event.currentTarget.value;
+      onChange(value); 
+      setIsValid(validateEmail(value));
+  };
     
 
   return (
     <TextInput
       label="E-mail adresa"
       error={!isValid && "Invalid email"}
-      value={email}
+      value={value}
       onChange={handleEmailChange}
       classNames={{
-        input: isValid ? '' : 'invalid-email', // Apply class when invalid
+        input: isValid ? '' : 'invalid-email',
       }}
       leftSection={<IconAt
         stroke={1.5}
