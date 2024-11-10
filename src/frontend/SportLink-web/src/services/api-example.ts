@@ -2,18 +2,17 @@
 import axios from 'axios';
 
 // Create axios instance with default config
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+export const apiClient = axios.create({
+  baseURL: 'https://api-sportlink-test.azurewebsites.net',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 // Request interceptor
-api.interceptors.request.use(
+apiClient.interceptors.request.use(
   (config) => {
-    // Get token from localStorage
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,7 +24,7 @@ api.interceptors.request.use(
 );
 
 // Response interceptor
-api.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
@@ -39,10 +38,10 @@ api.interceptors.response.use(
 
 // Example API functions
 export const apiService = {
-  get: <T>(url: string) => api.get<T>(url).then((res) => res.data),
-  post: <T>(url: string, data: unknown) => api.post<T>(url, data).then((res) => res.data),
-  put: <T>(url: string, data: unknown) => api.put<T>(url, data).then((res) => res.data),
-  delete: <T>(url: string) => api.delete<T>(url).then((res) => res.data),
+  get: <T>(url: string) => apiClient.get<T>(url).then((res) => res.data),
+  post: <T>(url: string, data: unknown) => apiClient.post<T>(url, data).then((res) => res.data),
+  put: <T>(url: string, data: unknown) => apiClient.put<T>(url, data).then((res) => res.data),
+  delete: <T>(url: string) => apiClient.delete<T>(url).then((res) => res.data),
 };
 
 // Types for API responses
@@ -53,13 +52,12 @@ export interface ApiResponse<T> {
 }
 
 // Example usage with TypeScript
-interface User {
-  id: number;
+interface UserLoginData {
   name: string;
   email: string;
 }
 
 export const userService = {
-  getUser: (id: number) => apiService.get<ApiResponse<User>>(`/users/${id}`),
-  updateUser: (id: number, data: Partial<User>) => apiService.put<ApiResponse<User>>(`/users/${id}`, data),
+  getUser: (id: number) => apiService.get<ApiResponse<UserLoginData>>(`/api/users/${id}`),
+  updateUser: (id: number, data: Partial<UserLoginData>) => apiService.put<ApiResponse<UserLoginData>>(`/api/users/${id}`, data),
 };

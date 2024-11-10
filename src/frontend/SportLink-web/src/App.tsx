@@ -5,6 +5,8 @@ import { Login } from './pages/Login'
 import { Registration } from './pages/Registration';
 import '@mantine/core/styles.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthorizedHome } from './pages/AuthorizedHome';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 
 export default function App() {
@@ -16,6 +18,7 @@ export default function App() {
           <Route path="/login/" element={<Login />} />
           <Route path="/registration/" element={<Registration/>} />
           <Route path="/registration/:step" element={<Registration/>} />
+          <Route path="/authorized" element={<ProtectedRoute><AuthorizedHome /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </MantineProvider>

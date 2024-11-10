@@ -2,46 +2,43 @@ import { useState } from 'react';
 import { CustomPasswordInput } from './CustomPasswordInput';
 import { EmailInput } from './EmailInput';
 import { Button, Center, Anchor } from '@mantine/core';
-//import { UserLoginData } from '../pages/Login';
 import './LoginBox.css';
 import '@mantine/core/styles.css';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { apiClient } from '../services/api-example';
 
 export function LoginBox(){
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     
     const handleEmailChange = (newEmail: string) => setEmail(newEmail);
     const handlePasswordChange = (newPassword: string) => setPassword(newPassword);
 
     const navigate = useNavigate();
-    const navigateToHomePage = () => {navigate('../')}
 
-    // const handleSubmit = async () => {
-    //     const loginData: UserLoginData = { email, password };
-        
-    //     try {
-    //         const response = await fetch('https://localhost:5000/', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(loginData),
-    //         });
-            
-    //         if (response.ok) {
-    //             const data = await response.json();
-    //             console.log('Login successful', data);
-    //             //to do redirect to home page
-    //         } else {
-    //             console.error('Login failed', response.status);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //     }
-
-    // };
+    const handleSubmit = async () => {
+        const loginData = { email, password };
+    
+        try {
+          const response = await apiClient.post('/api/Auth/login', loginData);
+    
+          if (response.status === 200) {
+            const token = response.data.token; //mogu li pretpostaviti da ima token
+            localStorage.setItem('authToken', token);
+    
+            console.log('Login successful', response.data);
+            navigate('../authorized/'); // Redirect to  authorized page
+          } else {
+            setErrorMessage('Login failed. Please try again.');
+            console.error('Login failed', response.status);
+          }
+        } catch (error) {
+          setErrorMessage('An error occurred during login.');
+          console.error('Error:', error);
+        }
+      };
 
     return (
     <Center style={{height: '100vh'}}>
@@ -60,7 +57,7 @@ export function LoginBox(){
                 size="md"
                 variant="light"
                 color="blue"
-                onClick={navigateToHomePage}>PRIJAVI SE</Button></div>
+                onClick={handleSubmit}>PRIJAVI SE</Button></div>
                 <div className='messageDiv'>
                     <p className='message1'>Nemate korisnički račun?<br/>
                     <Anchor component={Link} to="../registration">Registrirajte se</Anchor>

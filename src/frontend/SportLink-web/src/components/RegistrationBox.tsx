@@ -6,12 +6,14 @@ import { EmailInput } from './EmailInput';
 import { useState } from 'react';
 import { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiClient } from '../services/api-example'; 
 
 export function RegistrationBox(){
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     
     const handleFNameChange = (event: ChangeEvent<HTMLInputElement>) => {setFirstName(event.target.value);};
     const handleLNameChange = (event: ChangeEvent<HTMLInputElement>) => {setLastName(event.target.value);};
@@ -19,7 +21,34 @@ export function RegistrationBox(){
     const handlePasswordChange = (newPassword: string) => setPassword(newPassword);
 
     const navigate = useNavigate();
-    const navigateToVerification = () => {navigate('./otp')}
+    // const navigateToVerification = () => {navigate('./otp')}
+    const handleRegister = async () => {
+        const registrationData = {
+          firstName,
+          lastName,
+          email,
+          password,
+        };
+
+        try {
+            const response = await apiClient.post('/api/Auth/register', registrationData);
+      
+            if (response.status === 200) {
+              const { id } = response.data; // Get the user ID from the response
+      
+              console.log('Registration successful', response.data);
+              // Redirect to verification page with the user ID for OTP verification
+              navigate(`./otp?id=${id}`);
+            } else {
+              setErrorMessage('Registration failed. Please try again.');
+              console.error('Registration failed', response.status);
+            }
+        } catch (error) {
+            setErrorMessage('An error occurred during registration.');
+            console.log(errorMessage);
+            console.error('Error:', error);
+        }
+    };
 
     return (
     <Center style={{height:'100vh'}}>
@@ -50,7 +79,7 @@ export function RegistrationBox(){
                 size="md"
                 variant="light"
                 color="blue"
-                onClick={navigateToVerification}>REGISTRIRAJ SE</Button>
+                onClick={handleRegister}>REGISTRIRAJ SE</Button>
             </div>
         </div>
     </div>

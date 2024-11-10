@@ -2,40 +2,45 @@ import './VerificationBox.css'
 import { OTPInput } from './OTPInput';
 import { useState, useEffect } from 'react';
 import { Center, Notification } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { apiClient } from '../services/api-example';
 
 export function VerificationBox(){
+    const {id} = useParams();
     const [otpValue, setOtpValue] = useState(Array(6).fill(''));
     const [showNotification, setShowNotification] = useState(true); 
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const navigate = useNavigate();
-    const correctOTP = "123456"; //mock OTP
 
-    const handleResendClick = () => {setShowNotification(true);
+    const handleResendClick = () => {
+        setShowNotification(true);
         console.log('Resending verification code...');
     };
 
     const handleSubmit = async () => {
         const enteredOTP = otpValue.join('');
+        const userIdParam = id ? parseInt(id, 10) : 0; // User ID from the URL params
 
-        if (enteredOTP === correctOTP) {
-            navigate('../registration/success');
-            // try {
-            //     // Send OTP to backend
-            //     const response = await fetch('/api/verify-otp', {
-            //         method: 'POST',
-            //         headers: { 'Content-Type': 'application/json' },
-            //         body: JSON.stringify({ otp: enteredOTP }),
-            //     });
+        if (enteredOTP.length === 6) {
+            try {
+                // Send a PUT request to verify OTP
+                const response = await apiClient.put('/api/Auth/verify', {
+                    userId: userIdParam,
+                    otpCode: enteredOTP,
+                });
 
-            //     if (response.ok) {
-            //         navigate('/registration/success'); // Redirect to success page
-            //     } else {
-            //         console.log("Invalid OTP");
-            //     }
-            // } catch (error) {
-            //     console.error('Failed to verify OTP:', error);
-            // }
+                if (response.data === true) {
+                    // If OTP verification is successful, navigate to the confirmation page
+                    navigate('/registration/success');
+                } else {
+                    // If OTP verification fails, stay on the page and show an error message
+                    setErrorMessage('Invalid OTP. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error during OTP verification:', error);
+                setErrorMessage('An error occurred during OTP verification.');
+            }
         }
     };
 
