@@ -20,7 +20,7 @@ public class OrganizationValidator : AbstractValidator<OrganizationDto>
     public OrganizationValidator()
     {
         RuleFor(x => x.Name).NotEmpty().Length(3, 100);
-        RuleFor(x => x.Description).NotEmpty().Length(20, 200);
+        RuleFor(x => x.Description).NotEmpty().Length(3, 200);
         RuleFor(x => x.ContactEmail).NotEmpty().Length(3, 100).EmailAddress();
         RuleFor(x => x.ContactPhoneNumber).NotEmpty().Length(6, 15);
         RuleFor(x => x.Location).NotEmpty().Length(3, 100);

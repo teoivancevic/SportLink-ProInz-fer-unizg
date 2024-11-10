@@ -63,13 +63,20 @@ namespace SportLink.API.Services.Organization
         public async Task<OrganizationDto> GetSingleOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
-            return _mapper.Map<OrganizationDto>(organization);
+            if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
+            {
+                return _mapper.Map<OrganizationDto>(organization);
+            }
+            else
+            {
+                return null!;
+            }
         }
 
         public async Task<List<OrganizationDto>> GetMyOrganizations()
         {
             var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var organizations = await _context.Organizations.Where(x => x.OwnerId == int.Parse(ownerId!)).ToListAsync();
+            var organizations = await _context.Organizations.Where(x => x.OwnerId == int.Parse(ownerId!) && x.VerificationStatus == VerificationStatusEnum.Accepted).ToListAsync();
             return _mapper.Map<List<OrganizationDto>>(organizations);
         }
 

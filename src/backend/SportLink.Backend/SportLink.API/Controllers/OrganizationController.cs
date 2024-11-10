@@ -22,7 +22,7 @@ namespace SportLink.API.Controllers
             _organizationService = organizationService;
         }
 
-        [HttpPost, Authorize]
+        [HttpPost, Authorize(Roles = "OrganizationOwner,User")]
         [Route("CreateOrganization")]
         public async Task<ActionResult<OrganizationDto>> CreateOrganization([FromBody] OrganizationDto organization)
         {
