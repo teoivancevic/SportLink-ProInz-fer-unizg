@@ -6,7 +6,9 @@ import './LoginBox.css';
 import '@mantine/core/styles.css';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../services/api-example';
+// import { apiClient } from '../services/api-example';
+import { authService } from '../services/api-example';
+import type { LoginRequest } from '../types/auth';
 
 export function LoginBox(){
     const [email, setEmail] = useState<string>('');
@@ -19,21 +21,25 @@ export function LoginBox(){
     const navigate = useNavigate();
 
     const handleSubmit = async () => {
-        const loginData = { email, password };
+        const loginData: LoginRequest = { email, password };
     
         try {
-          const response = await apiClient.post('/api/Auth/login', loginData);
+          const response = await authService.login(loginData);
+          const { token } = response.data;
+            
+          localStorage.setItem('authToken', token);
+          navigate('../authorized/');
     
-          if (response.status === 200) {
-            const token = response.data.token; //mogu li pretpostaviti da ima token
-            localStorage.setItem('authToken', token);
+          // if (response.status === 200) {
+          //   const token = response.data.token; //mogu li pretpostaviti da ima token
+          //   localStorage.setItem('authToken', token);
     
-            console.log('Login successful', response.data);
-            navigate('../authorized/'); // Redirect to  authorized page
-          } else {
-            setErrorMessage('Login failed. Please try again.');
-            console.error('Login failed', response.status);
-          }
+          //   console.log('Login successful', response.data);
+          //   navigate('../authorized/'); // Redirect to  authorized page
+          // } else {
+          //   setErrorMessage('Login failed. Please try again.');
+          //   console.error('Login failed', response.status);
+          // }
         } catch (error) {
           setErrorMessage('An error occurred during login.');
           console.error('Error:', error);

@@ -1,5 +1,6 @@
 // src/services/api.ts
 import axios from 'axios';
+import { LoginRequest, LoginResponse } from '../types/auth';
 
 // Create axios instance with default config
 export const apiClient = axios.create({
@@ -60,4 +61,9 @@ interface UserLoginData {
 export const userService = {
   getUser: (id: number) => apiService.get<ApiResponse<UserLoginData>>(`/api/users/${id}`),
   updateUser: (id: number, data: Partial<UserLoginData>) => apiService.put<ApiResponse<UserLoginData>>(`/api/users/${id}`, data),
+};
+
+export const authService = {
+  login: (data: LoginRequest) => 
+    apiClient.post<LoginResponse>('/api/Auth/login', data),
 };
