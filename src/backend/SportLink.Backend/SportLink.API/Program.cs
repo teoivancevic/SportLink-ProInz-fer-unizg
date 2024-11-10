@@ -156,17 +156,17 @@ if (app.Environment.IsDevelopment())
     {
         options.EnableTryItOutByDefault();
     });
+    app.UseDeveloperExceptionPage();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 logger.LogInformation("Application starting...");
 logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
-logger.LogInformation($"Database Connection: {builder.Configuration.GetConnectionString("LocalConnection")?.Substring(0, 20)}...");
 
 app.Run();
