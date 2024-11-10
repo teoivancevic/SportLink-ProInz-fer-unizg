@@ -1,0 +1,88 @@
+*{
+    box-sizing: border-box;
+}
+
+.containerLogin{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 313px;
+    height: 450px;
+    padding: 20px;
+    background-color: rgb(189, 189, 189, 0.2);
+    border-radius: 15px;
+    box-shadow: 0px 10px 10px -5px rgba(0,0,0,0.4);
+    
+}
+
+.headerLogin{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h3{
+    color: #228be6;
+    text-align: center;
+}
+
+.line{
+    width: 196px;
+    height: 2px;
+    background-color: black;;
+    align-self: center;
+}
+
+.inputsLogin{
+    width: 273px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.footerLogin{
+    width: 273px;
+    height: 117px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttonDiv{
+    width:120px;
+    height:40px;
+    align-self: center;
+}
+
+.messageDiv{
+    border-top: 2px solid gray;
+    height: 39px;
+    width: 273px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.message1{
+    font-size: 15px;
+    text-align: center;
+}
+
+a{
+    color:#099dfb;
+    font-size: 12px;
+}
+
+
+/* .loginButton {
+    align-self: center;
+}
+  
+.loginButton:hover {
+    background-color: #E0E0E0; 
+} */
+
