@@ -13,8 +13,9 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registration" element={<Registration/>} />
+          <Route path="/login/" element={<Login />} />
+          <Route path="/registration/" element={<Registration/>} />
+          <Route path="/registration/:step" element={<Registration/>} />
         </Routes>
       </BrowserRouter>
     </MantineProvider>

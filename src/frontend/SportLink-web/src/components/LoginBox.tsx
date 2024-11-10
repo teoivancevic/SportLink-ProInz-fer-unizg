@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { CustomPasswordInput } from './CustomPasswordInput';
 import { EmailInput } from './EmailInput';
 import { Button, Center, Anchor } from '@mantine/core';
-import { UserLoginData } from '../pages/Login';
+//import { UserLoginData } from '../pages/Login';
 import './LoginBox.css';
 import '@mantine/core/styles.css';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginBox(){
     const [email, setEmail] = useState<string>('');
@@ -14,29 +15,33 @@ export function LoginBox(){
     const handleEmailChange = (newEmail: string) => setEmail(newEmail);
     const handlePasswordChange = (newPassword: string) => setPassword(newPassword);
 
-    const handleSubmit = async () => {
-        const loginData: UserLoginData = { email, password };
+    const navigate = useNavigate();
+    const navigateToHomePage = () => {navigate('../')}
+
+    // const handleSubmit = async () => {
+    //     const loginData: UserLoginData = { email, password };
         
-        try {
-            const response = await fetch('https://localhost:5000/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(loginData),
-            });
+    //     try {
+    //         const response = await fetch('https://localhost:5000/', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(loginData),
+    //         });
             
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Login successful', data);
-                // TO DO redirect navigation
-            } else {
-                console.error('Login failed', response.status);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             console.log('Login successful', data);
+    //             //to do redirect to home page
+    //         } else {
+    //             console.error('Login failed', response.status);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //     }
+
+    // };
 
     return (
     <Center style={{height: '100vh'}}>
@@ -55,7 +60,7 @@ export function LoginBox(){
                 size="md"
                 variant="light"
                 color="blue"
-                onClick={handleSubmit}>PRIJAVI SE</Button></div>
+                onClick={navigateToHomePage}>PRIJAVI SE</Button></div>
                 <div className='messageDiv'>
                     <p className='message1'>Nemate korisnički račun?<br/>
                     <Anchor component={Link} to="../registration">Registrirajte se</Anchor>

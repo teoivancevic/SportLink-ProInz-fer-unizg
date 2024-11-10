@@ -12,6 +12,7 @@ import { LinksGroup } from './NavbarLinksGroup';
 //import { Logo } from './Logo';
 import classes from './NavbarNested.module.css';
 import duckImage from '../assets/duck.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const mockdata = [
   { label: 'Početna', icon: IconHome },
@@ -43,6 +44,10 @@ const mockdata = [
 ];
 
 export function NavbarNested() {
+  const navigate = useNavigate();
+  const navigateLogin = () => { navigate('./login') };
+  const navigateRegistration = () => { navigate('./registration') };
+
   const links = mockdata.map((item) => <LinksGroup {...item} key={item.label} />);
 
   return (
@@ -63,9 +68,9 @@ export function NavbarNested() {
 
       <div className={classes.footer}>
           <Button variant='outline' size='sm' radius='sm'
-          // onClick={}
+          onClick={navigateLogin}
           >Prijava</Button>
-          <Button variant='light' size='sm' radius='sm'>Registracija</Button>
+          <Button variant='light' size='sm' radius='sm'  onClick={navigateRegistration}>Registracija</Button>
       </div>
     </nav>
   );

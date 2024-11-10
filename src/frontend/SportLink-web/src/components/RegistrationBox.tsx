@@ -5,6 +5,7 @@ import { CustomPasswordInput } from './CustomPasswordInput';
 import { EmailInput } from './EmailInput';
 import { useState } from 'react';
 import { ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function RegistrationBox(){
     const [firstName, setFirstName] = useState<string>('');
@@ -16,6 +17,9 @@ export function RegistrationBox(){
     const handleLNameChange = (event: ChangeEvent<HTMLInputElement>) => {setLastName(event.target.value);};
     const handleEmailChange = (newEmail: string) => setEmail(newEmail);
     const handlePasswordChange = (newPassword: string) => setPassword(newPassword);
+
+    const navigate = useNavigate();
+    const navigateToVerification = () => {navigate('./otp')}
 
     return (
     <Center style={{height:'100vh'}}>
@@ -45,7 +49,8 @@ export function RegistrationBox(){
                 className="loginButton"
                 size="md"
                 variant="light"
-                color="blue">REGISTRIRAJ SE</Button>
+                color="blue"
+                onClick={navigateToVerification}>REGISTRIRAJ SE</Button>
             </div>
         </div>
     </div>

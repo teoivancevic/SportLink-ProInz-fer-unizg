@@ -1,22 +1,58 @@
 import './VerificationBox.css'
 import { OTPInput } from './OTPInput';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Center, Notification } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 
 export function VerificationBox(){
     const [otpValue, setOtpValue] = useState(Array(6).fill(''));
     const [showNotification, setShowNotification] = useState(true); 
 
+    const navigate = useNavigate();
+    const correctOTP = "123456"; //mock OTP
+
     const handleResendClick = () => {setShowNotification(true);
         console.log('Resending verification code...');
     };
+
+    const handleSubmit = async () => {
+        const enteredOTP = otpValue.join('');
+
+        if (enteredOTP === correctOTP) {
+            navigate('../registration/success');
+            // try {
+            //     // Send OTP to backend
+            //     const response = await fetch('/api/verify-otp', {
+            //         method: 'POST',
+            //         headers: { 'Content-Type': 'application/json' },
+            //         body: JSON.stringify({ otp: enteredOTP }),
+            //     });
+
+            //     if (response.ok) {
+            //         navigate('/registration/success'); // Redirect to success page
+            //     } else {
+            //         console.log("Invalid OTP");
+            //     }
+            // } catch (error) {
+            //     console.error('Failed to verify OTP:', error);
+            // }
+        }
+    };
+
+    // Watch for full OTP entry
+    useEffect(() => {
+        if (otpValue.every(value => value !== '')) {
+            handleSubmit(); // Automatically submit when all OTP fields are filled
+        }
+    }, [otpValue]);
+
     return (
         <Center style={{ height: '100vh' }}>
-            <div className='container'>
-                <div className='message'>
+            <div className='containerVerif'>
+                <div className='messageVerif'>
                     <div><h5>Kod za verifikaciju e-mail adrese</h5></div>
-                    <div className='instruction'>
-                        <div><text className='text'>Molimo Vas unesite 6-znamekasti kod koji</text></div>
+                    <div className='instructionVerif'>
+                        <div><text>Molimo Vas unesite 6-znamekasti kod koji</text></div>
                         <div><text>Vam je poslan na Vašu e-mail adresu.</text></div>
                     </div>
                 </div>

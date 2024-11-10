@@ -1,10 +1,9 @@
-.container{
+.containerVerif{
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
-    gap: 20px;
     width: 313px;
     height: 279px;
     padding: 20px;
@@ -14,7 +13,7 @@
     
 }
 
-.message{
+.messageVerif{
     width: 272px;
     height: 40px;
     display: flex;
@@ -23,13 +22,13 @@
     align-items: center;
 }
 
-.instruction{
+.instructionVerif{
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.instruction > *{
+.instructionVerif > *{
     line-height: 0cm;
 }
 
