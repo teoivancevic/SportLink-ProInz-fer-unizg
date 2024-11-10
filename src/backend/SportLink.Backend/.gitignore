@@ -18,7 +18,7 @@ bld/
 
 # Visual Studio
 .vs/
-.vscode/
+!.vscode/
 *.user
 *.userosscache
 *.sln.docstates

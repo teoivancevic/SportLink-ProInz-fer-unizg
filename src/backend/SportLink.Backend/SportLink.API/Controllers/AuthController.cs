@@ -17,12 +17,12 @@ public class AuthController : ControllerBase
 
     private readonly IUserService _userService;
     private readonly IAuthService _authService;
-    
+
     public AuthController(IUserService userService, IAuthService authService, IAuthHandler authHandler, IConfiguration configuration)
     {
         _configuration = configuration;
         _authHandler = authHandler;
-        
+
         _userService = userService;
         _authService = authService;
     }
@@ -58,7 +58,7 @@ public class AuthController : ControllerBase
 
         return Ok($"User {userId} verified");
     }
-    
+
     /// <summary>
     /// Login user
     /// </summary>
@@ -70,25 +70,25 @@ public class AuthController : ControllerBase
     {
         var user = await _userService.GetUserByEmail(login.Email);
         if (user is null)
-            return BadRequest("User not found.");
+            return BadRequest("Wrong username or password.");
 
         var roleName = Enum.GetName(typeof(RolesEnum), user.RoleId);
         if (roleName is null)
-            return BadRequest("Role not found.");
-        
+            return BadRequest("Wrong username or password.");
+
         var verifyLogin = await _authService.LoginCheckCredentials(user, login.Password);
         if (!verifyLogin)
-            return BadRequest("Wrong pasword.");
-        
+            return BadRequest("Wrong username or pasword.");
+
 
         string token = _authHandler.CreateToken(
-            email: login.Email, 
+            email: login.Email,
             userId: $"{user.Id}",
             firstName: user.FirstName,
             lastName: user.LastName,
-            roleName: roleName, 
+            roleName: roleName,
             jwtKey: _configuration.GetSection("Jwt:Key").Value);
-        
+
         return Ok(token);
-    } 
+    }
 }

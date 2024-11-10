@@ -23,6 +23,7 @@ public class User : BaseEntity
     public virtual Role Role { get; set; }
     public virtual ICollection<OTPCode> OTPCodes { get; set; }
     public virtual ICollection<Organization> Organizations { get; set; }
+    public virtual ICollection<Review> Reviews { get; set; }
 }
 
 public class UserConfigurationBuilder : IEntityTypeConfiguration<User>
