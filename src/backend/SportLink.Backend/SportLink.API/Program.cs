@@ -18,6 +18,11 @@ using SportLink.API.Services.User;
 using SportLink.Core.Handlers;
 using SportLink.Core.Models;
 
+var logger = LoggerFactory.Create(config =>
+{
+    config.AddConsole();
+}).CreateLogger("Program");
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
@@ -87,7 +92,7 @@ builder.Services.AddAuthorization(options => { });
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("LocalConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -112,7 +117,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
 
 builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("EmailSettings"));
+    builder.Configuration.GetSection("EmailSettings")); 
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IAuthHandler, AuthHandler>();
@@ -125,6 +130,23 @@ builder.Services.AddSingleton<IMapper, Mapper>();
 // Console.WriteLine($"AppPassword: {builder.Configuration["EmailSettings:AppPassword"]}");
 
 var app = builder.Build();
+
+// Apply migrations automatically
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    try
+    {
+        logger.LogInformation("Starting database migration...");
+        db.Database.Migrate();
+        logger.LogInformation("Database migrated successfully");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while migrating the database");
+        throw;
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -142,5 +164,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+logger.LogInformation("Application starting...");
+logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
+logger.LogInformation($"Database Connection: {builder.Configuration.GetConnectionString("LocalConnection")?.Substring(0, 20)}...");
 
 app.Run();
