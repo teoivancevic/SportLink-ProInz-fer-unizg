@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REGISTRY: sportlinkCR.azurecr.io
-      IMAGE_NAME: sportlinkCR
+      IMAGE_NAME: sportlink-frontend
+      ACR_NAME: sportlinkCR  # ACR name without .azurecr.io
 
     steps:
       - uses: actions/checkout@v4
@@ -34,12 +35,9 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build and push Docker image
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.REGISTRY }}
-          username: ${{ secrets.AZURE_USERNAME }}
-          password: ${{ secrets.AZURE_PASSWORD }}
+      - name: Log in to Azure Container Registry
+        run: |
+          az acr login --name ${{ env.ACR_NAME }}
 
       - name: Build Docker image
         run: |
@@ -51,8 +49,8 @@ jobs:
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      # deployment step -- za kasnije
-      # - name: Deploy to Azure App Servicea
+      # Optional deployment step for later use
+      # - name: Deploy to Azure App Service
       #   uses: azure/webapps-deploy@v2
       #   with:
       #     app-name: your-app-service-name
