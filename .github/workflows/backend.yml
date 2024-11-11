@@ -2,11 +2,11 @@ name: .NET
 
 on:
   push:
-    branches: [ "dev" ]
-    paths: [ "src/backend/SportLink.Backend/**"]
+    branches: [ "dev", "devOps-testing" ]
+    #paths: [ "src/backend/SportLink.Backend/**"]
   pull_request:
-    branches: [ "dev" ]
-    paths: ["src/backend/SportLink.Backend/**"]
+    branches: [ "dev", "devOps-testing" ]
+    #paths: ["src/backend/SportLink.Backend/**"]
 
 jobs:
   build:
@@ -32,6 +32,11 @@ jobs:
       working-directory: ./src/backend/SportLink.Backend
 
     - name: Test
+      env:
+        ASPNETCORE_ENVIRONMENT: Development
+        ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING_TEST_DB }}
+        EmailSettings__AppPassword: ${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}
+        Jwt__Key: ${{ secrets.JWT_KEY_TEST }}
       run: dotnet test --no-build --verbosity normal
       working-directory: ./src/backend/SportLink.Backend
 

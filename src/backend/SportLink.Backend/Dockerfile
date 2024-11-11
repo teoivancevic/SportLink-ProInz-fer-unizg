@@ -26,8 +26,6 @@ COPY --from=build /app/publish .
 # Expose the application on port 8080
 EXPOSE 8080
 
-# Set environemnt variables
-ENV ASPNETCORE_ENVIRONMENT=Development
 
 # Start the application
 ENTRYPOINT ["dotnet", "SportLink.API.dll"]
