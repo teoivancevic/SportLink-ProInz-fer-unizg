@@ -2,9 +2,11 @@ name: .NET
 
 on:
   push:
-    branches: [ "devOps-testing" ]
+    branches: [ "dev" ]
+    paths: [ "src/backend/SportLink.Backend/**"]
   pull_request:
-    branches: [ "devOps-testing" ]
+    branches: [ "dev" ]
+    paths: ["src/backend/SportLink.Backend/**"]
 
 jobs:
   build:

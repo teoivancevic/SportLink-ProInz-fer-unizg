@@ -24,7 +24,12 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 
 # Expose the port your application listens on (adjust if necessary)
-EXPOSE 80
+EXPOSE 8080
+
+# Set environment variables
+# ENV ASPNETCORE_URLS=http://+:8080
+# ENV ASPNETCORE_HTTPS_PORT=
+ENV ASPNETCORE_ENVIRONMENT=Development
 
 # Set the entry point for the container
 ENTRYPOINT ["dotnet", "SportLink.API.dll"]
