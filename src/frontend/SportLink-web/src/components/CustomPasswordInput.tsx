@@ -3,9 +3,29 @@ import { PasswordInput, Text, Group, Anchor } from '@mantine/core';
 interface CustomPasswordInputProps {
   value: string;
   onChange: (value: string) => void;
+  error?: string;
 }
 
-export function CustomPasswordInput({ value, onChange }: CustomPasswordInputProps) {
+export function CustomPasswordInput({ value, onChange, error }: CustomPasswordInputProps) {
+  const validatePassword = (value: string) => {
+    if (value.length < 8) {
+      return 'Najmanje 8 znakova';
+    }
+    if (!/[A-Z]/.test(value)) {
+      return 'Barem jedno veliko slovo';
+    }
+    if (!/[a-z]/.test(value)) {
+      return 'Barem jedno malo slovo';
+    }
+    if (!/[0-9]/.test(value)) {
+      return 'Barem jedna brojka';
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+      return 'Barem jedan specijalni znak';
+    }
+    return null;
+  };
+
   return (
     <>
       <Group justify="space-between" mb={5}>
@@ -13,15 +33,19 @@ export function CustomPasswordInput({ value, onChange }: CustomPasswordInputProp
           Zaporka
         </Text>
 
+        {/* Optional forgot password link */}
         {/* <Anchor href="#" onClick={(event) => event.preventDefault()} pt={2} fw={500} fz="xs">
           Zaboravili ste zaporku?
-        </Anchor> */} 
+        </Anchor> */}
       </Group>
+
       <PasswordInput 
         placeholder="Password" 
         id="your-password" 
         value={value}
-        onChange={(event) => onChange(event.currentTarget.value)}/>
+        onChange={(event) => onChange(event.currentTarget.value)}
+        error={error || validatePassword(value)}
+      />
     </>
   );
 }

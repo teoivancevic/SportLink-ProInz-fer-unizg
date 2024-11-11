@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CustomPasswordInput } from './CustomPasswordInput';
 import { EmailInput } from './EmailInput';
-import { Button, Center, Anchor } from '@mantine/core';
+import { Button, Center, Anchor, Text } from '@mantine/core';
 import './LoginBox.css';
 import '@mantine/core/styles.css';
 import { Link } from 'react-router-dom';
@@ -14,8 +14,8 @@ export function LoginBox(){
     const [password, setPassword] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     
-    const handleEmailChange = (newEmail: string) => setEmail(newEmail);
-    const handlePasswordChange = (newPassword: string) => setPassword(newPassword);
+    const handleEmailChange = (newEmail: string) => {setEmail(newEmail); setErrorMessage(null)};
+    const handlePasswordChange = (newPassword: string) =>  {setPassword(newPassword); setErrorMessage(null)};
 
     const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ export function LoginBox(){
           navigate('../authorized/');
     
         } catch (error) {
-          setErrorMessage('An error occurred during login.');
+          setErrorMessage('Neispravni podaci za prijavu');
           console.error('Error:', error);
         }
       };
@@ -43,8 +43,8 @@ export function LoginBox(){
                 <div className='line'></div>
             </div>
             <div className='inputsLogin'>
-                <div><EmailInput value={email} onChange={handleEmailChange}/></div>
-                <div><CustomPasswordInput value={password} onChange={handlePasswordChange}/></div>
+                <div className='fixedSizeinput'><EmailInput value={email} onChange={handleEmailChange}/></div>
+                <div className='fixedSizeinput'><CustomPasswordInput value={password} onChange={handlePasswordChange}/></div>
             </div>
             <div className='footerLogin'>
                 <div className='buttonDiv'><Button
@@ -53,6 +53,12 @@ export function LoginBox(){
                 variant="light"
                 color="blue"
                 onClick={handleSubmit}>PRIJAVI SE</Button></div>
+                {/* Conditionally render error message if it exists */}
+                {errorMessage && (
+                <div className="error-message">
+                    <Text style={{color:"red"}}>{errorMessage}</Text>
+                </div>
+                )}
                 <div className='messageDiv'>
                     <p className='message1'>Nemate korisnički račun?<br/>
                     <Anchor component={Link} to="../registration">Registrirajte se</Anchor>

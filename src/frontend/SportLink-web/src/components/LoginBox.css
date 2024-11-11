@@ -36,10 +36,14 @@ h3{
 
 .inputsLogin{
     width: 273px;
-    height: 140px;
+    height: 150px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.fixedSizeInput{
+    height: 50%
 }
 
 .footerLogin{
