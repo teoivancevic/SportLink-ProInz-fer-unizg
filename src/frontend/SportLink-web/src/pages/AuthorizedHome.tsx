@@ -1,4 +1,3 @@
-import { apiClient } from "../services/api-example";
 
 export function AuthorizedHome() {
     

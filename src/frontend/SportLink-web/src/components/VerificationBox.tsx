@@ -2,14 +2,18 @@ import './VerificationBox.css'
 import { OTPInput } from './OTPInput';
 import { useState, useEffect } from 'react';
 import { Center, Notification } from '@mantine/core';
-import { useNavigate, useParams } from 'react-router-dom';
-import { apiClient } from '../services/api-example';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { authService } from '../services/api-example';
+import { VerifRequest } from '../types/auth';
 
 export function VerificationBox(){
-    const {id} = useParams();
     const [otpValue, setOtpValue] = useState(Array(6).fill(''));
-    const [showNotification, setShowNotification] = useState(true); 
+    const [showNotification, setShowNotification] = useState(false); 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const id = queryParams.get('id');
 
     const navigate = useNavigate();
 
@@ -19,27 +23,23 @@ export function VerificationBox(){
     };
 
     const handleSubmit = async () => {
-        const enteredOTP = otpValue.join('');
-        const userIdParam = id ? parseInt(id, 10) : 0; // User ID from the URL params
+        const otpCode = otpValue.join('');
+        const userId = id ? parseInt(id, 10) : 0;
 
-        if (enteredOTP.length === 6) {
-            try {
-                // Send a PUT request to verify OTP
-                const response = await apiClient.put('/api/Auth/verify', {
-                    userId: userIdParam,
-                    otpCode: enteredOTP,
-                });
+        const verifData: VerifRequest = {
+            userId, otpCode
+        }
 
-                if (response.data === true) {
-                    // If OTP verification is successful, navigate to the confirmation page
-                    navigate('/registration/success');
-                } else {
-                    // If OTP verification fails, stay on the page and show an error message
-                    setErrorMessage('Invalid OTP. Please try again.');
-                }
+        if (otpCode.length === 6) {
+            try { 
+                const response = await authService.verify(userId, otpCode, verifData);
+                console.log("Verification successful:", response.data);
+                navigate('/registration/success');
+
             } catch (error) {
                 console.error('Error during OTP verification:', error);
                 setErrorMessage('An error occurred during OTP verification.');
+                console.log(errorMessage);
             }
         }
     };
@@ -68,7 +68,7 @@ export function VerificationBox(){
                         disabled={false}
                         onChange={setOtpValue}
                     />
-                    <div><text>Niste primili kod?  <a href='#' onClick={handleResendClick}>Pošalji ponovno</a></text></div>
+                    <div><text>Niste primili kod?  <a href='' onClick={handleResendClick}>Pošalji ponovno</a></text></div>
                 </div>
             </div>
             {showNotification && (

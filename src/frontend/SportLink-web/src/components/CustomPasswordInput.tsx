@@ -13,9 +13,9 @@ export function CustomPasswordInput({ value, onChange }: CustomPasswordInputProp
           Zaporka
         </Text>
 
-        <Anchor href="#" onClick={(event) => event.preventDefault()} pt={2} fw={500} fz="xs">
+        {/* <Anchor href="#" onClick={(event) => event.preventDefault()} pt={2} fw={500} fz="xs">
           Zaboravili ste zaporku?
-        </Anchor>
+        </Anchor> */} 
       </Group>
       <PasswordInput 
         placeholder="Password" 

@@ -6,7 +6,8 @@ import { EmailInput } from './EmailInput';
 import { useState } from 'react';
 import { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../services/api-example'; 
+import { authService } from '../services/api-example';
+import type { RegistrationRequest } from '../types/auth';
 
 export function RegistrationBox(){
     const [firstName, setFirstName] = useState<string>('');
@@ -21,9 +22,9 @@ export function RegistrationBox(){
     const handlePasswordChange = (newPassword: string) => setPassword(newPassword);
 
     const navigate = useNavigate();
-    // const navigateToVerification = () => {navigate('./otp')}
+
     const handleRegister = async () => {
-        const registrationData = {
+        const registrationData: RegistrationRequest = {
           firstName,
           lastName,
           email,
@@ -31,18 +32,11 @@ export function RegistrationBox(){
         };
 
         try {
-            const response = await apiClient.post('/api/Auth/register', registrationData);
+            const response = await authService.register(registrationData);
+            console.log("Response Data:", response.data);
+            const { id } = response.data;
       
-            if (response.status === 200) {
-              const { id } = response.data; // Get the user ID from the response
-      
-              console.log('Registration successful', response.data);
-              // Redirect to verification page with the user ID for OTP verification
-              navigate(`./otp?id=${id}`);
-            } else {
-              setErrorMessage('Registration failed. Please try again.');
-              console.error('Registration failed', response.status);
-            }
+            navigate(`/registration/otp?id=${id}`);
         } catch (error) {
             setErrorMessage('An error occurred during registration.');
             console.log(errorMessage);
@@ -61,12 +55,14 @@ export function RegistrationBox(){
             <div><TextInput
                 label="Ime"
                 placeholder="Name"
+                required
                 value={firstName}
                 onChange={handleFNameChange}
             /></div>
             <div><TextInput
                 label="Prezime"
                 placeholder="Surname"
+                required
                 value={lastName}
                 onChange={handleLNameChange}
             /></div>

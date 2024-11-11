@@ -1,13 +1,12 @@
 // src/services/api.ts
 import axios from 'axios';
-import { LoginRequest, LoginResponse } from '../types/auth';
+import { LoginRequest, LoginResponse,RegistrationRequest, RegistrationResponse, VerifRequest, VerifResponse } from '../types/auth'
 
-// Create axios instance with default config
 export const apiClient = axios.create({
   baseURL: 'https://api-sportlink-test.azurewebsites.net',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  // headers: {
+  //   'Content-Type': 'application/json',
+  // },
 });
 
 // Request interceptor
@@ -53,17 +52,30 @@ export interface ApiResponse<T> {
 }
 
 // Example usage with TypeScript
-interface UserLoginData {
-  name: string;
-  email: string;
-}
+// interface UserLoginData {
+//   name: string;
+//   email: string;
+// }
 
-export const userService = {
-  getUser: (id: number) => apiService.get<ApiResponse<UserLoginData>>(`/api/users/${id}`),
-  updateUser: (id: number, data: Partial<UserLoginData>) => apiService.put<ApiResponse<UserLoginData>>(`/api/users/${id}`, data),
-};
+// export const userService = {
+//   getUser: (id: number) => apiService.get<ApiResponse<UserLoginData>>(`/api/users/${id}`),
+//   updateUser: (id: number, data: Partial<UserLoginData>) => apiService.put<ApiResponse<UserLoginData>>(`/api/users/${id}`, data),
+// };
 
 export const authService = {
   login: (data: LoginRequest) => 
     apiClient.post<LoginResponse>('/api/Auth/login', data),
+  register: (data: RegistrationRequest) => 
+    apiClient.post<RegistrationResponse>('/api/Auth/register', data),
+  verify: (userId: number, otpCode: string, data: VerifRequest) => 
+    apiClient.put<VerifResponse>(
+      `/api/Auth/verify`,
+      data,
+      {
+        params: { userId, otpCode },
+        headers: {
+          'accept': 'text/plain',
+        },
+      }
+    ),
 };

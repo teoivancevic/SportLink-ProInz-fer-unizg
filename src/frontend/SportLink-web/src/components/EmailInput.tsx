@@ -19,7 +19,7 @@ export function EmailInput({ value, onChange }: EmailInputProps) {
 
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.currentTarget.value;
-      onChange(value); 
+      onChange(value);
       setIsValid(validateEmail(value));
   };
     
@@ -29,6 +29,7 @@ export function EmailInput({ value, onChange }: EmailInputProps) {
       label="E-mail adresa"
       error={!isValid && "Invalid email"}
       value={value}
+      required
       onChange={handleEmailChange}
       classNames={{
         input: isValid ? '' : 'invalid-email',
