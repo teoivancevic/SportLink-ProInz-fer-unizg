@@ -1,22 +1,25 @@
-name: .NET
+name: Backend CI/CD
 
 on:
   push:
     branches: [ "dev", "devOps-testing" ]
-    #paths: [ "src/backend/SportLink.Backend/**"]
+    # paths: [ "src/backend/SportLink.Backend/**" ]
   pull_request:
     branches: [ "dev", "devOps-testing" ]
-    #paths: ["src/backend/SportLink.Backend/**"]
+    # paths: [ "src/backend/SportLink.Backend/**" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      ACR_LOGIN_SERVER: sportlinkCR.azurecr.io
-      ACR_NAME: sportlinkCR
+      REGISTRY: sportlinkCR.azurecr.io  # Updated variable
+      ACR_NAME: sportlinkCR             # Kept as is
+      IMAGE_NAME: sportlink-backend     # Added variable
+      WEB_APP_NAME: api-sportlink-test-2  # Added variable
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -42,7 +45,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t ${{ env.ACR_LOGIN_SERVER }}/sportlink-backend:${{ github.sha }} .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
       working-directory: ./src/backend/SportLink.Backend
 
     - name: Login to Azure
@@ -61,9 +64,15 @@ jobs:
 
     - name: Login to Azure Container Registry
       run: |
-        echo "$ACR_PASSWORD" | docker login ${{ env.ACR_LOGIN_SERVER }} -u $ACR_USERNAME --password-stdin
+        echo "$ACR_PASSWORD" | docker login ${{ env.REGISTRY }} -u $ACR_USERNAME --password-stdin
 
     - name: Push Docker image to ACR
       run: |
-        docker push ${{ env.ACR_LOGIN_SERVER }}/sportlink-backend:${{ github.sha }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.WEB_APP_NAME }}
+        images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest'
 
