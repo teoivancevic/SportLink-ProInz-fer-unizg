@@ -62,9 +62,9 @@ jobs:
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-          #- name: Deploy to Azure Web App
-          #uses: azure/webapps-deploy@v2
-          #with:
-          #app-name: ${{ env.WEB_APP_NAME }}
-          #images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.WEB_APP_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
