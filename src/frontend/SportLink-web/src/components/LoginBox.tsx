@@ -34,7 +34,7 @@ export function LoginBox(){
             
           localStorage.setItem('authToken', token);
           console.log(localStorage.getItem('authToken'));
-          navigate('../authorized/');
+          navigate('/');
     
         } catch (error) {
           setErrorMessage('Neispravni podaci za prijavu');
