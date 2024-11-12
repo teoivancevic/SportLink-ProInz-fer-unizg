@@ -1,52 +1,32 @@
-// src/pages/Home.tsx
-import { Container, Image, Title, Stack, Button, Alert } from '@mantine/core';
-import { useGetData } from '../services/api';
-
-interface DogApiResponse {
-  message: string;  // image URL
-  status: string;
-}
+import { NavbarNested } from "../components/NavbarNested";
+import { useLocation } from "react-router-dom";
+import { Text, Flex, Box, Center, ScrollArea } from "@mantine/core";
 
 export function Home() {
-  const { data, error, isLoading } = useGetData<DogApiResponse>();
+  const location = useLocation();
+  let content;
 
-  if (error) {
-    return (
-      <Container size="sm" py="xl">
-        <Alert title="Error" color="red" variant="filled">
-          {error.message}
-        </Alert>
-      </Container>
-    );
+  if (location.pathname === '/'){
+    content = <Text>Welcome to the home page!</Text>;
   }
+  // } else if(location.pathname === '/createOrg'){
+  //   content = <OrganisationReg/>
+  // }
 
-  return (
-    <Container size="sm" py="xl">
-      <Stack align="center" gap="xl">
-        <Title order={1} size="h2">Random Dog Image</Title>
-        
-        {isLoading ? (
-          <Image
-            height={400}
-            radius="md"
-            src="https://placehold.co/400x400?text=Loading..."
-          />
-        ) : (
-          <Image
-            src={data?.message}
-            height={400}
-            radius="md"
-            fallbackSrc="https://placehold.co/400x400?text=No+Image"
-          />
-        )}
+  return(
+    <Flex style={{ height: '100vh'}}>
+      <Box style={{ position: 'fixed', top: 0, left: 0, height: '100vh', overflow: 'auto', zIndex:"10" }}>
+        <NavbarNested />
+      </Box>
 
-        <Button 
-          onClick={() => window.location.reload()}
-          size="lg"
-        >
-          Get New Dog
-        </Button>
-      </Stack>
-    </Container>
+      <Box style={{ flex: 1, margin: "1rem" }}>
+        <ScrollArea style={{ height: '100vh' }}>
+          <Center>
+            {content}
+          </Center>
+        </ScrollArea>
+      </Box>
+    </Flex>
+
   );
 }
