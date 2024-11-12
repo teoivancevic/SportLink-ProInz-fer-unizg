@@ -78,7 +78,7 @@ jobs:
           Jwt__Key="${{ secrets.JWT_KEY_TEST }}" \
           ASPNETCORE_ENVIRONMENT="Development" \
           WEBSITES_PORT=8080
-- name: Deploy to Azure Web App
+    - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.WEB_APP_NAME }}
