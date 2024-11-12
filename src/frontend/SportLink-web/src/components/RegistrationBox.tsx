@@ -8,6 +8,7 @@ import { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/api-example';
 import type { RegistrationRequest } from '../types/auth';
+import { useDisclosure } from '@mantine/hooks';
 
 export function RegistrationBox(){
     const [firstName, setFirstName] = useState<string>('');
@@ -15,6 +16,7 @@ export function RegistrationBox(){
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [loading, { open, close }] = useDisclosure(false);
     
     const handleFNameChange = (event: ChangeEvent<HTMLInputElement>) => {setFirstName(event.target.value);};
     const handleLNameChange = (event: ChangeEvent<HTMLInputElement>) => {setLastName(event.target.value);};
@@ -32,6 +34,7 @@ export function RegistrationBox(){
         };
 
         try {
+            open();
             const response = await authService.register(registrationData);
             console.log("Response Data:", response.data);
             const { id } = response.data;
@@ -41,6 +44,8 @@ export function RegistrationBox(){
             setErrorMessage('An error occurred during registration.');
             console.log(errorMessage);
             console.error('Error:', error);
+        } finally {
+            close();
         }
     };
 
@@ -72,6 +77,7 @@ export function RegistrationBox(){
         <div className='footerRegistration'>
             <div className='buttonDivReg'><Button
                 className="loginButton"
+                loading={loading}
                 size="md"
                 variant="light"
                 color="blue"

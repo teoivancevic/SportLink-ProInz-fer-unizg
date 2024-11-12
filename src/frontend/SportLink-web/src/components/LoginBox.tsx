@@ -8,11 +8,13 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/api-example';
 import type { LoginRequest } from '../types/auth';
+import { useDisclosure } from '@mantine/hooks';
 
 export function LoginBox(){
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [loading, { open, close }] = useDisclosure(false);
     
     const handleEmailChange = (newEmail: string) => {setEmail(newEmail); setErrorMessage(null)};
     const handlePasswordChange = (newPassword: string) =>  {setPassword(newPassword); setErrorMessage(null)};
@@ -23,6 +25,7 @@ export function LoginBox(){
         const loginData: LoginRequest = { email, password };
     
         try {
+          open();
           const response = await authService.login(loginData);
           const token: string = response.data;
           console.log(response);
@@ -36,6 +39,8 @@ export function LoginBox(){
         } catch (error) {
           setErrorMessage('Neispravni podaci za prijavu');
           console.error('Error:', error);
+        } finally {
+            close();
         }
       };
 
@@ -51,12 +56,15 @@ export function LoginBox(){
                 <div className='fixedSizeinput'><CustomPasswordInput value={password} onChange={handlePasswordChange}/></div>
             </div>
             <div className='footerLogin'>
-                <div className='buttonDiv'><Button
-                className="loginButton"
-                size="md"
-                variant="light"
-                color="blue"
-                onClick={handleSubmit}>PRIJAVI SE</Button></div>
+                <div className='buttonDiv'>
+                <Button
+                    loading = {loading}
+                    className="loginButton"
+                    size="md"
+                    variant="light"
+                    color="blue"
+                    onClick={handleSubmit}>PRIJAVI SE
+                    </Button></div>
                 {/* Conditionally render error message if it exists */}
                 {errorMessage && (
                 <div className="error-message">

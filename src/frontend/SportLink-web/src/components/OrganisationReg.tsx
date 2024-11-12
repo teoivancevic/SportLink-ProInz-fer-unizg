@@ -5,6 +5,7 @@ import {TextInput, Text, Paper, Group, PaperProps, Button, MultiSelect, Center, 
 import { orgService } from '../services/api-example';
 import { CreateOrgRequest } from '../types/org';
 import { useNavigate } from 'react-router-dom';
+import { useDisclosure } from '@mantine/hooks';
 
 
 export function OrganisationReg(props: PaperProps) {
@@ -14,6 +15,7 @@ export function OrganisationReg(props: PaperProps) {
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, { open, close }] = useDisclosure(false);
     
   const handleEmailChange = (newEmail: string) => {setEmail(newEmail); setErrorMessage(null)};
   const handleNameChange = (newName: string) =>  {setName(newName); setErrorMessage(null)};
@@ -24,7 +26,6 @@ export function OrganisationReg(props: PaperProps) {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    console.log("clicked")
     const organisationData: CreateOrgRequest = { 
       name:name, 
       description: description,
@@ -35,6 +36,7 @@ export function OrganisationReg(props: PaperProps) {
     
 
     try {
+      open();
       const response = await orgService.createOrganization(name, description, email, contact, location, organisationData);
       console.log(response.data);
       console.log("Request to create organization successfully sent.");
@@ -43,6 +45,8 @@ export function OrganisationReg(props: PaperProps) {
     } catch (error) {
       console.error('Error:', error);
       console.log(errorMessage);
+    } finally {
+      close();
     }
   };
 
@@ -156,6 +160,7 @@ export function OrganisationReg(props: PaperProps) {
             <Button
               onClick={handleSubmit}
                 className="loginButton"
+                loading={loading}
                 size="md"
                 variant="light"
                 color="blue"
