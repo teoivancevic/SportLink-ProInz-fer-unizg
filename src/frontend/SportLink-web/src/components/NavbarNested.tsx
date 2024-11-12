@@ -13,6 +13,8 @@ import { LinksGroup } from './NavbarLinksGroup';
 import classes from './NavbarNested.module.css';
 import duckImage from '../assets/duck.jpg';
 import { useNavigate } from 'react-router-dom';
+import AuthorizedElement from './AuthorizedElement';
+import UnauthorizedElement from './UnauthorizedElement';
 
 const mockdata = [
   { label: 'Početna', icon: IconHome },
@@ -65,12 +67,29 @@ export function NavbarNested() {
       <ScrollArea className={classes.links}>
         <div className={classes.linksInner}>{links}</div>
       </ScrollArea>
-
+      
       <div className={classes.footer}>
+        <AuthorizedElement>
+          {({ userData }) => (
+            <>
+              <div>
+                <h2>Welcome, {userData.firstName} {userData.lastName}!</h2>
+                <p>Your email: {userData.email}</p>
+                <p>Your role: {userData.role}</p>
+                <p>Your ID: {userData.id}</p>
+                <a href='/logout'>LOGOUT</a>
+              </div>
+            </>
+          )}
+          {/* <UserButton/> */}
+        </AuthorizedElement>
+        <UnauthorizedElement>
           <Button variant='outline' size='sm' radius='sm'
-          onClick={navigateLogin}
-          >Prijava</Button>
+            onClick={navigateLogin}
+            >Prijava</Button>
           <Button variant='light' size='sm' radius='sm'  onClick={navigateRegistration}>Registracija</Button>
+        </UnauthorizedElement>
+          
       </div>
     </nav>
   );

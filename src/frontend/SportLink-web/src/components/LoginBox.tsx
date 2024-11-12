@@ -31,7 +31,7 @@ export function LoginBox(){
             
           localStorage.setItem('authToken', token);
           console.log(localStorage.getItem('authToken'));
-          navigate('../authorized/');
+          navigate('/');
     
         } catch (error) {
           setErrorMessage('An error occurred during login.');
