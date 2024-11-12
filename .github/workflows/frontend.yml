@@ -12,10 +12,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      REGISTRY: sportlinkCR.azurecr.io
-      IMAGE_NAME: sportlink-frontend
-      ACR_NAME: sportlinkCR  # ACR name without .azurecr.io
-      WEB_APP_NAME: webapp-sportlink-test-2
+      REGISTRY: acrsportlink.azurecr.io
+      IMAGE_NAME: webapp
+      ACR_NAME: acrsportlink
+      WEB_APP_NAME: webapp-sportlink-test
 
     steps:
       - uses: actions/checkout@v4
@@ -29,11 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
         working-directory: ./src/frontend/SportLink-web
-
-      # Optional: Run tests
-      # - name: Run tests
-      #   run: npm test
-      #   working-directory: ./src/frontend/SportLink-web
 
       - name: Build the React app
         run: npm run build

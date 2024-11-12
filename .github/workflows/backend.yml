@@ -2,20 +2,21 @@ name: Backend CI/CD
 
 on:
   push:
-    branches: [ "dev", "devOps-testing" ]
-    # paths: [ "src/backend/SportLink.Backend/**" ]
+    branches: [ "dev" ]
+    paths: [ "src/backend/SportLink.Backend/**" ]
   pull_request:
-    branches: [ "dev", "devOps-testing" ]
-    # paths: [ "src/backend/SportLink.Backend/**" ]
-
+    branches: [ "dev" ]
+    paths: [ "src/backend/SportLink.Backend/**" ]
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      REGISTRY: sportlinkCR.azurecr.io  # Updated variable
-      ACR_NAME: sportlinkCR             # Kept as is
-      IMAGE_NAME: sportlink-backend     # Added variable
-      WEB_APP_NAME: api-sportlink-test-2  # Added variable
+      REGISTRY: acrsportlink.azurecr.io
+      ACR_NAME: acrsportlink
+      IMAGE_NAME: api
+      WEB_APP_NAME: api-sportlink-test-02
+      RESOURCE_GROUP: rg-sportlink-test
 
     steps:
     - name: Checkout code
@@ -69,7 +70,14 @@ jobs:
     - name: Push Docker image to ACR
       run: |
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
+    - name: Configure App Settings
+      run: |
+        az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.WEB_APP_NAME }} --settings \
+          ConnectionStrings__DefaultConnection="${{ secrets.CONNECTION_STRING_TEST_DB }}" \
+          EmailSettings__AppPassword="${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}" \
+          Jwt__Key="${{ secrets.JWT_KEY_TEST }}" \
+          ASPNETCORE_ENVIRONMENT="Development" \
+          WEBSITES_PORT=8080
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
