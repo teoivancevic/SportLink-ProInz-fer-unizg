@@ -15,7 +15,7 @@ jobs:
       REGISTRY: acrsportlink.azurecr.io
       ACR_NAME: acrsportlink
       IMAGE_NAME: api
-      WEB_APP_NAME: api-sportlink-test
+      WEB_APP_NAME: api-sportlink-test-02
 
     steps:
     - name: Checkout code
