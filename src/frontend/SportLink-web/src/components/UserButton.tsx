@@ -1,26 +1,39 @@
-import { UnstyledButton, Group, Avatar, Text, rem } from '@mantine/core';
+import { UnstyledButton, Group, Avatar, Text, Menu } from '@mantine/core';
+import { IconLogout } from '@tabler/icons-react';
 
-export function UserButton() {
+interface UserButtonProps {
+  name: string;
+  email: string;
+  onLogout: () => void;
+}
+
+export function UserButton({ name, email, onLogout }: UserButtonProps) {
   return (
-    <UnstyledButton style={{display: "block",
-        width:" 100%", padding:"10px"}}>
-      <Group>
-        <Avatar
-          src=""
-          radius="xl"
-        />
+    <Menu position="right" withArrow>
+      <Menu.Target>
+        <UnstyledButton style={{ display: "block", width: "100%" }}>
+          <Group>
+            <Avatar src="" radius="xl" />
+            <div style={{ flex: 1 }}>
+              <Text size="sm" fw={500}>
+                {name}
+              </Text>
+              <Text color="dimmed" size="xs">
+                {email}
+              </Text>
+            </div>
+          </Group>
+        </UnstyledButton>
+      </Menu.Target>
 
-        <div style={{ flex: 1 }}>
-          <Text size="sm" fw={500}>
-            Harriette Spoonlicker
-          </Text>
-
-          <Text c="dimmed" size="xs">
-            hspoonlicker@outlook.com
-          </Text>
-        </div>
-
-      </Group>
-    </UnstyledButton>
+      <Menu.Dropdown>
+        <Menu.Item onClick={onLogout}>
+          <Group>
+            <IconLogout size={16} />
+            <Text>Logout</Text>
+          </Group>
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 }

@@ -25,6 +25,7 @@
 h3{
     color: #228be6;
     text-align: center;
+    margin: 10px;
 }
 
 .line{
@@ -43,7 +44,8 @@ h3{
 }
 
 .fixedSizeInput{
-    height: 50%
+    height: 73px;
+    display: block;
 }
 
 .footerLogin{

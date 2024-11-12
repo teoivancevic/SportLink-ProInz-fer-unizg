@@ -1,13 +1,10 @@
 import { Group, ScrollArea, Title, Button, Image, Drawer } from '@mantine/core';
 import {
-  // IconNotes,
-  // IconCalendarStats,
-  // IconPresentationAnalytics,
-  // IconAdjustments,
+  IconNotes,
+  IconAdjustments,
   IconHome,
   IconSearch
 } from '@tabler/icons-react';
-//import { UserButton } from '../UserButton/UserButton';
 import { LinksGroup } from './NavbarLinksGroup';
 //import { Logo } from './Logo';
 import classes from './NavbarNested.module.css';
@@ -16,34 +13,37 @@ import { useNavigate } from 'react-router-dom';
 import AuthorizedElement from './AuthorizedElement';
 import UnauthorizedElement from './UnauthorizedElement';
 import { UserRole } from '../types/roles';
+import { UserButton } from './UserButton';
 
-const mockdata = [
+const unauthorizedMockdata = [
   { label: 'Početna', icon: IconHome },
   {
     label: 'Pretraživanje',
     icon: IconSearch,
-    initiallyOpened: false,
     links: [
       { label: 'Organizacije', link: '/' },
       { label: 'Događanja', link: '/' },
       { label: 'Termini', link: '/' },
     ],
-   } 
-   //ovo ce biti vidljivo tek kada se korisnik ulogira
-  // ,{
-  //   label: 'Kalendar',
-  //   icon: IconCalendarStats,
-  //   links: [
-  //     { label: 'Nadolazeći događaji', link: '/' },
-  //     { label: 'Prošli događaji', link: '/' }
-  //   ],
-  // },
-  // { label: 'Analiza', icon: IconPresentationAnalytics },
-  // {
-  //   label: 'Ostavi komentar',
-  //   icon: IconNotes
-  // },
-  // { label: 'Postavke', icon: IconAdjustments }
+  }
+];
+
+const authorizedMockdata = [
+  { label: 'Početna', icon: IconHome },
+  {
+    label: 'Pretraživanje',
+    icon: IconSearch,
+    links: [
+      { label: 'Organizacije', link: '/' },
+      { label: 'Događanja', link: '/' },
+      { label: 'Termini', link: '/' },
+    ],
+  },
+  {
+    label: 'Ostavi komentar',
+    icon: IconNotes
+  },
+  { label: 'Postavke', icon: IconAdjustments }
 ];
 
 export function NavbarNested() {
@@ -52,7 +52,9 @@ export function NavbarNested() {
   const navigateRegistration = () => { navigate('/registration') };
   const navigateCreateOrganization = () => { navigate('/registerOrganisation') };
 
-  const links = mockdata.map((item) => <LinksGroup {...item} key={item.label} />);
+  const unauthorizedLinks = unauthorizedMockdata.map((item) => <LinksGroup {...item} key={item.label} />);
+  
+  const authorizedLinks = authorizedMockdata.map((item) => <LinksGroup {...item} key={item.label} />);
 
   return (
     <nav className={classes.navbar}>
@@ -67,9 +69,17 @@ export function NavbarNested() {
       </div>
 
       <ScrollArea className={classes.links}>
-        <div className={classes.linksInner}>{links}</div>
+        <AuthorizedElement  roles={[UserRole.User]}>
+          {({ userData }) => 
+            <div className={classes.linksInner}>{authorizedLinks}</div>
+          }
+        </AuthorizedElement>
+        <UnauthorizedElement>
+        <div className={classes.linksInner}>{unauthorizedLinks}</div>
+        </UnauthorizedElement>
       </ScrollArea>
-      <AuthorizedElement roles={[UserRole.User]}>
+
+      {/* <AuthorizedElement roles={[UserRole.User]}>
         {({ userData }) => 
           <p>VISIBLE TO USER ROLE ONLY</p>
         }
@@ -83,22 +93,21 @@ export function NavbarNested() {
         {({ userData }) => 
           <p>VISIBLE TO APPADMIN ROLE ONLY</p>
         }
+      </AuthorizedElement> */}
+
+
+      <AuthorizedElement roles={[UserRole.User]}>
+        {({ userData }) => 
+          <Button variant="light" size="sm" radius="sm" onClick={navigateCreateOrganization}>
+            Kreiraj organizaciju
+          </Button>
+        }
       </AuthorizedElement>
-      
       <div className={classes.footer}>
-        <AuthorizedElement>
+        <AuthorizedElement roles={[UserRole.User, UserRole.AppAdmin]}>
           {({ userData }) => (
-            <>
-              <div>
-                <h2>Welcome, {userData.firstName} {userData.lastName}!</h2>
-                <p>Your email: {userData.email}</p>
-                <p>Your role: {userData.role}</p>
-                <p>Your ID: {userData.id}</p>
-                <a href='/logout'>LOGOUT</a>
-              </div>
-            </>
+          <UserButton name={userData.firstName + ' ' + userData.lastName} email={userData.email} onLogout={() => { navigate('/logout')}} />
           )}
-          {/* <UserButton/> */}
         </AuthorizedElement>
         <UnauthorizedElement>
           <Button variant='outline' size='sm' radius='sm'
@@ -106,7 +115,6 @@ export function NavbarNested() {
             >Prijava</Button>
           <Button variant='light' size='sm' radius='sm'  onClick={navigateRegistration}>Registracija</Button>
         </UnauthorizedElement>
-          
       </div>
     </nav>
   );

@@ -8,6 +8,9 @@ interface CustomPasswordInputProps {
 
 export function CustomPasswordInput({ value, onChange, error }: CustomPasswordInputProps) {
   const validatePassword = (value: string) => {
+    if (value === '') {
+      return null;
+    }
     if (value.length < 8) {
       return 'Najmanje 8 znakova';
     }
