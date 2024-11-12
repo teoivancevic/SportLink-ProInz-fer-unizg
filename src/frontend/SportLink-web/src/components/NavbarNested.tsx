@@ -15,6 +15,7 @@ import duckImage from '../assets/duck.jpg';
 import { useNavigate } from 'react-router-dom';
 import AuthorizedElement from './AuthorizedElement';
 import UnauthorizedElement from './UnauthorizedElement';
+import { UserRole } from '../types/roles';
 
 const mockdata = [
   { label: 'Početna', icon: IconHome },
@@ -67,6 +68,21 @@ export function NavbarNested() {
       <ScrollArea className={classes.links}>
         <div className={classes.linksInner}>{links}</div>
       </ScrollArea>
+      <AuthorizedElement roles={[UserRole.User]}>
+        {({ userData }) => 
+          <p>VISIBLE TO USER ROLE ONLY</p>
+        }
+      </AuthorizedElement>
+      <AuthorizedElement roles={[UserRole.User, UserRole.AppAdmin]}>
+        {({ userData }) => 
+          <p>VISIBLE TO BOTH USER AND APPADMIN ROLES</p>
+        }
+      </AuthorizedElement>
+      <AuthorizedElement roles={[UserRole.AppAdmin]}>
+        {({ userData }) => 
+          <p>VISIBLE TO APPADMIN ROLE ONLY</p>
+        }
+      </AuthorizedElement>
       
       <div className={classes.footer}>
         <AuthorizedElement>
