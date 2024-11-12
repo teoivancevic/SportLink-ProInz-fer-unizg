@@ -1,49 +1,79 @@
 import '@mantine/core/styles.css';
 import { IconAt } from '@tabler/icons-react';
-import { useForm } from '@mantine/form';
+import { useState } from 'react';
 import {TextInput, Text, Paper, Group, PaperProps, Button, MultiSelect, Center, Stack, rem, Textarea} from '@mantine/core';
+import { orgService } from '../services/api-example';
+import { CreateOrgRequest } from '../types/org';
+import { useNavigate } from 'react-router-dom';
 
 
 export function OrganisationReg(props: PaperProps) {
+  const [email, setEmail] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [contact, setContact] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    
+  const handleEmailChange = (newEmail: string) => {setEmail(newEmail); setErrorMessage(null)};
+  const handleNameChange = (newName: string) =>  {setName(newName); setErrorMessage(null)};
+  const handleContactChange = (newContact: string) => {setContact(newContact); setErrorMessage(null)};
+  const handleDescriptionChange = (newDescription: string) =>  {setDescription(newDescription); setErrorMessage(null)};
+  const handleLocationChange = (newLocation: string) =>  {setLocation(newLocation); setErrorMessage(null)};
 
-  const form = useForm({
-    initialValues: {
-      email: '',
-      name: '',
-      password: '',
-      terms: true,
-    },
+  const navigate = useNavigate();
 
-    validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
-    },
-  });
+  const handleSubmit = async () => {
+    console.log("clicked")
+    const organisationData: CreateOrgRequest = { 
+      name:name, 
+      description: description,
+      contactEmail: email,
+      contactPhoneNumber: contact,
+      location: location
+     };
+    
+
+    try {
+      const response = await orgService.createOrganization(name, description, email, contact, location, organisationData);
+      console.log(response.data);
+      console.log("Request to create organization successfully sent.");
+      navigate('/');
+
+    } catch (error) {
+      console.error('Error:', error);
+      console.log(errorMessage);
+    }
+  };
 
   return (
+    <Center>
     <Paper radius="md" p="xl" withBorder style={{ width: '622px', height: '630px', backgroundColor: 'rgba(189, 189, 189, 0.2)', boxShadow: '0px 10px 10px -5px rgba(0, 0, 0, 0.4)'}} {...props}>
-      <Text size="lg" fw={700} align="center" color="#228be6">
+      <Text size="lg" fw={700} style={{textAlign:"center", color:"#228be6"}}>
         REGISTRACIJA ORGANIZACIJE
-        </Text>
+      </Text>
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      
         <Stack>
 
             <TextInput
                 required
                 label="Ime"
-                placeholder="name"
+                placeholder="Unesite ime"
+                onChange={(event) => handleNameChange(event.currentTarget.value)}
+                value={name}
                 radius="sm"
                 size='sm'
+                
             />  
 
             <TextInput
                 required
                 label="E-mail adresa"
-                placeholder="Your mail"
-                value={form.values.email}
-                onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
-                error={form.errors.email && 'Invalid email'}
+                placeholder="Unesite e-mail"
+                value={email}
+                onChange={(event) => handleEmailChange(event.currentTarget.value)}
+                // error={form.errors.email && 'Invalid email'}
                 radius="sm"
                 leftSection={<IconAt
                     stroke={1.5}
@@ -54,7 +84,9 @@ export function OrganisationReg(props: PaperProps) {
             <TextInput
                 required
                 label="Kontakt"
-                placeholder="098/1234-567"
+                value={contact}
+                onChange={(event) => handleContactChange(event.currentTarget.value)}
+                placeholder="0981234567"
                 radius="sm"
                 size='sm'
             />        
@@ -63,7 +95,9 @@ export function OrganisationReg(props: PaperProps) {
                 <TextInput
                     required
                     label="Grad"
-                    placeholder="town"
+                    value={location}
+                    onChange={(event) => handleLocationChange(event.currentTarget.value)}
+                    placeholder="Unesite grad"
                     radius="sm"
                     size='sm'
                     style={{ width: '48%' }}
@@ -72,7 +106,7 @@ export function OrganisationReg(props: PaperProps) {
                 <TextInput
                     required
                     label="Ulica i broj"
-                    placeholder="organisation address"
+                    placeholder="Adresa organizacije"
                     radius="sm"
                     size='sm'
                     style={{ width: '48%' }}
@@ -83,8 +117,8 @@ export function OrganisationReg(props: PaperProps) {
                 <MultiSelect
                     required
                     data={["Natjecanje", "Grupe", "Termini"]}
-                    label="Vrste organizacije"
-                    placeholder="type of organisation"
+                    label="Želim oglašavati"
+                    placeholder="Tip"
                     maxDropdownHeight={120}
                     style={{ width: '44%'}}
                     styles={{
@@ -96,7 +130,7 @@ export function OrganisationReg(props: PaperProps) {
                     required
                     data={["Nogomet", "Kosarka", "Rukomet", "Tenis", "Padel"]}
                     label="Vrsta sporta"
-                    placeholder="sports"
+                    placeholder="Sportovi"
                     style={{ width: '44%'}}
                     maxDropdownHeight={120}
                     styles={{
@@ -108,8 +142,10 @@ export function OrganisationReg(props: PaperProps) {
             <Textarea 
                 required
                 label="Opis Organizacije"
-                placeholder="about section"
+                placeholder="Unesite opis"
                 autosize={false}
+                value={description}
+                onChange={(event) => handleDescriptionChange(event.currentTarget.value)}
                 className="custom-textarea"
                 style={{ height: '100px' }}
             />
@@ -118,7 +154,7 @@ export function OrganisationReg(props: PaperProps) {
 
         <Center w="100%">
             <Button
-                type="submit"
+              onClick={handleSubmit}
                 className="loginButton"
                 size="md"
                 variant="light"
@@ -127,7 +163,7 @@ export function OrganisationReg(props: PaperProps) {
                 REGISTRIRAJ ORGANIZACIJU
             </Button>
         </Center>
-      </form>
     </Paper>
+    </Center>
   );
 }

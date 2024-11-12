@@ -1,6 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
 import { LoginRequest, LoginResponse,RegistrationRequest, RegistrationResponse, VerifRequest, VerifResponse } from '../types/auth'
+import { CreateOrgRequest, CreateOrgResponse } from '../types/org';
 
 export const apiClient = axios.create({
   baseURL: 'https://api-sportlink-test.azurewebsites.net',
@@ -78,4 +79,20 @@ export const authService = {
         },
       }
     ),
+};
+
+export const orgService = {
+  createOrganization: (name: string, description:string, contactEmail: string, contactPhoneNumber:string, location: string, data: CreateOrgRequest) =>
+    apiClient.post<CreateOrgResponse>('/api/Organization/CreateOrganization', data,
+      {
+        params: { name,
+          description,
+          contactEmail,
+          contactPhoneNumber,
+          location},
+        headers: {
+          'accept': 'text/plain',
+        },
+      }
+    )
 };
