@@ -4,7 +4,7 @@ import { LoginRequest, LoginResponse,RegistrationRequest, RegistrationResponse, 
 import { CreateOrgRequest, CreateOrgResponse } from '../types/org';
 
 export const apiClient = axios.create({
-  baseURL: 'https://api-sportlink-test.azurewebsites.net',
+  baseURL: 'https://api-sportlink-test-02.azurewebsites.net',
   // headers: {
   //   'Content-Type': 'application/json',
   // },

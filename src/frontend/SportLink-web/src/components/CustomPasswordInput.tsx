@@ -1,4 +1,4 @@
-import { PasswordInput, Text, Group, Anchor } from '@mantine/core';
+import { PasswordInput, Text, Group } from '@mantine/core';
 
 interface CustomPasswordInputProps {
   value: string;

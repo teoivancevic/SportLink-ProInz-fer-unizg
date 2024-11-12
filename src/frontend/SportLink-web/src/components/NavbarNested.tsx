@@ -1,4 +1,5 @@
-import { Group, ScrollArea, Title, Button, Image, Drawer } from '@mantine/core';
+import { Group, ScrollArea, Title, Button, Image} from '@mantine/core';
+// import { Group, ScrollArea, Title, Button, Image, Drawer } from '@mantine/core';
 import {
   IconNotes,
   IconAdjustments,
@@ -70,7 +71,7 @@ export function NavbarNested() {
 
       <ScrollArea className={classes.links}>
         <AuthorizedElement  roles={[UserRole.User]}>
-          {({ userData }) => 
+          {() => 
             <div className={classes.linksInner}>{authorizedLinks}</div>
           }
         </AuthorizedElement>
@@ -97,7 +98,7 @@ export function NavbarNested() {
 
 
       <AuthorizedElement roles={[UserRole.User]}>
-        {({ userData }) => 
+        {() => 
           <Button variant="light" size="sm" radius="sm" onClick={navigateCreateOrganization}>
             Kreiraj organizaciju
           </Button>
