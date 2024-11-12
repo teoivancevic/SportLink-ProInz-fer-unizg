@@ -16,6 +16,7 @@ jobs:
       ACR_NAME: acrsportlink
       IMAGE_NAME: api
       WEB_APP_NAME: api-sportlink-test-02
+      RESOURCE_GROUP: rg-sportlink-test
 
     steps:
     - name: Checkout code
@@ -75,8 +76,7 @@ jobs:
           ConnectionStrings__DefaultConnection="${{ secrets.CONNECTION_STRING_TEST_DB }}" \
           EmailSettings__AppPassword="${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}" \
           Jwt__Key="${{ secrets.JWT_KEY_TEST }}" \
-          ASPNETCORE_ENVIRONMENT="Development" \
-          WEBSITES_PORT=8080
+          ASPNETCORE_ENVIRONMENT="Development"
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
