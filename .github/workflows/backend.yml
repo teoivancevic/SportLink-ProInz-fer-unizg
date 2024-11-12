@@ -77,7 +77,7 @@ jobs:
           EmailSettings__AppPassword="${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}" \
           Jwt__Key="${{ secrets.JWT_KEY_TEST }}" \
           ASPNETCORE_ENVIRONMENT="Development" \
-          WEBSITES_PORT="8080"
+          WEBSITES_PORT=8080
 - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
