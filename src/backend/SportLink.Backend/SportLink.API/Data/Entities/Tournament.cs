@@ -10,6 +10,8 @@ public class Tournament : BaseEntity
     public DateTime TimeFrom { get; set; }
     public DateTime TimeTo { get; set; }
     public decimal EntryFee { get; set; }
+
+    public string Location { get; set; }
     
     public int OrganizationId { get; set; }
     public int SportId { get; set; }
@@ -31,6 +33,8 @@ public class TournamentConfigurationBuilder : IEntityTypeConfiguration<Tournamen
         builder.Property(x => x.EntryFee)
             .IsRequired();
         builder.Property(x => x.Description)
+            .IsRequired();
+        builder.Property(x => x.Location)
             .IsRequired();
 
         builder.Property(x => x.CreatedAt)

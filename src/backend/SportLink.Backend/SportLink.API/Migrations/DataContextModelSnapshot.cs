@@ -301,6 +301,10 @@ namespace SportLink.API.Migrations
                     b.Property<decimal>("EntryFee")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
 
@@ -369,6 +373,31 @@ namespace SportLink.API.Migrations
                     b.HasIndex("SportId");
 
                     b.ToTable("TrainingGroup", (string)null);
+                });
+
+            modelBuilder.Entity("SportLink.API.Data.Entities.TrainingSchedule", b =>
+                {
+                    b.Property<int>("TrainingGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("TrainingGroupId", "DayOfWeek", "StartTime");
+
+                    b.ToTable("TrainingSchedule", (string)null);
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>
@@ -550,6 +579,17 @@ namespace SportLink.API.Migrations
                     b.Navigation("Sport");
                 });
 
+            modelBuilder.Entity("SportLink.API.Data.Entities.TrainingSchedule", b =>
+                {
+                    b.HasOne("SportLink.API.Data.Entities.TrainingGroup", "TrainingGroup")
+                        .WithMany("TrainingSchedules")
+                        .HasForeignKey("TrainingGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TrainingGroup");
+                });
+
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>
                 {
                     b.HasOne("SportLink.API.Data.Entities.Role", "Role")
@@ -586,6 +626,11 @@ namespace SportLink.API.Migrations
                     b.Navigation("Tournaments");
 
                     b.Navigation("TrainingGroups");
+                });
+
+            modelBuilder.Entity("SportLink.API.Data.Entities.TrainingGroup", b =>
+                {
+                    b.Navigation("TrainingSchedules");
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.User", b =>

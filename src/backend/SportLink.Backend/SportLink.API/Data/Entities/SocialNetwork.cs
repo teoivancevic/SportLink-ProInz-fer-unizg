@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using SportLink.Core.Enums;
 
 namespace SportLink.API.Data.Entities;
 
 public class SocialNetwork : BaseEntity
 {
-    public string Type { get; set; }
+    public SocialNetworkTypeEnum Type { get; set; }
     public string Link { get; set; }
     public string Username { get; set; }
     public int OrganizationId { get; set; }
@@ -16,6 +18,7 @@ public class SocialNetwork : BaseEntity
 
 public class SocialNetworkConfigurationBuilder : IEntityTypeConfiguration<SocialNetwork>
 {
+    private readonly EnumToStringConverter<SocialNetworkTypeEnum> _converter = new EnumToStringConverter<SocialNetworkTypeEnum>();
     public void Configure(EntityTypeBuilder<SocialNetwork> builder)
     {
         builder.ToTable(nameof(SocialNetwork));
@@ -26,6 +29,8 @@ public class SocialNetworkConfigurationBuilder : IEntityTypeConfiguration<Social
             .IsRequired();
         builder.Property(r => r.Link)
             .IsRequired();
+        builder.Property(r => r.Type)
+            .HasConversion(_converter);
             
         builder.Property(x => x.CreatedAt)
             .IsRequired();

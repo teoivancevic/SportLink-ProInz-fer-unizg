@@ -18,6 +18,7 @@ public class TrainingGroup : BaseEntity
     
     public virtual Sport Sport { get; set; }
     public virtual Organization Organization { get; set; }
+    public virtual ICollection<TrainingSchedule> TrainingSchedules { get; set; }
 }
 
 public class TrainingGroupConfigurationBuilder : IEntityTypeConfiguration<TrainingGroup>
