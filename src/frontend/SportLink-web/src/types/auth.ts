@@ -3,9 +3,10 @@ export interface LoginRequest {
     password: string;
 }
 
-export interface LoginResponse {
-    token: string;
-}
+export type LoginResponse = string;
+// export interface LoginResponse {
+//     token: string
+// }
 
 export interface VerifRequest {
     userId: number,

@@ -24,9 +24,13 @@ export function LoginBox(){
     
         try {
           const response = await authService.login(loginData);
-          const { token } = response.data;
+          const token: string = response.data;
+          console.log(response);
+          console.log(response.data);
+          console.log(token);
             
           localStorage.setItem('authToken', token);
+          console.log(localStorage.getItem('authToken'));
           navigate('../authorized/');
     
         } catch (error) {
