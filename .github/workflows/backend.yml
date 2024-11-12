@@ -12,10 +12,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      REGISTRY: sportlinkCR.azurecr.io  # Updated variable
-      ACR_NAME: sportlinkCR             # Kept as is
-      IMAGE_NAME: sportlink-backend     # Added variable
-      WEB_APP_NAME: api-sportlink-test-2  # Added variable
+      REGISTRY: acrsportlink.azurecr.io
+      ACR_NAME: acrsportlink
+      IMAGE_NAME: api
+      WEB_APP_NAME: api-sportlink-test
 
     steps:
     - name: Checkout code
@@ -70,9 +70,9 @@ jobs:
       run: |
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.WEB_APP_NAME }}
-        images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest'
+        #- name: Deploy to Azure Web App
+        #uses: azure/webapps-deploy@v2
+        #with:
+        #app-name: ${{ env.WEB_APP_NAME }}
+        #images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest'
 
