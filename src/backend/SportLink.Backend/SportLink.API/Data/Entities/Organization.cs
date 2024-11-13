@@ -67,7 +67,7 @@ public class OrganizationConfigurationBuilder : IEntityTypeConfiguration<Organiz
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasMany(x => x.Sports)
-            .WithMany(s => s.Organizations) // Assuming Sport entity has Organizations collection
+            .WithMany(s => s.Organizations) 
             .UsingEntity<Dictionary<string, object>>(
                 "OrganizationSport", // Join table name
                 j => j.HasOne<Sport>().WithMany().HasForeignKey("SportId"),
