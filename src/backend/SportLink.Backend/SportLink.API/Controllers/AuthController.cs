@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportLink.API.Services.Auth;
@@ -91,6 +93,43 @@ public class AuthController : ControllerBase
 
         return Ok(token);
     }
+
+    [HttpGet("externalLogin/{provider}")]
+    public IActionResult ExternalLogin(string provider = "Google")
+    {
+        var redirectUrl = Url.Action("ExternalLoginCallback", "Auth");
+        var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+        return new ChallengeResult(provider, properties);
+    }
+
+    [HttpGet("externalLoginCallback")]
+    public async Task<IActionResult> ExternalLoginCallback()
+    {
+        // var result = await HttpContext.AuthenticateAsync("Google");
+        // if (!result.Succeeded)
+        // {
+        //     return RedirectToAction("Login");
+        //     //return BadRequest("External authentication failed.");
+        // }
+        var claims = HttpContext.User.Claims;
+        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        var userId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        if (email == null || userId == null)
+        {
+            return BadRequest("Essential claims are missing.");
+        }
+
+        var firstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? "Unknown";
+        var lastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? "Unknown";
+        var roleName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? "User";
+
+        var token = _authHandler.CreateToken(email, userId, firstName, lastName, roleName, _configuration["Jwt:Key"] ?? "");
+
+        //return Ok(new { Token = token });
+        var frontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
+        return Redirect($"{frontendUrl}?token={token}");
+    }
     /// <summary>
     /// Resend OTP email verification code
     /// </summary>
@@ -101,7 +140,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> ResendOTPCode(int userId)
     {
         var isEmailSent = await _authService.ResendEmailVerificationCode(userId);
-        if(!isEmailSent)
+        if (!isEmailSent)
             return BadRequest("Could not resend verification code.");
 
         return Ok("Sent verification code");
