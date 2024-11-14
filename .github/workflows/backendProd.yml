@@ -1,13 +1,11 @@
-name: Backend production CI/CD
+name: Backend Production CI/CD
 
 on:
   push:
-    branches: [ "main", "ci/cd_production" ]
-    #paths: [ "src/backend/SportLink.Backend/**" ]
-  pull_request:
-    types: ["opened", "reopened", "closed"]
     branches: [ "main" ]
-    paths: [ "src/backend/SportLink.Backend/**" ]
+    tags: [ '*' ]
+  workflow_dispatch:
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -21,6 +19,17 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set Image Version
+      id: vars
+      run: |
+        if [ "${{ github.ref_type }}" == "tag" ]; then
+          echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+        else
+          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+        fi
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -32,7 +41,7 @@ jobs:
       working-directory: ./src/backend/SportLink.Backend
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
       working-directory: ./src/backend/SportLink.Backend
 
     - name: Test
@@ -46,7 +55,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} .
       working-directory: ./src/backend/SportLink.Backend
 
     - name: Login to Azure
@@ -58,18 +67,18 @@ jobs:
       run: sudo apt-get install -y jq
 
     - name: Set up ACR credentials
-      id: acr_credentials
       run: |
         echo "ACR_USERNAME=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')" >> $GITHUB_ENV
         echo "ACR_PASSWORD=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')" >> $GITHUB_ENV
 
     - name: Login to Azure Container Registry
       run: |
-        echo "$ACR_PASSWORD" | docker login ${{ env.REGISTRY }} -u $ACR_USERNAME --password-stdin
+        echo "$ACR_PASSWORD" | docker login ${{ env.REGISTRY }} -u "$ACR_USERNAME" --password-stdin
 
     - name: Push Docker image to ACR
       run: |
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+
     - name: Configure App Settings
       run: |
         az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.WEB_APP_NAME }} --settings \
@@ -78,9 +87,10 @@ jobs:
           Jwt__Key="${{ secrets.JWT_KEY_PROD }}" \
           ASPNETCORE_ENVIRONMENT="Production" \
           WEBSITES_PORT=8080
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.WEB_APP_NAME }}
-        images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest'
+        images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}'
 
