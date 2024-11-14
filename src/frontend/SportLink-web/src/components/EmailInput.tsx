@@ -21,6 +21,7 @@ export function EmailInput({ value, onChange }: EmailInputProps) {
       const value = event.currentTarget.value;
       onChange(value);
       setIsValid(validateEmail(value));
+      
   };
     
 
