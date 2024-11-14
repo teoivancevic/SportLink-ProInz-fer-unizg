@@ -36,7 +36,10 @@ public class AuthService : IAuthService
         var userDto = await _userService.CreateUnverifiedUser(registerUserDto, role);
         
         string otp6DigitCode = await _otpCodeService.GenerateOTP(userDto.Id, OTPCodeTypeEnum.EmailVerification, 6);
-        // TODO handle ako null il nesto?
+        if (otp6DigitCode is null || otp6DigitCode == "")
+        {
+            return null;
+        }
 
         await _emailService.SendVerificationEmailAsync(userDto.Email, otp6DigitCode);
         
@@ -78,7 +81,10 @@ public class AuthService : IAuthService
         if (userEntity is not null && !userEntity.IsEmailVerified)
         {
             string? otp6DigitCode = await _otpCodeService.GenerateOTP(userEntity.Id, OTPCodeTypeEnum.EmailVerification, 6);
-            // TODO handle ako null il nesto?
+            if (otp6DigitCode is null || otp6DigitCode == "")
+            {
+                return false;
+            }
 
             await _emailService.SendVerificationEmailAsync(userEntity.Email, otp6DigitCode);
             

@@ -20,6 +20,8 @@ public class OTPCodeService : IOTPCodeService
         await ClearOldOTPs(userId, type);
         
         var otpCodeEntity = await CreateOTP(userId, type, digitOTPCode);
+        if (otpCodeEntity is null)
+            return null;
 
         return otpCodeEntity.Code;
     }
@@ -53,7 +55,7 @@ public class OTPCodeService : IOTPCodeService
 
     private async Task<Data.Entities.OTPCode> CreateOTP(int userId, OTPCodeTypeEnum type, string code)
     {
-        var OTPCodeEntity = new Data.Entities.OTPCode
+        var otpCodeEntity = new Data.Entities.OTPCode
         {
             Id = 0,
             Code = code,
@@ -63,10 +65,10 @@ public class OTPCodeService : IOTPCodeService
             ExpiresAt = DateTime.UtcNow.AddMinutes(5)
         };
 
-        _context.OTPCodes.Add(OTPCodeEntity);
+        _context.OTPCodes.Add(otpCodeEntity);
         await _context.SaveChangesAsync();
 
-        return OTPCodeEntity;
+        return otpCodeEntity;
     }
     private async Task<bool> MarkOTPUsed(int otpCodeId)
     {
