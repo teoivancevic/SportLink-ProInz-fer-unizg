@@ -91,4 +91,19 @@ public class AuthController : ControllerBase
 
         return Ok(token);
     }
+    /// <summary>
+    /// Resend OTP email verification code
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpPut, AllowAnonymous]
+    [Route("resendOTP")]
+    public async Task<ActionResult> ResendOTPCode(int userId)
+    {
+        var isEmailSent = await _authService.ResendEmailVerificationCode(userId);
+        if(!isEmailSent)
+            return BadRequest("Could not resend verification code.");
+
+        return Ok("Sent verification code");
+    }
 }
