@@ -23,7 +23,8 @@ export function VerificationBox(){
             userId
         }
         try{
-            const response = await authService.resendOTP(resendOTPData);
+            const response = await authService.resendOTP(userId, resendOTPData);
+            console.log(response);
             setShowNotification(true); // notification to user that otp is successfully sent
         } catch (error) {
             console.error('Error during OTP verification:', error);

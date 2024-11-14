@@ -65,8 +65,14 @@ export const authService = {
         },
       }
     ),
-  resendOTP: (data: ResendOTPRequest) => 
-    apiClient.put<ResendOTPResponse>('/api/Auth/resendOTP', data)
+  resendOTP: (userId: number, data: ResendOTPRequest) => 
+    apiClient.put<ResendOTPResponse>('/api/Auth/resendOTP', data,
+       {
+        params: { userId },
+        headers: {
+          'accept': 'text/plain',
+        },
+        })
 };
 
 export const orgService = {
