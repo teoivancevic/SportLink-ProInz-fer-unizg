@@ -11,7 +11,7 @@ import type { LoginRequest } from '../types/auth';
 import { useDisclosure } from '@mantine/hooks';
 import { GoogleIcon } from '../assets/GoogleIcon'
 
-function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
+export function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
     return <Button leftSection={<GoogleIcon />} variant="default" {...props} />;
 }
 
