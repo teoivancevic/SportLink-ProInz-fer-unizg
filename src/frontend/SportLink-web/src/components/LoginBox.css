@@ -7,8 +7,6 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
-   
-    
 }
 
 .headerLogin{
@@ -20,7 +18,7 @@
 h3{
     color: #228be6;
     text-align: center;
-    margin: 10px;
+    margin: 0px;
 }
 
 .line{

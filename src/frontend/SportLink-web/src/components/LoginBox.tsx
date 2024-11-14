@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CustomPasswordInput } from './CustomPasswordInput';
 import { EmailInput } from './EmailInput';
-import { Button, Center, Anchor, Text, ButtonProps, Stack, Paper } from '@mantine/core';
+import { Button, Center, Anchor, Text, ButtonProps, Stack, Paper, Divider } from '@mantine/core';
 import './LoginBox.css';
 import '@mantine/core/styles.css';
 import { Link } from 'react-router-dom';
@@ -74,10 +74,11 @@ export function LoginBox(){
                 {/* Conditionally render error message if it exists */}
                 {errorMessage && (
                 
-                    <Text style={{color:"red"}}>{errorMessage}</Text>
+                    <Text size="sm" style={{color:"red", textAlign:"center"}}>{errorMessage}</Text>
                 
                 )}
-                <GoogleButton>Continue with Google</GoogleButton>
+                <Divider label="ili" size={2} color='dark'></Divider>
+                <GoogleButton>Prijava s Google računom</GoogleButton>
                 </Stack>
                 <div className='messageDiv'>
                     <p className='message1'>Nemate korisnički račun?<br/>
