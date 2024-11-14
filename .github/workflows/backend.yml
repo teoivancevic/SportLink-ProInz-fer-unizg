@@ -5,11 +5,12 @@ on:
     branches: [ "dev" ]
     paths: [ "src/backend/SportLink.Backend/**" ]
   pull_request:
+    types: [ "opened", "reopened", "closed" ]
     branches: [ "dev" ]
     paths: [ "src/backend/SportLink.Backend/**" ]
   workflow_dispatch:
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     env:
       REGISTRY: acrsportlink.azurecr.io
