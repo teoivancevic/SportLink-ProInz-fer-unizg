@@ -82,12 +82,9 @@ public class UserService : IUserService
             RoleId = roleId,
             PasswordHash = null!,
             PasswordSalt = null!,
-            LastLoginAt = DateTime.Now,
-            CreatedAt = DateTime.Now,
-            // UpdatedAt 
-            IsEmailVerified = true
-            //ExternalUserSource = ,
-            // ExternalUserId = externalId
+            IsEmailVerified = true,
+            ExternalUserSource = ExternalUserSourceEnum.Google,
+            ExternalUserId = externalId
         };
 
         _context.Users.Add(userEntity);

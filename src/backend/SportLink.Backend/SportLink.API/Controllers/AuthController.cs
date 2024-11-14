@@ -127,20 +127,27 @@ public class AuthController : ControllerBase
         var user = await _userService.GetUserByEmail(email);
         if (user is null)
         {
-            var registerUser = _userService.CreateExternalUser(email, externalUserId, firstName, lastName, roleName);
+            var registerUser = await _userService.CreateExternalUser(email, externalUserId, firstName, lastName, roleName);
 
             if (registerUser is null)
             {
                 return BadRequest("Registration via Google failed.");
             }
+
+            var newUserToken = _authHandler.CreateToken(registerUser.Email, registerUser.Id.ToString(), registerUser.FirstName, registerUser.LastName, Enum.GetName(typeof(RolesEnum), registerUser.RoleId), _configuration["Jwt:Key"]);
+            var newUserFrontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
+            return Redirect($"{newUserFrontendUrl}?token={newUserToken}");
         }
+        else
+        {
 
-        var role = Enum.GetName(typeof(RolesEnum), user.RoleId);
-        var token = _authHandler.CreateToken(user.Email, user.Id.ToString(), user.FirstName, user.LastName, role!, _configuration["Jwt:Key"]);
+            var role = Enum.GetName(typeof(RolesEnum), user!.RoleId);
+            var token = _authHandler.CreateToken(user.Email, user.Id.ToString(), user.FirstName, user.LastName, role!, _configuration["Jwt:Key"]);
 
-        //return Ok(new { Token = token });
-        var frontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
-        return Redirect($"{frontendUrl}?token={token}");
+            //return Ok(new { Token = token });
+            var frontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
+            return Redirect($"{frontendUrl}?token={token}");
+        }
     }
 
     /// <summary>
