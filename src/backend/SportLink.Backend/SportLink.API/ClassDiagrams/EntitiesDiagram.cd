@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SportLink.API.Data.Entities.CourtBooking">
+    <Position X="11.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAASgAAAAAAgAAAAAAIACAAAAQAAAAAAAACAAAAAIAA=</HashCode>
+      <FileName>Data\Entities\CourtBooking.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Sport" />
+      <Property Name="Organization" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.Organization">
+    <Position X="16.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAECIAAIkAAASAAIAEAQAAAAABAAAAACAAAAAEEA=</HashCode>
+      <FileName>Data\Entities\Organization.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Owner" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="TrainingGroups" />
+      <Property Name="SocialNetworks" />
+      <Property Name="Reviews" />
+      <Property Name="Tournaments" />
+      <Property Name="CourtBookings" />
+      <Property Name="Sports" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.OTPCode">
+    <Position X="22.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAADAAAAAAAAAAAAACAgAAkAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Data\Entities\OTPCodes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.Review">
+    <Position X="20.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAABgAAAAAAAAAAgAAQAAAAEAAAAAAAAAIAA=</HashCode>
+      <FileName>Data\Entities\Review.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Organization" />
+      <Property Name="User" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.Role">
+    <Position X="22.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACACAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\Entities\Role.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Users" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.SocialNetwork">
+    <Position X="14" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQAAAAAAAQAAAAAAAQAAQAAAIAA=</HashCode>
+      <FileName>Data\Entities\SocialNetwork.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Organization" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.Sport">
+    <Position X="12.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAEAABAAAAAEAQAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Data\Entities\Sport.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Organizations" />
+      <Property Name="CourtBookings" />
+      <Property Name="Tournaments" />
+      <Property Name="TrainingGroups" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.Tournament">
+    <Position X="19.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAASAAAAAAAgAAAAAAIACAAAAQAAAAAAAADAAAAAIAA=</HashCode>
+      <FileName>Data\Entities\Tournament.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Organization" />
+      <Property Name="Sport" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.TrainingGroup">
+    <Position X="14.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAACAAAAAoAgBAAAAgAACAAAAQAAAAAAAACAAAAAIAA=</HashCode>
+      <FileName>Data\Entities\TrainingGroup.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Organization" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="TrainingSchedules" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.TrainingSchedule">
+    <Position X="14.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAgAgAAABAEAAAAAAA=</HashCode>
+      <FileName>Data\Entities\TrainingSchedule.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="TrainingGroup" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Data.Entities.User">
+    <Position X="18.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EACCAEIAACAACABAECAAAAAAAAAQAggAAAAAAAAAAAg=</HashCode>
+      <FileName>Data\Entities\User.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Role" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Organizations" />
+      <Property Name="OTPCodes" />
+      <Property Name="Reviews" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -14,14 +14,14 @@
 <!--    </PropertyGroup>-->
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -30,6 +30,18 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SportLink.Core\SportLink.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="yWorks.yFilesNET.Adapter">
+        <HintPath>..\..\..\..\..\..\yFiles.NET-Complete-5.6-Evaluation\lib\net8.0\yWorks.yFilesNET.Adapter.dll</HintPath>
+      </Reference>
+      <Reference Include="yWorks.yFilesNET.Algorithms">
+        <HintPath>..\..\..\..\..\..\yFiles.NET-Complete-5.6-Evaluation\lib\net8.0\yWorks.yFilesNET.Algorithms.dll</HintPath>
+      </Reference>
+      <Reference Include="yWorks.yFilesNET.Viewer">
+        <HintPath>..\..\..\..\..\..\yFiles.NET-Complete-5.6-Evaluation\lib\net8.0\yWorks.yFilesNET.Viewer.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

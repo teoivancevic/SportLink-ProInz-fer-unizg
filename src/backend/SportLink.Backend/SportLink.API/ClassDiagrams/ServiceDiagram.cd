@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SportLink.API.Services.Auth.AuthService">
+    <Position X="2.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EkAAAIAAAAAABAAAAAAJAAAQIAAAAAAAAAAEAQAAAAA=</HashCode>
+      <FileName>Services\Auth\AuthService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_emailService" />
+      <Field Name="_otpCodeService" />
+      <Field Name="_userService" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SportLink.API.Services.Email.EmailService">
+    <Position X="4.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAABAAAAAgABAAAAAAAAABAAAAAAAAQAAAAA=</HashCode>
+      <FileName>Services\Email\EmailService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_settings" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SportLink.API.Services.Organization.OrganizationService">
+    <Position X="7.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAABAEBAAAQAABQAAQAAAAgAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Services\Organization\OrganizationService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_emailService" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SportLink.API.Services.OTPCode.OTPCodeService">
+    <Position X="10.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAACQAAAAABAAAAAAAAAAAAAAAAEAAAAEAAAAAACA=</HashCode>
+      <FileName>Services\OTPCode\OTPCodeService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SportLink.API.Services.User.UserService">
+    <Position X="5.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAIAAAABAAAgAAJAAAQIAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Services\User\UserService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_emailService" />
+      <Field Name="_otpCodeService" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SportLink.API.Services.Email.EmailSettings">
+    <Position X="7.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAABAIAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Services\Email\EmailSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="SportLink.API.Services.Email.IEmailService" Collapsed="true">
+    <Position X="6" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAABAAAAAAABAAAAAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Email\IEmailService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.OTPCode.IOTPCodeService" Collapsed="true">
+    <Position X="3.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAACA=</HashCode>
+      <FileName>Services\OTPCode\IOTPCodeService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.User.IUserService" Collapsed="true">
+    <Position X="2.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Services\User\IUserService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

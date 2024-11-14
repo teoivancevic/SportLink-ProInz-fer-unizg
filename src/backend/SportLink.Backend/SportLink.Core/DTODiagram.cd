@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SportLink.Core.Models.LoginDto">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Models\LoginDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SportLink.Core.Models.OrganizationDto">
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAIAAAQAAAAABAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Models\OrganizationDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SportLink.Core.Models.RegisterUserDto">
+    <Position X="1.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAg=</HashCode>
+      <FileName>Models\RegisterUserDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SportLink.Core.Models.UserDto">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAEIAACAACAAAACAAAAAAAAAQAgAAAAAAAAAAAAg=</HashCode>
+      <FileName>Models\UserDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="SportLink.Core.Enums.OTPCodeTypeEnum">
+    <Position X="1.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enums\OTPCodeTypeEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SportLink.Core.Enums.RolesEnum">
+    <Position X="7.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAgAAAAA=</HashCode>
+      <FileName>Enums\RolesEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SportLink.Core.Enums.SexEnum">
+    <Position X="9.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Enums\SexEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SportLink.Core.Enums.SocialNetworkTypeEnum">
+    <Position X="3.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAQAAAAAAAAAAAAAAAACAAAABAAAAAAAA=</HashCode>
+      <FileName>Enums\SocialNetworkTypeEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SportLink.Core.Enums.VerificationStatusEnum">
+    <Position X="5.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQIAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enums\VerificationStatusEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
