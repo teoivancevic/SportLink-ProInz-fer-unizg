@@ -2,9 +2,10 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ "main" ]
-    paths: ["src/frontend/SportLink-web/**"]
+    branches: [ "main", "ci/cd_production" ]
+    #paths: ["src/frontend/SportLink-web/**"]
   pull_request:
+    types: ["opened", "reopened", "closed"]
     branches: [ "main" ]
     paths: ["src/frontend/SportLink-web/**"]
 
