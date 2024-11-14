@@ -6,7 +6,7 @@ import './LoginBox.css';
 import '@mantine/core/styles.css';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api-example';
+import { authService } from '../services/api';
 import type { LoginRequest } from '../types/auth';
 import { useDisclosure } from '@mantine/hooks';
 
@@ -52,8 +52,8 @@ export function LoginBox(){
                 <div className='line'></div>
             </div>
             <div className='inputsLogin'>
-                <div className='fixedSizeinput'><EmailInput value={email} onChange={handleEmailChange}/></div>
-                <div className='fixedSizeinput'><CustomPasswordInput value={password} onChange={handlePasswordChange}/></div>
+                <div className='fixedSizeInput'><EmailInput value={email} onChange={handleEmailChange}/></div>
+                <div className='fixedSizeInput'><CustomPasswordInput value={password} onChange={handlePasswordChange}/></div>
             </div>
             <div className='footerLogin'>
                 <div className='buttonDiv'>

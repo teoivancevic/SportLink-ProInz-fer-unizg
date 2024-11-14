@@ -3,8 +3,8 @@ import { OTPInput } from './OTPInput';
 import { useState, useEffect } from 'react';
 import { Center, Notification } from '@mantine/core';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { authService } from '../services/api-example';
-import { VerifRequest } from '../types/auth';
+import { authService } from '../services/api';
+import { ResendOTPRequest, VerifRequest } from '../types/auth';
 
 export function VerificationBox(){
     const [otpValue, setOtpValue] = useState(Array(6).fill(''));
@@ -17,9 +17,17 @@ export function VerificationBox(){
 
     const navigate = useNavigate();
 
-    const handleResendClick = () => {
-        setShowNotification(true);
-        console.log('Resending verification code...');
+    const handleResendClick = async () => {
+        const userId = id ? parseInt(id, 10) : 0;
+        const resendOTPData: ResendOTPRequest = {
+            userId
+        }
+        try{
+            const response = await authService.resendOTP(resendOTPData);
+            setShowNotification(true); // notification to user that otp is successfully sent
+        } catch (error) {
+            console.error('Error during OTP verification:', error);
+        }
     };
 
     const handleSubmit = async () => {
@@ -68,14 +76,14 @@ export function VerificationBox(){
                         disabled={false}
                         onChange={setOtpValue}
                     />
-                    <div><text>Niste primili kod?  <a href='' onClick={handleResendClick}>Pošalji ponovno</a></text></div>
+                    <div><text>Niste primili kod?  <a href='#' onClick={handleResendClick}>Pošalji ponovno</a></text></div>
                 </div>
             </div>
             {showNotification && (
                 <Notification
                     title='Kod uspješno poslan'
                     withBorder
-                    onClose={() => setShowNotification(false)} // Close the notification
+                    onClose={() => setShowNotification(false)}
                     style={{ position:"absolute",  bottom:"0px"}}
                 >
                     Možete ponovno zatražiti kod za jednu minutu.

@@ -6,7 +6,7 @@ import { EmailInput } from './EmailInput';
 import { useState } from 'react';
 import { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api-example';
+import { authService } from '../services/api';
 import type { RegistrationRequest } from '../types/auth';
 import { useDisclosure } from '@mantine/hooks';
 
