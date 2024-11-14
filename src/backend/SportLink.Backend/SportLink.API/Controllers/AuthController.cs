@@ -113,23 +113,36 @@ public class AuthController : ControllerBase
         // }
         var claims = HttpContext.User.Claims;
         var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-        var userId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var externalUserId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-        if (email == null || userId == null)
+        if (email == null || externalUserId == null)
         {
-            return BadRequest("Essential claims are missing.");
+            return BadRequest("Sign in with Google failed.");
         }
 
         var firstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? "Unknown";
         var lastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? "Unknown";
         var roleName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? "User";
 
-        var token = _authHandler.CreateToken(email, userId, firstName, lastName, roleName, _configuration["Jwt:Key"] ?? "");
+        var user = await _userService.GetUserByEmail(email);
+        if (user is null)
+        {
+            var registerUser = _userService.CreateExternalUser(email, externalUserId, firstName, lastName, roleName);
+
+            if (registerUser is null)
+            {
+                return BadRequest("Registration via Google failed.");
+            }
+        }
+
+        var role = Enum.GetName(typeof(RolesEnum), user.RoleId);
+        var token = _authHandler.CreateToken(user.Email, user.Id.ToString(), user.FirstName, user.LastName, role!, _configuration["Jwt:Key"]);
 
         //return Ok(new { Token = token });
         var frontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
         return Redirect($"{frontendUrl}?token={token}");
     }
+
     /// <summary>
     /// Resend OTP email verification code
     /// </summary>
