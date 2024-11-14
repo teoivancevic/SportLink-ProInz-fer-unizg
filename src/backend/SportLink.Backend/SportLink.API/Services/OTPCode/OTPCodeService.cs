@@ -45,7 +45,7 @@ public class OTPCodeService : IOTPCodeService
         if (otpCodeEntity is null)
             return false;
 
-        await MarkOTPUsed(userId, code);
+        await MarkOTPUsed(otpCodeEntity.Id);
         
         return true;
     }
@@ -68,11 +68,10 @@ public class OTPCodeService : IOTPCodeService
 
         return OTPCodeEntity;
     }
-    private async Task<bool> MarkOTPUsed(int userId, string code)
+    private async Task<bool> MarkOTPUsed(int otpCodeId)
     {
         var otpCodeEntity = await _context.OTPCodes.Where(x =>
-            x.UserId == userId &&
-            x.Code == code
+            x.Id == otpCodeId
             ).FirstOrDefaultAsync();
 
         if (otpCodeEntity is null)

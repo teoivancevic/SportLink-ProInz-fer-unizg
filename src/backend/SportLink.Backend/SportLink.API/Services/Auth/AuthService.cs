@@ -74,10 +74,21 @@ public class AuthService : IAuthService
 
     public async Task<bool> ResendEmailVerificationCode(int userId)
     {
-        throw new NotImplementedException();
+        var userEntity = await _context.Users.FindAsync(userId);
+        if (userEntity is not null && !userEntity.IsEmailVerified)
+        {
+            string? otp6DigitCode = await _otpCodeService.GenerateOTP(userEntity.Id, OTPCodeTypeEnum.EmailVerification, 6);
+            // TODO handle ako null il nesto?
+
+            await _emailService.SendVerificationEmailAsync(userEntity.Email, otp6DigitCode);
+            
+            return true;
+        }
+
+        return false;
     }
 
-    public async Task ForgotPasswort(string email)
+    public async Task ForgotPassword(string email)
     {
         throw new NotImplementedException();
     }

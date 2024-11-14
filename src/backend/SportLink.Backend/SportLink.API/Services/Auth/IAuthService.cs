@@ -10,5 +10,5 @@ public interface IAuthService
     Task<bool> LoginCheckCredentials(UserDto userDto, string password);
     
     Task<bool> ResendEmailVerificationCode(int userId);
-    Task ForgotPasswort(string email);
+    Task ForgotPassword(string email);
 }
