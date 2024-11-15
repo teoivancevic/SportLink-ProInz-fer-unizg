@@ -45,6 +45,10 @@ export function LoginBox(){
         }
       };
 
+      const handleGoogleLogin = () => {
+        window.location.href = 'https://api-sportlink-test-02.azurewebsites.net/api/Auth/externalLogin/Google';
+      };
+
     return (
     <Center style={{height: '100vh'}}>
         <Paper radius="md" p="xl" withBorder style={{ width: '313px', backgroundColor: 'rgba(189, 189, 189, 0.2)', boxShadow: '0px 10px 10px -5px rgba(0, 0, 0, 0.4)' }}>
@@ -74,7 +78,7 @@ export function LoginBox(){
                 
                 )}
                 <Divider label="ili" size={2} color='dark'></Divider>
-                <GoogleButton>Prijava s Google računom</GoogleButton>
+                <GoogleButton onClick={handleGoogleLogin}>Prijava s Google računom</GoogleButton>
                 </Stack>
                 <div className='messageDiv'>
                     <p className='message1'>Nemate korisnički račun?<br/>

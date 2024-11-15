@@ -53,7 +53,7 @@ export const authService = {
   login: (data: LoginRequest) => 
     apiClient.post<LoginResponse>('/api/Auth/login', data),
   loginGoogle: () => 
-    apiClient.post<LoginResponse>('/api/Auth/externalLogin/Google'),
+    apiClient.get<LoginResponse>('/api/Auth/externalLogin/Google'),
   register: (data: RegistrationRequest) => 
     apiClient.post<RegistrationResponse>('/api/Auth/register', data),
   verify: (userId: number, otpCode: string, data: VerifRequest) => 
