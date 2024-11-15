@@ -1,4 +1,4 @@
-import { LoginBox } from '../components/LoginBox.tsx';
+import { LoginBox } from '../components/authentication/LoginBox.tsx';
 
 export interface UserLoginData {
   email: string; 

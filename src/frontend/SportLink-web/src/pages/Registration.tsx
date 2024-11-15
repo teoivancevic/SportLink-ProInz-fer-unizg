@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
-import { RegistrationBox } from '../components/RegistrationBox.tsx';
-import { VerificationBox } from '../components/VerificationBox.tsx';
-import { RegistrationEndBox } from '../components/RegistrationEndBox.tsx';
+import { RegistrationBox } from '../components/authentication/RegistrationBox.tsx';
+import { VerificationBox } from '../components/authentication/VerificationBox.tsx';
+import { RegistrationEndBox } from '../components/authentication/RegistrationEndBox.tsx';
 
 export function Registration() {
   const { step } = useParams();

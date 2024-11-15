@@ -1,4 +1,4 @@
-import {Button, TextInput, Center} from '@mantine/core';
+import {Button, TextInput, Center, ButtonProps, Stack, Divider} from '@mantine/core';
 import './RegistrationBox.css';
 import '@mantine/core/styles.css';
 import { CustomPasswordInput } from './CustomPasswordInput';
@@ -6,9 +6,14 @@ import { EmailInput } from './EmailInput';
 import { useState } from 'react';
 import { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api';
-import type { RegistrationRequest } from '../types/auth';
+import { authService } from '../../services/api';
+import type { RegistrationRequest } from '../../types/auth';
 import { useDisclosure } from '@mantine/hooks';
+import { GoogleIcon } from '../../assets/GoogleIcon'
+
+export function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
+    return <Button leftSection={<GoogleIcon />} variant="default" {...props} />;
+}
 
 export function RegistrationBox(){
     const [firstName, setFirstName] = useState<string>('');
@@ -49,6 +54,15 @@ export function RegistrationBox(){
         }
     };
 
+    const handleGoogleLogin = async () => {
+        try{
+         const response = await authService.loginGoogle();
+         console.log(response)
+        } catch (error) {
+         console.log(error);
+        }
+       };
+
     return (
     <Center style={{height:'100vh'}}>
     <div className='containerRegistration'>
@@ -74,6 +88,7 @@ export function RegistrationBox(){
             <div><EmailInput  value={email} onChange={handleEmailChange}/></div>
             <div><CustomPasswordInput value={password} onChange={handlePasswordChange}/></div>
         </div>
+        <Stack >
         <div className='footerRegistration'>
             <div className='buttonDivReg'><Button
                 className="loginButton"
@@ -83,7 +98,13 @@ export function RegistrationBox(){
                 color="blue"
                 onClick={handleRegister}>REGISTRIRAJ SE</Button>
             </div>
+            
         </div>
+        <Divider label="ili" size={2} color='dark'></Divider>
+        <GoogleButton onClick={handleGoogleLogin}>Registracija s Google računom</GoogleButton>
+        </Stack>
+        {/* TODO barbara, dodat padding i link natrag za login */}
+        
     </div>
     </Center>)
     ;

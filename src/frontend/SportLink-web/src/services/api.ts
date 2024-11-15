@@ -1,7 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
 import { LoginRequest, LoginResponse,RegistrationRequest, RegistrationResponse, VerifRequest, VerifResponse, ResendOTPRequest, ResendOTPResponse } from '../types/auth'
-import { CreateOrgRequest, CreateOrgResponse } from '../types/org';
+import { CreateOrgRequest, CreateOrgResponse, GetOrganizationResponse } from '../types/org';
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -52,6 +52,9 @@ export interface ApiResponse<T> {
 export const authService = {
   login: (data: LoginRequest) => 
     apiClient.post<LoginResponse>('/api/Auth/login', data),
+  loginGoogle: () => {
+    window.location.href = `${apiClient.defaults.baseURL}/api/Auth/externalLogin/Google`;
+  },
   register: (data: RegistrationRequest) => 
     apiClient.post<RegistrationResponse>('/api/Auth/register', data),
   verify: (userId: number, otpCode: string, data: VerifRequest) => 
@@ -72,7 +75,23 @@ export const authService = {
         headers: {
           'accept': 'text/plain',
         },
-        })
+        }),
+
+  handleAuthCallback: async (token: string) => {
+      // Store the token
+      localStorage.setItem('authToken', token);
+      
+      // Optionally fetch user data
+      try {
+          // const response = await apiClient.get<ApiResponse<{ user: AuthState['user'] }>>(
+          // '/api/Auth/me'
+          // );
+          //return response.data;
+      } catch (error) {
+          localStorage.removeItem('authToken');
+          throw error;
+      }
+  },
 };
 
 export const orgService = {
@@ -88,5 +107,15 @@ export const orgService = {
           'accept': 'text/plain',
         },
       }
-    )
+    ),
+  getOrganizations: (verified: boolean) =>
+    apiClient.get<GetOrganizationResponse>(`/api/Organization/Organizations?isVerified=${verified}`),
+  acceptOrganization: (id: number) =>
+    apiClient.put(`/api/Organization/${id}/verify/`),
+  rejectOrganization: (id: number, reason: string) =>
+    apiClient.put(`/api/Organization/${id}/decline/`, JSON.stringify(reason) , {
+      headers: {
+          'Content-Type': 'application/json'
+      }
+  })
 };
