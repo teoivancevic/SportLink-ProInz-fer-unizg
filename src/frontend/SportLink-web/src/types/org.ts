@@ -7,6 +7,7 @@ export interface CreateOrgRequest {
 }
 
 export interface CreateOrgResponse {
+    id: number;
     name: string;
     description: string;
     contactEmail: string;
@@ -16,6 +17,7 @@ export interface CreateOrgResponse {
 
 
 export interface Organization{
+    id: number,
     name: string,
     description: string,
     contactEmail: string,

@@ -7,13 +7,13 @@ interface MainLayoutProps {
 
 export function MainLayoutWithNavbar({ children }: MainLayoutProps) {
   return(
-    <Flex style={{ height: '100vh'}}>
-      <Box style={{ position: 'fixed', top: 0, left: 0, height: '100vh', overflow: 'auto', zIndex:"10" }}>
+    <Flex style={{ height: '100%'}}>
+      <Box style={{ position: 'fixed', top: 0, left: 0, height: '100%', overflow: 'auto', zIndex:"10" }}>
         <NavbarNested />
       </Box>
 
-      <Box style={{ flex: 1, margin: "1rem" }}>
-        <ScrollArea style={{ height: '100vh' }}>
+      <Box style={{ flex: 1}}>
+        <ScrollArea style={{ height: '100%' }}>
           <Center>
             {children}
           </Center>

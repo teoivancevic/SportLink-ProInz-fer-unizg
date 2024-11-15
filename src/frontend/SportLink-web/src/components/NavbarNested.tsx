@@ -100,7 +100,7 @@ export function NavbarNested() {
         }
       </AuthorizedElement>
       <div className={classes.footer}>
-        <AuthorizedElement roles={[UserRole.User, UserRole.AppAdmin]}>
+        <AuthorizedElement roles={[UserRole.User, UserRole.OrganizationOwner, UserRole.AppAdmin]}>
           {({ userData }) => (
           <UserButton name={userData.firstName + ' ' + userData.lastName} email={userData.email} onLogout={() => { navigate('/logout')}} />
           )}

@@ -112,6 +112,10 @@ export const orgService = {
     apiClient.get<GetOrganizationResponse>(`/api/Organization/Organizations?isVerified=${verified}`),
   acceptOrganization: (id: number) =>
     apiClient.put(`/api/Organization/${id}/verify/`),
-  rejectOrganization: (id: number) =>
-    apiClient.put(`/api/Organization/${id}/decline/`), // todo add reason
+  rejectOrganization: (id: number, reason: string) =>
+    apiClient.put(`/api/Organization/${id}/decline/`, JSON.stringify(reason) , {
+      headers: {
+          'Content-Type': 'application/json'
+      }
+  })
 };
