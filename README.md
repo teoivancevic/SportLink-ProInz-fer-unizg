@@ -69,5 +69,7 @@ NF-5.2. | Aplikacija treba biti responzivna i funkcionalna na računalima i mobi
 > Fran Horvat fran.horvat@fer.unizg.hr - Dizajner + Ispitivanje  
 > Vito Anić vito.anic@fer.unizg.hr - DevOps
 
-## 📝 Kodeks ponašanja [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)]
+## 📝 Kodeks ponašanja 
+
+## 📝 Licenca
 
