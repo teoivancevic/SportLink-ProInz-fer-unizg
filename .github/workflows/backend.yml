@@ -42,6 +42,8 @@ jobs:
         ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING_TEST_DB }}
         EmailSettings__AppPassword: ${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}
         Jwt__Key: ${{ secrets.JWT_KEY_TEST }}
+        Google__ClientId: ${{ secrets.GOOGLE_CLIENTID }}
+        Google__ClientSecret: ${{ secrets.GOOGLE_CLIENTSECRET }}
       run: dotnet test --no-build --verbosity normal
       working-directory: ./src/backend/SportLink.Backend
 
@@ -78,7 +80,9 @@ jobs:
           EmailSettings__AppPassword="${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}" \
           Jwt__Key="${{ secrets.JWT_KEY_TEST }}" \
           ASPNETCORE_ENVIRONMENT="Development" \
-          WEBSITES_PORT=8080
+          WEBSITES_PORT=8080 \
+          Google__ClientId="${{ secrets.GOOGLE_CLIENTID }}" \
+          Google__ClientSecret="${{ secrets.GOOGLE_CLIENTSECRET }}"
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
