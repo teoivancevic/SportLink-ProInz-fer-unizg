@@ -52,8 +52,9 @@ export interface ApiResponse<T> {
 export const authService = {
   login: (data: LoginRequest) => 
     apiClient.post<LoginResponse>('/api/Auth/login', data),
-  loginGoogle: () => 
-    apiClient.get<LoginResponse>('/api/Auth/externalLogin/Google'),
+  loginGoogle: () => {
+    window.location.href = `${apiClient.defaults.baseURL}/api/Auth/externalLogin/Google`;
+  },
   register: (data: RegistrationRequest) => 
     apiClient.post<RegistrationResponse>('/api/Auth/register', data),
   verify: (userId: number, otpCode: string, data: VerifRequest) => 
@@ -76,21 +77,21 @@ export const authService = {
         },
         }),
 
-    handleAuthCallback: async (token: string) => {
-        // Store the token
-        localStorage.setItem('authToken', token);
-        
-        // Optionally fetch user data
-        try {
-            // const response = await apiClient.get<ApiResponse<{ user: AuthState['user'] }>>(
-            // '/api/Auth/me'
-            // );
-            //return response.data;
-        } catch (error) {
-            localStorage.removeItem('authToken');
-            throw error;
-        }
-    },
+  handleAuthCallback: async (token: string) => {
+      // Store the token
+      localStorage.setItem('authToken', token);
+      
+      // Optionally fetch user data
+      try {
+          // const response = await apiClient.get<ApiResponse<{ user: AuthState['user'] }>>(
+          // '/api/Auth/me'
+          // );
+          //return response.data;
+      } catch (error) {
+          localStorage.removeItem('authToken');
+          throw error;
+      }
+  },
 };
 
 export const orgService = {
