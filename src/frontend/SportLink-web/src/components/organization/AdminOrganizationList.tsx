@@ -66,32 +66,32 @@ const AdminOrganizationList: React.FC = () => {
 
   return (
     
-    <Container padding="md">
+    <Container>
       <Title order={2} style={{padding:"20px"}}>Organization List</Title>
       {organizations.length === 0 ? <NoOrganizations /> : null}
-      <Group direction="column" spacing="md">
+      <Group >
         {organizations.map(org => {
           // console.log("org", org.id)
           return (
           <Card key={org.name} shadow="sm" padding="lg" style={{ width: '100%' }}>
-            <Group position="apart" align="flex-start">
-              <Group direction="column" spacing="xs" style={{ flex: 1 }}>
+            <Group align="flex-start">
+              <Group style={{ flex: 1 }}>
                 <Text fw={700}>{org.name}</Text>
                 <Text size="sm" color="dimmed">{org.description}</Text>
                 <Text size="sm">Lokacija: {org.location}</Text>
               </Group>
-              <Group direction="column" spacing="xs" align="flex-end">
-                <Group spacing="xs">
+              <Group align="flex-end">
+                <Group>
                   <IconMail size={16} />
                   <Text size="sm">{org.contactEmail}</Text>
                 </Group>
-                <Group spacing="xs">
+                <Group >
                   <IconPhone size={16} />
                   <Text size="sm">{org.contactPhoneNumber}</Text>
                 </Group>
               </Group>
             </Group>
-            <Group position="apart" mt="md">
+            <Group mt="md">
               <TextInput
                 placeholder="Razlog odbijanja organizacije"
                 value={rejectionReasons[org.id] || ''} // Use org.id for unique key

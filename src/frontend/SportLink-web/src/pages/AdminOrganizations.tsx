@@ -1,4 +1,4 @@
-import { Center, Text } from "@mantine/core";
+
 import { MainLayoutWithNavbar } from "./MainLayoutWithNavbar";
 import AuthorizedElement from "../components/authorization/AuthorizedElement";
 import AdminOrganizationList from "../components/organization/AdminOrganizationList";
@@ -11,7 +11,7 @@ export function AdminOrganizations() {
       <MainLayoutWithNavbar>
 
         <AuthorizedElement roles={[UserRole.AppAdmin]}>
-          {({ userData }) => 
+          {() => 
             <AdminOrganizationList />
           }
         </AuthorizedElement>
