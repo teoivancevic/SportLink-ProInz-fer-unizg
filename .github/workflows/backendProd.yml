@@ -2,7 +2,6 @@ name: Backend Production CI/CD
 
 on:
   push:
-    branches: [ "main" ]
     tags: [ '*' ]
   workflow_dispatch:
 

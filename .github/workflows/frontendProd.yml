@@ -2,7 +2,6 @@ name: Frontend Production CI/CD
 
 on:
   push:
-    branches: [ "main" ]
     tags: [ '*' ]
   workflow_dispatch:
 
@@ -14,7 +13,7 @@ jobs:
       IMAGE_NAME: webapp-prod
       ACR_NAME: acrsportlink
       WEB_APP_NAME: webapp-sportlink-prod
-      API_URL: https://api-sportlink-prod.azurewebsites.net/
+      API_URL: https://api-sportlink-prod.azurewebsites.net
 
     steps:
       - uses: actions/checkout@v4
