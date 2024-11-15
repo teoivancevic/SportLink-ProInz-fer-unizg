@@ -9,52 +9,52 @@ import { IconMail, IconPhone } from '@tabler/icons-react';
 
 const AdminOrganizationList: React.FC = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const [loadingAccept, setLoadingAccept] = useState<{ [key: string]: boolean }>({});
+  const [loadingReject, setLoadingReject] = useState<{ [key: string]: boolean }>({});
   const [rejectionReasons, setRejectionReasons] = useState<{ [key: string]: string }>({});
 
-
+  const fetchOrganizations = async () => {
+    try {
+      const response = await orgService.getOrganizations(false); // get unverified
+      console.log("response", response);
+      setOrganizations(response.data);
+      console.log("organizacijeee", organizations);
+    } catch (error) {
+      console.error('Error fetching organizations:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrganizations = async () => {
-      try {
-        const response = await orgService.getOrganizations(false); // get unverified
-        console.log("response", response);
-        setOrganizations(response.data);
-        console.log("organizacijeee", organizations);
-      } catch (error) {
-        console.error('Error fetching organizations:', error);
-      }
-    };
-
     fetchOrganizations();
   }, []);
 
   const acceptOrganization = async (orgId: number) => {
-    setLoading(prev => ({ ...prev, [orgId]: true }));
+    setLoadingAccept(prev => ({ ...prev, [orgId]: true }));
     try{
      const response = await orgService.acceptOrganization(orgId);
      console.log(response)
+     fetchOrganizations();
 
      // reload organizations here
     } catch (error) {
      console.log(error);
     } finally {
-        setLoading(prev => ({ ...prev, [orgId]: false }));
+        setLoadingAccept(prev => ({ ...prev, [orgId]: false }));
       }
    };
    const rejectOrganization = async (orgId: number) => {
     const reason = rejectionReasons[orgId];
-    setLoading(prev => ({ ...prev, [orgId]: true }));
+    setLoadingReject(prev => ({ ...prev, [orgId]: true }));
     console.log("reason", reason);
     try{
      const response = await orgService.rejectOrganization(orgId, reason);
      console.log(response)
-     // reload organizations here
+     fetchOrganizations();
 
     } catch (error) {
      console.log(error);
     } finally {
-        setLoading(prev => ({ ...prev, [orgId]: false }));
+        setLoadingReject(prev => ({ ...prev, [orgId]: false }));
       }
    };
   
@@ -66,7 +66,9 @@ const AdminOrganizationList: React.FC = () => {
     <Container padding="md">
       <Title order={2}>Organization List</Title>
       <Group direction="column" spacing="md">
-        {organizations.map(org => (
+        {organizations.map(org => {
+            
+        return (
           <Card key={org.name} shadow="sm" padding="lg" style={{ width: '90%' }}>
             <Group position="apart" align="flex-start">
               <Group direction="column" spacing="xs" style={{ flex: 1 }}>
@@ -87,31 +89,40 @@ const AdminOrganizationList: React.FC = () => {
             </Group>
             <Group position="apart" mt="md">
               <TextInput
-                placeholder="Reason for rejection"
+                placeholder="Razlog odbijanja organizacije"
                 value={rejectionReasons[org.id] || ''}
                 onChange={(event) => handleReasonChange(org.id, event.currentTarget.value)}
-                style={{ flex: 1 }}
+                style={{ flex: 1 }} 
+                disabled={loadingAccept[org.id] || loadingReject[org.id]}
               />
               <Group>
                 <Button
-                  loading={loading[org.id]}
+                  loading={loadingReject[org.id]}
                   variant='outline'
                   color='red'
-                  onClick={() => rejectOrganization(org.id)}
+                  onClick={() => {
+                    if (rejectionReasons[org.id]) {
+                      rejectOrganization(org.id);
+                    } else {
+                      alert('Reason is required to reject the organization.');
+                    }
+                  }}
+                  disabled={loadingAccept[org.id]}
                 >
                   Odbij
                 </Button>
                 <Button
-                  loading={loading[org.id]}
+                  loading={loadingAccept[org.id]}
                   variant='filled'
                   onClick={() => acceptOrganization(org.id)}
+                  disabled={loadingReject[org.id]}
                 >
                   Odobri
                 </Button>
               </Group>
             </Group>
           </Card>
-        ))}
+        )})}
       </Group>
     </Container>
   );
