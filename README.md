@@ -3,7 +3,7 @@ SportLink je platforma namjenjena rekreativnim sportašima svih uzrasta za otkri
 
 # Url na aplikaciju
 
-Produkcijska okolina: [https://webapp-sportlink-prod.azurewebsites.net/](https://webapp-sportlink-test.azurewebsites.net/)  
+https://webapp-sportlink-test.azurewebsites.net/
 - AppAdmin demo korisnik (administrator aplikacije)
   - Email: andrija.jozefinovic@gmail.com
   - Šifra: Teo12345!
