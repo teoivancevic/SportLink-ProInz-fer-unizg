@@ -136,9 +136,9 @@ public class AuthController : ControllerBase
         }
         else
         {
-            if (user.ExternalUserSource != ExternalUserSourceEnum.Google)
+            if (user.ExternalUserSource == 0)
             {
-                return BadRequest("Sign in with Google failed.");
+                return BadRequest("Sign in with Google failed. There is already an account made with the same email.");
             }
             else
             {

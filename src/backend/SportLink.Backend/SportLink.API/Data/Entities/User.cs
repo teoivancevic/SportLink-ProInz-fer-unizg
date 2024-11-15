@@ -18,8 +18,6 @@ public class User : BaseEntity
     public byte[]? PasswordSalt { get; set; }
 
     public DateTime LastLoginAt { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
     public bool IsEmailVerified { get; set; }
 
     public ExternalUserSourceEnum? ExternalUserSource { get; set; }
