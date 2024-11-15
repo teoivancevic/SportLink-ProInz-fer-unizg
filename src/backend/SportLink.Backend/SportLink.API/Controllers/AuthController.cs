@@ -109,6 +109,8 @@ public class AuthController : ControllerBase
         var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         var externalUserId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
+        var dbUser = await _userService.GetUserByEmail(email!);
+
         if (email == null || externalUserId == null)
         {
             return BadRequest("Sign in with Google failed.");
@@ -134,13 +136,19 @@ public class AuthController : ControllerBase
         }
         else
         {
+            if (user.ExternalUserSource == 0)
+            {
+                return BadRequest("Sign in with Google failed. There is already an account made with the same email.");
+            }
+            else
+            {
+                var role = Enum.GetName(typeof(RolesEnum), user!.RoleId);
+                var token = _authHandler.CreateToken(user.Email, user.Id.ToString(), user.FirstName, user.LastName, role!, _configuration["Jwt:Key"]);
 
-            var role = Enum.GetName(typeof(RolesEnum), user!.RoleId);
-            var token = _authHandler.CreateToken(user.Email, user.Id.ToString(), user.FirstName, user.LastName, role!, _configuration["Jwt:Key"]);
-
-            //return Ok(new { Token = token });
-            var frontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
-            return Redirect($"{frontendUrl}?token={token}");
+                //return Ok(new { Token = token });
+                var frontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
+                return Redirect($"{frontendUrl}?token={token}");
+            }
         }
     }
 

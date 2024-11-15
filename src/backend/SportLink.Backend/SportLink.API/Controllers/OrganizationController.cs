@@ -21,7 +21,7 @@ namespace SportLink.API.Controllers
         {
             _organizationService = organizationService;
         }
-        
+
         [HttpPost, Authorize(Roles = "OrganizationOwner,User", Policy = "jwt_policy")]
         [Route("CreateOrganization")]
         public async Task<ActionResult<OrganizationDto>> CreateOrganization([FromBody] OrganizationDto organization)

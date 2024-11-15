@@ -97,7 +97,7 @@ builder.Services.AddAuthentication("cookie")
         options.SignInScheme = "cookie";
         options.ClientId = builder.Configuration["Google:ClientId"]!;
         options.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
-        options.CallbackPath = new PathString("/signin-google");    
+        options.CallbackPath = new PathString("/signin-google");
     });
 
 builder.Services.AddAuthorization(options =>
