@@ -70,6 +70,7 @@ jobs:
       run: sudo apt-get install -y jq
 
     - name: Set up ACR credentials
+      id: acr_credentials
       run: |
         echo "ACR_USERNAME=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')" >> $GITHUB_ENV
         echo "ACR_PASSWORD=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')" >> $GITHUB_ENV
