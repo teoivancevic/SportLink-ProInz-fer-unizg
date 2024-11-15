@@ -67,5 +67,7 @@ NF-5.2. | Aplikacija treba biti responzivna i funkcionalna na računalima i mobi
 > Roko Jakaša roko.jakasa@fer.unizg.hr - Backend developer  
 > Rita Zonjić rita.zonjic@fer.unizg.hr - Backend developer  
 > Fran Horvat fran.horvat@fer.unizg.hr - Dizajner + Ispitivanje  
-> Vito Anić vito.anic@fer.unizg.hr - DevOps  
+> Vito Anić vito.anic@fer.unizg.hr - DevOps
+
+## 📝 Kodeks ponašanja [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)]
 
