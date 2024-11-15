@@ -45,8 +45,13 @@ export function LoginBox(){
         }
       };
 
-      const handleGoogleLogin = () => {
-        window.location.href = 'https://api-sportlink-test-02.azurewebsites.net/api/Auth/externalLogin/Google';
+      const handleGoogleLogin = async () => {
+       try{
+        const response = await authService.loginGoogle();
+        console.log(response)
+       } catch (error) {
+        console.log(error);
+       }
       };
 
     return (
@@ -82,7 +87,7 @@ export function LoginBox(){
                 </Stack>
                 <div className='messageDiv'>
                     <p className='message1'>Nemate korisnički račun?<br/>
-                    <Anchor component={Link} to="../registration">Registrirajte se</Anchor>
+                    <Anchor component={Link} to="/registration">Registrirajte se</Anchor>
                     </p>
                 </div>
             </div>
