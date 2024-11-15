@@ -3,7 +3,8 @@ import {
   IconNotes,
   IconAdjustments,
   IconHome,
-  IconSearch
+  IconSearch,
+  IconList
 } from '@tabler/icons-react';
 import { LinksGroup } from './NavbarLinksGroup';
 //import { Logo } from './Logo';
@@ -43,7 +44,8 @@ const authorizedMockdata = [
     label: 'Ostavi komentar',
     icon: IconNotes
   },
-  { label: 'Postavke', icon: IconAdjustments }
+  { label: 'Postavke', icon: IconAdjustments },
+  {label: "Lista Organizacija", icon: IconList, link: "/adminOrganizationList"}
 ];
 
 export function NavbarNested() {

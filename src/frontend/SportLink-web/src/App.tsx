@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Logout from './components/Logout'; // Import the Logout component
 import { OrganisationForm } from './pages/OrganizationForm';
 import { AuthCallback } from './components/auth/AuthCallback';
+import { AdminOrganizations } from './pages/AdminOrganizations';
 
 
 
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/registration/" element={<Registration/>} />
           <Route path="/registration/:step" element={<Registration/>} />
           <Route path="/registerOrganisation" element={<OrganisationForm />} />
+          <Route path="/adminOrganizations" element={<AdminOrganizations />} />
           {/* <Route path="/authorized" element={<ProtectedRoute><AuthorizedHome /></ProtectedRoute>} /> */}
           <Route path="/auth/callback" element={<AuthCallback />} />
         </Routes>
