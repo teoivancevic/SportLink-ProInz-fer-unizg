@@ -14,9 +14,9 @@ public class UserService : IUserService
 {
     private readonly DataContext _context;
     private readonly IMapper _mapper;
-    
+
     private readonly ILogger<UserService> _logger;
-    
+
     private readonly IOTPCodeService _otpCodeService;
     private readonly IEmailService _emailService;
     public UserService(DataContext context, IMapper mapper, ILogger<UserService> logger)
@@ -30,7 +30,7 @@ public class UserService : IUserService
     {
         var user = await _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
         var userDto = _mapper.Map<UserDto>(user);
-        
+
         return userDto;
     }
 
@@ -38,7 +38,7 @@ public class UserService : IUserService
     {
         var user = await _context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
         var userDto = _mapper.Map<UserDto>(user);
-        
+
         return userDto;
     }
 
@@ -56,12 +56,40 @@ public class UserService : IUserService
         PasswordHelper.CreatePasswordHash(createUserDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
         userEntity.PasswordHash = passwordHash;
         userEntity.PasswordSalt = passwordSalt;
-        
-        userEntity.RoleId = (int) RolesEnum.User;
-        
+
+        userEntity.RoleId = (int)RolesEnum.User;
+
         _context.Users.Add(userEntity);
         await _context.SaveChangesAsync();
-        
+
+        var userDto = _mapper.Map<UserDto>(userEntity);
+        return userDto;
+    }
+
+    public async Task<UserDto> CreateExternalUser(string email, string externalId, string firstName, string lastName, string roleName)
+    {
+        int roleId = 0;
+        if (Enum.TryParse(roleName, out RolesEnum role))
+        {
+            roleId = (int)role;
+        }
+        var userEntity = new Data.Entities.User
+        {
+            Id = 0,
+            FirstName = firstName,
+            LastName = lastName,
+            Email = email,
+            RoleId = roleId,
+            PasswordHash = null!,
+            PasswordSalt = null!,
+            IsEmailVerified = true,
+            ExternalUserSource = ExternalUserSourceEnum.Google,
+            ExternalUserId = externalId
+        };
+
+        _context.Users.Add(userEntity);
+        await _context.SaveChangesAsync();
+
         var userDto = _mapper.Map<UserDto>(userEntity);
         return userDto;
     }

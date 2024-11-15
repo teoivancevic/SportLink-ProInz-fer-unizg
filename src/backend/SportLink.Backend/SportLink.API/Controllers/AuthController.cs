@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportLink.API.Services.Auth;
@@ -91,6 +93,63 @@ public class AuthController : ControllerBase
 
         return Ok(token);
     }
+
+    [HttpGet("externalLogin/{provider}")]
+    public IActionResult ExternalLogin(string provider = "Google")
+    {
+        var redirectUrl = Url.Action("ExternalLoginCallback", "Auth");
+        var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+        return new ChallengeResult(provider, properties);
+    }
+
+    [HttpGet("externalLoginCallback")]
+    public async Task<IActionResult> ExternalLoginCallback()
+    {
+        // var result = await HttpContext.AuthenticateAsync("Google");
+        // if (!result.Succeeded)
+        // {
+        //     return RedirectToAction("Login");
+        //     //return BadRequest("External authentication failed.");
+        // }
+        var claims = HttpContext.User.Claims;
+        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        var externalUserId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        if (email == null || externalUserId == null)
+        {
+            return BadRequest("Sign in with Google failed.");
+        }
+
+        var firstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? "Unknown";
+        var lastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? "Unknown";
+        var roleName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? "User";
+
+        var user = await _userService.GetUserByEmail(email);
+        if (user is null)
+        {
+            var registerUser = await _userService.CreateExternalUser(email, externalUserId, firstName, lastName, roleName);
+
+            if (registerUser is null)
+            {
+                return BadRequest("Registration via Google failed.");
+            }
+
+            var newUserToken = _authHandler.CreateToken(registerUser.Email, registerUser.Id.ToString(), registerUser.FirstName, registerUser.LastName, Enum.GetName(typeof(RolesEnum), registerUser.RoleId), _configuration["Jwt:Key"]);
+            var newUserFrontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
+            return Redirect($"{newUserFrontendUrl}?token={newUserToken}");
+        }
+        else
+        {
+
+            var role = Enum.GetName(typeof(RolesEnum), user!.RoleId);
+            var token = _authHandler.CreateToken(user.Email, user.Id.ToString(), user.FirstName, user.LastName, role!, _configuration["Jwt:Key"]);
+
+            //return Ok(new { Token = token });
+            var frontendUrl = _configuration["ExternalLogin:FrontendRedirectUrl"];
+            return Redirect($"{frontendUrl}?token={token}");
+        }
+    }
+
     /// <summary>
     /// Resend OTP email verification code
     /// </summary>
@@ -101,7 +160,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> ResendOTPCode(int userId)
     {
         var isEmailSent = await _authService.ResendEmailVerificationCode(userId);
-        if(!isEmailSent)
+        if (!isEmailSent)
             return BadRequest("Could not resend verification code.");
 
         return Ok("Sent verification code");

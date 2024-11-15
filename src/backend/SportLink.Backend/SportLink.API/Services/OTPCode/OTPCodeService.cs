@@ -7,48 +7,48 @@ namespace SportLink.API.Services.OTPCode;
 public class OTPCodeService : IOTPCodeService
 {
     private readonly DataContext _context;
-    
+
     public OTPCodeService(DataContext context)
     {
         _context = context;
     }
-    
+
     public async Task<string> GenerateOTP(int userId, OTPCodeTypeEnum type, int digits = 6)
     {
         string digitOTPCode = GenerateNumericCode(digits);
 
         await ClearOldOTPs(userId, type);
-        
+
         var otpCodeEntity = await CreateOTP(userId, type, digitOTPCode);
         if (otpCodeEntity is null)
             return null;
 
         return otpCodeEntity.Code;
     }
-    
+
     private string GenerateNumericCode(int length)
     {
-        return string.Join("", 
+        return string.Join("",
             Enumerable.Range(0, length)
                 .Select(_ => Random.Shared.Next(0, 10)));
     }
-    
+
 
     public async Task<bool> ValidateOTP(int userId, OTPCodeTypeEnum type, string code)
     {
-        var otpCodeEntity = await _context.OTPCodes.Where(x => 
-            x.Code == code && 
-            x.UserId == userId && 
-            x.Type == type && 
+        var otpCodeEntity = await _context.OTPCodes.Where(x =>
+            x.Code == code &&
+            x.UserId == userId &&
+            x.Type == type &&
             x.IsUsed == false &&
-            x.ExpiresAt > DateTime.UtcNow 
+            x.ExpiresAt > DateTime.UtcNow
             ).FirstOrDefaultAsync();
 
         if (otpCodeEntity is null)
             return false;
 
         await MarkOTPUsed(otpCodeEntity.Id);
-        
+
         return true;
     }
 
@@ -80,17 +80,17 @@ public class OTPCodeService : IOTPCodeService
         {
             throw new Exception("Couldn't mark OTP code as used");
         }
-        
+
         otpCodeEntity.IsUsed = true;
         _context.OTPCodes.Update(otpCodeEntity);
         await _context.SaveChangesAsync();
 
         return true;
     }
-    
+
     private async Task ClearOldOTPs(int userId, OTPCodeTypeEnum type)
     {
-        var otpCodes = await _context.OTPCodes.Where(x => 
+        var otpCodes = await _context.OTPCodes.Where(x =>
             x.UserId == userId && x.Type == type).ToListAsync();
 
         foreach (var otpCode in otpCodes)
