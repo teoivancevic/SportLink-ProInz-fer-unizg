@@ -6,10 +6,10 @@ import './LoginBox.css';
 import '@mantine/core/styles.css';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api';
-import type { LoginRequest } from '../types/auth';
+import { authService } from '../../services/api';
+import type { LoginRequest } from '../../types/auth';
 import { useDisclosure } from '@mantine/hooks';
-import { GoogleIcon } from '../assets/GoogleIcon'
+import { GoogleIcon } from '../../assets/GoogleIcon'
 
 export function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
     return <Button leftSection={<GoogleIcon />} variant="default" {...props} />;

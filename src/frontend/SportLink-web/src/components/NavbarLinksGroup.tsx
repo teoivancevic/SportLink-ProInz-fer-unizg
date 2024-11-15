@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Group, Box, Collapse, ThemeIcon, Text, UnstyledButton, rem } from '@mantine/core';
-import { IconCalendarStats, IconChevronRight } from '@tabler/icons-react';
+import { IconChevronRight } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import classes from './NavbarLinksGroup.module.css';
 
 interface LinksGroupProps {
@@ -13,17 +14,20 @@ interface LinksGroupProps {
 export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksGroupProps) {
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
+  const navigate = useNavigate();
+
   const items = (hasLinks ? links : []).map((link) => (
-    <div className={classes.sublink}>
-    <Text<'a'>
-      component="a"
-      // className={classes.link} //TO DO
-      href={link.link}
-      key={link.label}
-      onClick={(event) => event.preventDefault()}
-    >
-      {link.label}
-    </Text>
+    <div className={classes.sublink} key={link.label}>
+      <Text<'a'>
+        component="a"
+        href={link.link}
+        onClick={(event) => {
+          event.preventDefault();
+          navigate(link.link);
+        }}
+      >
+        {link.label}
+      </Text>
     </div>
   ));
 
@@ -52,23 +56,5 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }: LinksG
       </UnstyledButton>
       {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
     </>
-  );
-}
-
-const mockdata = {
-  label: 'Releases',
-  icon: IconCalendarStats,
-  links: [
-    { label: 'Upcoming releases', link: '/' },
-    { label: 'Previous releases', link: '/' },
-    { label: 'Releases schedule', link: '/' },
-  ],
-};
-
-export function NavbarLinksGroup() {
-  return (
-    <Box mih={220} p="md">
-      <LinksGroup {...mockdata} />
-    </Box>
   );
 }

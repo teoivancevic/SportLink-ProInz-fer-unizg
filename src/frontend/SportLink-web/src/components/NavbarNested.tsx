@@ -11,8 +11,8 @@ import { LinksGroup } from './NavbarLinksGroup';
 import classes from './NavbarNested.module.css';
 import logo from '../assets/logo.png'
 import { useNavigate } from 'react-router-dom';
-import AuthorizedElement from './AuthorizedElement';
-import UnauthorizedElement from './UnauthorizedElement';
+import AuthorizedElement from './authorization/AuthorizedElement';
+import UnauthorizedElement from './authorization/UnauthorizedElement';
 import { UserRole } from '../types/roles';
 import { UserButton } from './UserButton';
 
@@ -29,24 +29,26 @@ const unauthorizedMockdata = [
   }
 ];
 
-const authorizedMockdata = [
-  { label: 'Početna', icon: IconHome },
-  {
-    label: 'Pretraživanje',
-    icon: IconSearch,
-    links: [
-      { label: 'Organizacije', link: '/' },
-      { label: 'Događanja', link: '/' },
-      { label: 'Termini', link: '/' },
-    ],
-  },
+const authorizedExtraMockdata = [
+  ...unauthorizedMockdata,
   {
     label: 'Ostavi komentar',
     icon: IconNotes
   },
-  { label: 'Postavke', icon: IconAdjustments },
-  {label: "Lista Organizacija", icon: IconList, link: "/adminOrganizationList"}
+  { label: 'Postavke', icon: IconAdjustments }
 ];
+
+
+const appAdminExtraMockdata = [
+  ...authorizedExtraMockdata,
+  {label: "Admin organizacije", icon: IconList, 
+    links: [
+      { label: 'Nepotrvđene', link: '/adminOrganizations' }
+    ],
+  }
+];
+
+
 
 export function NavbarNested() {
   const navigate = useNavigate();
@@ -56,7 +58,8 @@ export function NavbarNested() {
 
   const unauthorizedLinks = unauthorizedMockdata.map((item) => <LinksGroup {...item} key={item.label} />);
   
-  const authorizedLinks = authorizedMockdata.map((item) => <LinksGroup {...item} key={item.label} />);
+  const authorizedLinks = authorizedExtraMockdata.map((item) => <LinksGroup {...item} key={item.label} />);
+  const appAdminLinks = appAdminExtraMockdata.map((item) => <LinksGroup {...item} key={item.label} />);
 
   return (
     <nav className={classes.navbar}>
@@ -65,14 +68,21 @@ export function NavbarNested() {
       </div>
 
       <ScrollArea className={classes.links}>
-        <AuthorizedElement  roles={[UserRole.User]}>
+        
+        <UnauthorizedElement>
+          <div className={classes.linksInner}>{unauthorizedLinks}</div>
+        </UnauthorizedElement>
+        <AuthorizedElement roles={[UserRole.User, UserRole.OrganizationOwner]}>
           {() => 
             <div className={classes.linksInner}>{authorizedLinks}</div>
           }
         </AuthorizedElement>
-        <UnauthorizedElement>
-        <div className={classes.linksInner}>{unauthorizedLinks}</div>
-        </UnauthorizedElement>
+        <AuthorizedElement roles={[UserRole.AppAdmin]}>
+          {() => 
+            <div className={classes.linksInner}>{appAdminLinks}</div>
+          }
+        </AuthorizedElement>
+        
       </ScrollArea>
 
       {/* <AuthorizedElement roles={[UserRole.User]}>
