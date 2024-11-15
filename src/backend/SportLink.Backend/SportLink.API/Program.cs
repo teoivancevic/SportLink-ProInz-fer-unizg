@@ -179,9 +179,10 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseCors("AllowAll");
-
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll"); // changed this to be after httpsredirection
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
