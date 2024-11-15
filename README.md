@@ -69,7 +69,6 @@ NF-5.2. | Aplikacija treba biti responzivna i funkcionalna na računalima i mobi
 > Fran Horvat fran.horvat@fer.unizg.hr - Dizajner + Ispitivanje  
 > Vito Anić vito.anic@fer.unizg.hr - DevOps
 
-## 📝 Kodeks ponašanja 
 
 ## 📝 Licenca
 Ovaj repozitorij sadrži otvoreni obrazovni sadržaji i korisimo [MIT licencu](LICENSE)
