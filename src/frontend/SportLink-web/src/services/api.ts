@@ -1,7 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
 import { LoginRequest, LoginResponse,RegistrationRequest, RegistrationResponse, VerifRequest, VerifResponse, ResendOTPRequest, ResendOTPResponse } from '../types/auth'
-import { CreateOrgRequest, CreateOrgResponse } from '../types/org';
+import { CreateOrgRequest, CreateOrgResponse, GetOrganizationResponse } from '../types/org';
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -107,5 +107,15 @@ export const orgService = {
           'accept': 'text/plain',
         },
       }
-    )
+    ),
+  getOrganizations: (verified: boolean) =>
+    apiClient.get<GetOrganizationResponse>(`/api/Organization/Organizations?isVerified=${verified}`),
+  acceptOrganization: (id: number) =>
+    apiClient.put(`/api/Organization/${id}/verify/`),
+  rejectOrganization: (id: number, reason: string) =>
+    apiClient.put(`/api/Organization/${id}/decline/`, JSON.stringify(reason) , {
+      headers: {
+          'Content-Type': 'application/json'
+      }
+  })
 };

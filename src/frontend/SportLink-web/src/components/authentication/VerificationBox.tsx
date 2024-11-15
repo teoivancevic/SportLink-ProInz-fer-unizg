@@ -3,8 +3,8 @@ import { OTPInput } from './OTPInput';
 import { useState, useEffect } from 'react';
 import { Center, Notification } from '@mantine/core';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { authService } from '../services/api';
-import { ResendOTPRequest, VerifRequest } from '../types/auth';
+import { authService } from '../../services/api';
+import { ResendOTPRequest, VerifRequest } from '../../types/auth';
 
 export function VerificationBox(){
     const [otpValue, setOtpValue] = useState(Array(6).fill(''));

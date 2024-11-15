@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { UserRole } from '../types/roles';
+import { UserRole } from '../../types/roles';
 
 interface UserData {
   id: string;

@@ -6,10 +6,10 @@ import { EmailInput } from './EmailInput';
 import { useState } from 'react';
 import { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api';
-import type { RegistrationRequest } from '../types/auth';
+import { authService } from '../../services/api';
+import type { RegistrationRequest } from '../../types/auth';
 import { useDisclosure } from '@mantine/hooks';
-import { GoogleIcon } from '../assets/GoogleIcon'
+import { GoogleIcon } from '../../assets/GoogleIcon'
 
 export function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
     return <Button leftSection={<GoogleIcon />} variant="default" {...props} />;

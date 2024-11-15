@@ -2,12 +2,12 @@ import '@mantine/core/styles.css';
 import { IconAt } from '@tabler/icons-react';
 import { useState } from 'react';
 import { TextInput, Text, Paper, Center, Stack, rem, Textarea, Button } from '@mantine/core';
-import { orgService } from '../services/api';
-import { CreateOrgRequest } from '../types/org';
+import { orgService } from '../../services/api';
+import { CreateOrgRequest } from '../../types/org';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 
-export function OrganisationReg() {
+export function OrganizationReg() {
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [contact, setContact] = useState<string>('');

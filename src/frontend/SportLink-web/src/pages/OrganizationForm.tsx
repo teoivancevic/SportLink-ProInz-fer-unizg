@@ -1,6 +1,11 @@
-import { OrganisationReg } from "../components/OrganisationReg";
+import { OrganizationReg } from "../components/organization/OrganizationReg";
+import { MainLayoutWithNavbar } from "./MainLayoutWithNavbar";
 
 
-export function OrganisationForm(){
-    return <OrganisationReg/>
+export function OrganizationForm(){
+    return (
+        <MainLayoutWithNavbar>
+            <OrganizationReg/>
+        </MainLayoutWithNavbar>
+    );
 };
