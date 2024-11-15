@@ -105,12 +105,6 @@ public class AuthController : ControllerBase
     [HttpGet("externalLoginCallback")]
     public async Task<IActionResult> ExternalLoginCallback()
     {
-        // var result = await HttpContext.AuthenticateAsync("Google");
-        // if (!result.Succeeded)
-        // {
-        //     return RedirectToAction("Login");
-        //     //return BadRequest("External authentication failed.");
-        // }
         var claims = HttpContext.User.Claims;
         var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         var externalUserId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
