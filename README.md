@@ -72,4 +72,5 @@ NF-5.2. | Aplikacija treba biti responzivna i funkcionalna na računalima i mobi
 ## 📝 Kodeks ponašanja 
 
 ## 📝 Licenca
+Ovaj repozitorij sadrži otvoreni obrazovni sadržaji i korisimo [MIT licencu](LICENSE)
 
