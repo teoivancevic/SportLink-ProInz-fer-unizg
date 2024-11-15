@@ -22,7 +22,7 @@ namespace SportLink.API.Controllers
             _organizationService = organizationService;
         }
 
-        [HttpPost, Authorize(Roles = "OrganizationOwner, User")]
+        [HttpPost, Authorize(Roles = "OrganizationOwner,User", Policy = "jwt_policy")]
         [Route("CreateOrganization")]
         public async Task<ActionResult<OrganizationDto>> CreateOrganization([FromBody] OrganizationDto organization)
         {
@@ -39,7 +39,7 @@ namespace SportLink.API.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpGet, Authorize(Roles = "AppAdmin")]
+        [HttpGet, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
         [Route("Organizations")]
         public async Task<ActionResult<List<OrganizationDto>>> GetOrganizations([FromQuery] bool isVerified)
         {
@@ -58,7 +58,7 @@ namespace SportLink.API.Controllers
             }
         }
 
-        [HttpGet, Authorize]
+        [HttpGet, Authorize(Policy = "jwt_policy")]
         [Route("{id}")]
         public async Task<ActionResult<OrganizationDto>> GetSingleOrganization(int id)
         {
@@ -70,7 +70,7 @@ namespace SportLink.API.Controllers
             return Ok(organization);
         }
 
-        [HttpGet, Authorize(Roles = "OrganizationOwner")]
+        [HttpGet, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("myOrganizations")]
         public async Task<ActionResult<List<OrganizationDto>>> GetMyOrganizations()
         {
@@ -86,7 +86,7 @@ namespace SportLink.API.Controllers
         }
 
 
-        [HttpPut, Authorize(Roles = "AppAdmin")]
+        [HttpPut, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
         [Route("{id}/verify")]
         public async Task<ActionResult<bool>> VerifyOrganization(int id)
         {
@@ -98,7 +98,7 @@ namespace SportLink.API.Controllers
             return Ok("Organizacija uspješno potvrđena.");
         }
 
-        [HttpPut, Authorize(Roles = "AppAdmin")]
+        [HttpPut, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
         [Route("{id}/decline")]
         public async Task<ActionResult<bool>> DeclineOrganization(int id, [FromBody] string reason)
         {

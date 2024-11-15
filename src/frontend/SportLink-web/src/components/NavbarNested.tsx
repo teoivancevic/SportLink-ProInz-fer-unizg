@@ -1,5 +1,4 @@
-import { Group, ScrollArea, Title, Button, Image} from '@mantine/core';
-// import { Group, ScrollArea, Title, Button, Image, Drawer } from '@mantine/core';
+import { ScrollArea, Button, Image} from '@mantine/core';
 import {
   IconNotes,
   IconAdjustments,
@@ -9,7 +8,7 @@ import {
 import { LinksGroup } from './NavbarLinksGroup';
 //import { Logo } from './Logo';
 import classes from './NavbarNested.module.css';
-import duckImage from '../assets/duck.jpg';
+import logo from '../assets/logo.png'
 import { useNavigate } from 'react-router-dom';
 import AuthorizedElement from './AuthorizedElement';
 import UnauthorizedElement from './UnauthorizedElement';
@@ -60,13 +59,7 @@ export function NavbarNested() {
   return (
     <nav className={classes.navbar}>
       <div className={classes.header}>
-        <Group justify="space-around">
-          <div className={classes.logoContainer} >
-          <Image src={duckImage} alt="duck"></Image>
-          </div>
-          <Title> SportLink </Title>
-          {/* <Logo style={{ width: rem(120) }} /> */}
-        </Group>
+          <Image src={logo} alt="sportlink"></Image>
       </div>
 
       <ScrollArea className={classes.links}>

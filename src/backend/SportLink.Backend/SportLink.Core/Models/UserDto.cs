@@ -9,7 +9,7 @@ public class UserDto
     public string LastName { get; set; }
     public string Email { get; set; }
     public int RoleId { get; set; }
-
+    public ExternalUserSourceEnum ExternalUserSource { get; set; }
     public DateTime LastLoginAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { CustomPasswordInput } from './CustomPasswordInput';
 import { EmailInput } from './EmailInput';
-import { Button, Center, Anchor, Text } from '@mantine/core';
+import { Button, Center, Anchor, Text, ButtonProps, Stack, Paper, Divider } from '@mantine/core';
 import './LoginBox.css';
 import '@mantine/core/styles.css';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api-example';
+import { authService } from '../services/api';
 import type { LoginRequest } from '../types/auth';
 import { useDisclosure } from '@mantine/hooks';
+import { GoogleIcon } from '../assets/GoogleIcon'
+
+export function GoogleButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
+    return <Button leftSection={<GoogleIcon />} variant="default" {...props} />;
+}
 
 export function LoginBox(){
     const [email, setEmail] = useState<string>('');
@@ -28,12 +33,8 @@ export function LoginBox(){
           open();
           const response = await authService.login(loginData);
           const token: string = response.data;
-          console.log(response);
-          console.log(response.data);
-          console.log(token);
             
           localStorage.setItem('authToken', token);
-          console.log(localStorage.getItem('authToken'));
           navigate('/');
     
         } catch (error) {
@@ -44,19 +45,29 @@ export function LoginBox(){
         }
       };
 
+      const handleGoogleLogin = async () => {
+       try{
+        const response = await authService.loginGoogle();
+        console.log(response)
+       } catch (error) {
+        console.log(error);
+       }
+      };
+
     return (
     <Center style={{height: '100vh'}}>
-        <div className='containerLogin'>
+        <Paper radius="md" p="xl" withBorder style={{ width: '313px', backgroundColor: 'rgba(189, 189, 189, 0.2)', boxShadow: '0px 10px 10px -5px rgba(0, 0, 0, 0.4)' }}>
+            <div className='containerLogin'>
             <div className='headerLogin'>
                 <div><h3>PRIJAVA</h3></div>
                 <div className='line'></div>
             </div>
             <div className='inputsLogin'>
-                <div className='fixedSizeinput'><EmailInput value={email} onChange={handleEmailChange}/></div>
-                <div className='fixedSizeinput'><CustomPasswordInput value={password} onChange={handlePasswordChange}/></div>
+                <div className='fixedSizeInput'><EmailInput value={email} onChange={handleEmailChange}/></div>
+                <div className='fixedSizeInput'><CustomPasswordInput value={password} onChange={handlePasswordChange}/></div>
             </div>
-            <div className='footerLogin'>
-                <div className='buttonDiv'>
+            
+                <Stack>
                 <Button
                     loading = {loading}
                     className="loginButton"
@@ -64,19 +75,22 @@ export function LoginBox(){
                     variant="light"
                     color="blue"
                     onClick={handleSubmit}>PRIJAVI SE
-                    </Button></div>
+                    </Button>
                 {/* Conditionally render error message if it exists */}
                 {errorMessage && (
-                <div className="error-message">
-                    <Text style={{color:"red"}}>{errorMessage}</Text>
-                </div>
+                
+                    <Text size="sm" style={{color:"red", textAlign:"center"}}>{errorMessage}</Text>
+                
                 )}
+                <Divider label="ili" size={2} color='dark'></Divider>
+                <GoogleButton onClick={handleGoogleLogin}>Prijava s Google računom</GoogleButton>
+                </Stack>
                 <div className='messageDiv'>
                     <p className='message1'>Nemate korisnički račun?<br/>
-                    <Anchor component={Link} to="../registration">Registrirajte se</Anchor>
+                    <Anchor component={Link} to="/registration">Registrirajte se</Anchor>
                     </p>
                 </div>
             </div>
-        </div>
+        </Paper>
     </Center>);
 }

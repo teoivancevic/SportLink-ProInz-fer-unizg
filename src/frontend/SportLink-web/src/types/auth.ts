@@ -35,3 +35,10 @@ export interface RegistrationResponse {
     // updatedAt: "2024-11-11T08:15:26.152Z",
     isEmailVerified: boolean;
 }
+
+export interface ResendOTPRequest {
+    userId: number,
+}
+
+export interface ResendOTPResponse {
+}

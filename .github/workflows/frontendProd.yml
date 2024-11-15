@@ -1,13 +1,9 @@
-name: Frontend CI/CD
+name: Frontend Production CI/CD
 
 on:
   push:
-    branches: [ "dev" ]
-    paths: ["src/frontend/SportLink-web/**"]
-  pull_request:
-    types: [ "opened", "reopened", "closed" ]
-    branches: [ "dev" ]
-    paths: ["src/frontend/SportLink-web/**"]
+    branches: [ "main" ]
+    tags: [ '*' ]
   workflow_dispatch:
 
 jobs:
@@ -15,13 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REGISTRY: acrsportlink.azurecr.io
-      IMAGE_NAME: webapp
+      IMAGE_NAME: webapp-prod
       ACR_NAME: acrsportlink
-      WEB_APP_NAME: webapp-sportlink-test
-      API_URL: https://api-sportlink-test-02.azurewebsites.net
+      WEB_APP_NAME: webapp-sportlink-prod
+      API_URL: https://api-sportlink-prod.azurewebsites.net/
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set Image Version
+        id: vars
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -29,6 +36,7 @@ jobs:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: src/frontend/SportLink-web/package-lock.json
+
       - name: Install dependencies
         run: npm ci
         working-directory: ./src/frontend/SportLink-web
@@ -48,7 +56,6 @@ jobs:
         run: sudo apt-get install -y jq
 
       - name: Extract ACR credentials
-        id: acr_credentials
         run: |
           echo "ACR_USERNAME=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')" >> $GITHUB_ENV
           echo "ACR_PASSWORD=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')" >> $GITHUB_ENV
@@ -59,17 +66,17 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --build-arg VITE_API_URL=${{ env.API_URL }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ./src/frontend/SportLink-web
+          docker build --build-arg VITE_API_URL=${{ env.API_URL }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} ./src/frontend/SportLink-web
         env:
           DOCKER_BUILDKIT: 1
 
       - name: Push Docker image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.WEB_APP_NAME }}
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
 

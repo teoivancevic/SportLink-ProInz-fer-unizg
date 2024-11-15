@@ -7,7 +7,7 @@ export function Home() {
   let content;
 
   if (location.pathname === '/'){
-    content = <Text>Welcome to the home page!</Text>;
+    content = <Text>Dobrodošli na početnu stranicu!</Text>;
   }
   // } else if(location.pathname === '/createOrg'){
   //   content = <OrganisationReg/>
