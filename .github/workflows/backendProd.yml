@@ -1,0 +1,100 @@
+name: Backend Production CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ '*' ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: acrsportlink.azurecr.io
+      ACR_NAME: acrsportlink
+      IMAGE_NAME: api-prod
+      WEB_APP_NAME: api-sportlink-prod
+      RESOURCE_GROUP: rg-sportlink-prod
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set Image Version
+      id: vars
+      run: |
+        if [ "${{ github.ref_type }}" == "tag" ]; then
+          echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+        else
+          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+        fi
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./src/backend/SportLink.Backend
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+      working-directory: ./src/backend/SportLink.Backend
+
+    - name: Test
+      env:
+        ASPNETCORE_ENVIRONMENT: Production
+        ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING_PROD_DB }}
+        EmailSettings__AppPassword: ${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}
+        Jwt__Key: ${{ secrets.JWT_KEY_PROD }}
+        Google__ClientId: ${{ secrets.GOOGLE_CLIENTID }}
+        Google__ClientSecret: ${{ secrets.GOOGLE_CLIENTSECRET }}
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./src/backend/SportLink.Backend
+
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} .
+      working-directory: ./src/backend/SportLink.Backend
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Set up ACR credentials
+      run: |
+        echo "ACR_USERNAME=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')" >> $GITHUB_ENV
+        echo "ACR_PASSWORD=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')" >> $GITHUB_ENV
+
+    - name: Login to Azure Container Registry
+      run: |
+        echo "$ACR_PASSWORD" | docker login ${{ env.REGISTRY }} -u "$ACR_USERNAME" --password-stdin
+
+    - name: Push Docker image to ACR
+      run: |
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+
+    - name: Configure App Settings
+      run: |
+        az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.WEB_APP_NAME }} --settings \
+          ConnectionStrings__DefaultConnection="${{ secrets.CONNECTION_STRING_PROD_DB }}" \
+          EmailSettings__AppPassword="${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}" \
+          Jwt__Key="${{ secrets.JWT_KEY_PROD }}" \
+          ASPNETCORE_ENVIRONMENT="Production" \
+          WEBSITES_PORT=8080
+          Google__ClientId="${{ secrets.GOOGLE_CLIENTID }}" \
+          Google__ClientSecret="${{ secrets.GOOGLE_CLIENTSECRET }}"
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.WEB_APP_NAME }}
+        images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}'
+

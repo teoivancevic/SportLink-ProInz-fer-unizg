@@ -1,0 +1,87 @@
+*{
+    box-sizing: border-box;
+}
+
+.containerLogin{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.headerLogin{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h3{
+    color: #228be6;
+    text-align: center;
+    margin: 0px;
+}
+
+.line{
+    width: 196px;
+    height: 2px;
+    background-color: black;;
+    align-self: center;
+}
+
+.inputsLogin{
+    width: 273px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.fixedSizeInput{
+    height: 73px;
+    display: block;
+}
+
+.footerLogin{
+    width: 273px;
+    height: 117px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttonDiv{
+    width:120px;
+    height:40px;
+    align-self: center;
+}
+
+.messageDiv{
+    border-top: 2px solid gray;
+    height: 39px;
+    width: 273px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.message1{
+    font-size: 15px;
+    text-align: center;
+}
+
+a{
+    color:#099dfb;
+    font-size: 12px;
+}
+
+
+/* .loginButton {
+    align-self: center;
+}
+  
+.loginButton:hover {
+    background-color: #E0E0E0; 
+} */
+
