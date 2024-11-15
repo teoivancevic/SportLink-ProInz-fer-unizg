@@ -33,12 +33,8 @@ export function LoginBox(){
           open();
           const response = await authService.login(loginData);
           const token: string = response.data;
-          console.log(response);
-          console.log(response.data);
-          console.log(token);
             
           localStorage.setItem('authToken', token);
-          console.log(localStorage.getItem('authToken'));
           navigate('/');
     
         } catch (error) {
