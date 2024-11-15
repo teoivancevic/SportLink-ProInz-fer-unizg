@@ -18,6 +18,7 @@ jobs:
       IMAGE_NAME: webapp
       ACR_NAME: acrsportlink
       WEB_APP_NAME: webapp-sportlink-test
+      API_URL: https://api-sportlink-test-02.azurewebsites.net
 
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +36,8 @@ jobs:
       - name: Build the React app
         run: npm run build
         working-directory: ./src/frontend/SportLink-web
+        env:
+          VITE_API_URL: ${{ env.API_URL }}
 
       - name: Log in to Azure
         uses: azure/login@v1
@@ -56,7 +59,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ./src/frontend/SportLink-web
+          docker build --build-arg VITE_API_URL=${{ env.API_URL }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ./src/frontend/SportLink-web
         env:
           DOCKER_BUILDKIT: 1
 
