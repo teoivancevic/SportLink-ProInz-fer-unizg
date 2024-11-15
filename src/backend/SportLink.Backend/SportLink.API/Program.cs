@@ -5,8 +5,10 @@ using System.Text;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -78,13 +80,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication("cookie"
-// , options =>
-// {
-//     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-// }
-)
+builder.Services.AddAuthentication("cookie")
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -98,14 +94,21 @@ builder.Services.AddAuthentication("cookie"
     .AddCookie("cookie")
     .AddGoogle(options =>
     {
-        //options.SignInScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.SignInScheme = "cookie"; //IdentityConstants.ExternalScheme;
+        options.SignInScheme = "cookie";
         options.ClientId = builder.Configuration["Google:ClientId"]!;
         options.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
-        options.CallbackPath = new PathString("/signin-google");    // nepotrebno?
+        options.CallbackPath = new PathString("/signin-google");    
     });
 
-builder.Services.AddAuthorization(options => { });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("jwt_policy", pb => pb
+        .RequireAuthenticatedUser()
+        .AddAuthenticationSchemes("Bearer")
+        .Build()
+    );
+});
+
 
 builder.Services.AddDbContext<DataContext>(options =>
 {

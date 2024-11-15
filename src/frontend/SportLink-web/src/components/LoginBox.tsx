@@ -33,12 +33,8 @@ export function LoginBox(){
           open();
           const response = await authService.login(loginData);
           const token: string = response.data;
-          console.log(response);
-          console.log(response.data);
-          console.log(token);
             
           localStorage.setItem('authToken', token);
-          console.log(localStorage.getItem('authToken'));
           navigate('/');
     
         } catch (error) {
@@ -47,6 +43,15 @@ export function LoginBox(){
         } finally {
             close();
         }
+      };
+
+      const handleGoogleLogin = async () => {
+       try{
+        const response = await authService.loginGoogle();
+        console.log(response)
+       } catch (error) {
+        console.log(error);
+       }
       };
 
     return (
@@ -78,11 +83,11 @@ export function LoginBox(){
                 
                 )}
                 <Divider label="ili" size={2} color='dark'></Divider>
-                <GoogleButton>Prijava s Google računom</GoogleButton>
+                <GoogleButton onClick={handleGoogleLogin}>Prijava s Google računom</GoogleButton>
                 </Stack>
                 <div className='messageDiv'>
                     <p className='message1'>Nemate korisnički račun?<br/>
-                    <Anchor component={Link} to="../registration">Registrirajte se</Anchor>
+                    <Anchor component={Link} to="/registration">Registrirajte se</Anchor>
                     </p>
                 </div>
             </div>
