@@ -3,9 +3,13 @@ SportLink je platforma namjenjena rekreativnim sportašima svih uzrasta za otkri
 
 # Url na aplikaciju
 
-https://webapp-sportlink-prod.azurewebsites.net/  
-Za lokalno pokretanje frontenda upute se nalaze u: src/frontend/SportLink-web.  
-Za lokalno pokretanje backenda upute se nalaze u: src/backend/SportLink.Backend.  
+https://webapp-sportlink-test.azurewebsites.net/
+- AppAdmin demo korisnik (administrator aplikacije)
+  - Email: andrija.jozefinovic@gmail.com
+  - Šifra: Teo12345!
+
+Za lokalno pokretanje frontenda upute se nalaze u: `src/frontend/SportLink-web`  
+Za lokalno pokretanje backenda upute se nalaze u: `src/backend/SportLink.Backend`
 
 # Opis projekta
 
