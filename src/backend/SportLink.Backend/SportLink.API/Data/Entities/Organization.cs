@@ -25,7 +25,7 @@ public class Organization : BaseEntity
     public virtual ICollection<SocialNetwork> SocialNetworks { get; set; }
     public virtual ICollection<Sport> Sports { get; set; }
     public virtual ICollection<TrainingGroup> TrainingGroups { get; set; }
-    public virtual ICollection<CourtBooking> CourtBookings { get; set; }
+    public virtual ICollection<SportsObject> SportsObjects { get; set; }
     public virtual ICollection<Tournament> Tournaments { get; set; }
 }
 
