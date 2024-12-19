@@ -1,6 +1,8 @@
 # SportLink
 SportLink je platforma namjenjena rekreativnim sportašima svih uzrasta za otkrivanje sportskih klubova, prijavu na natjecanja i rezervacije termina.  
 
+# [Programsko inženjerstvo ak.god 2024./2025](https://www.fer.unizg.hr/predmet/proinz)
+
 # Url na aplikaciju
 
 https://webapp-sportlink-test.azurewebsites.net/
