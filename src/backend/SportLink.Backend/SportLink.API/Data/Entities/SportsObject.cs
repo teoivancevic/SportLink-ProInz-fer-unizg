@@ -11,7 +11,7 @@ public class SportsObject : BaseEntity
     public int OrganizationId { get; set; }
 
     public virtual Organization Organization { get; set; }
-    public virtual ICollection<CourtBooking> CourtBookings { get; set; }
+    public virtual ICollection<SportCourt> SportCourts { get; set; }
     public virtual ICollection<WorkTime> WorkTimes { get; set; }
 }
 
