@@ -1,5 +1,8 @@
 "use client"
 
+import AuthorizedElement from '@/components/auth/authorized-element'
+import { UserRole } from '@/types/roles'
+
 import * as React from "react"
 import {
   
@@ -39,14 +42,10 @@ import {
 } from "@/components/ui/sidebar"
 import Image from "next/image"
 import { TeamSwitcher } from "./team-switcher"
+import { Button } from './ui/button'
+import UnauthorizedElement from './auth/unauthorized-element'
 
 const data = {
-  user: {
-    firstName: "shad",
-    lastName: "CN",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Acme Inc",
@@ -73,7 +72,7 @@ const data = {
       items: []
     },
     {
-      title: "Pretrazivanje",
+      title: "Pretraživanje",
       url: "/search",
       icon: Search,
       isActive: true,
@@ -144,59 +143,74 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Login (temp.)",
-      url: "/login",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Signup (temp.)",
-      url: "/signup",
-      icon: Send,
-    },
-    {
       title: "Dodaj organizaciju",
       url: "/organizations/create",
       icon: Building,
     },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const navigateLogin = () => {
+    window.location.href = '/login'
+  }
+  const navigateSignup = () => {
+    window.location.href = '/signup'
+  }
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <a href="/">
           <Image src="/logo-sportlink.png" alt="Logo" width={200} height={50} />
         </a>
-        
       </SidebarHeader>
       <SidebarContent>
         <NavMain navTitle="SportLink" items={data.navMain} />
-        <NavMain navTitle="Moja organizacija" items={data.navOrgOwner} />
-        <NavMain navTitle="App Admin" items={data.navAppAdmin} />
-        {/* <NavAppAdmin items={data.projects} /> */}
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        
+        <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
+          {({ userData }) => (
+            <NavMain navTitle="Moja organizacija" items={data.navOrgOwner} />
+          )}
+        </AuthorizedElement>
+        
+        <AuthorizedElement roles={[UserRole.AppAdmin]}>
+          {({ userData }) => (
+            <NavMain navTitle="App Admin" items={data.navAppAdmin} />
+          )}
+        </AuthorizedElement>
+        
+        <AuthorizedElement roles={[UserRole.User]}>
+          {({ userData }) => (
+            <NavSecondary items={data.navSecondary} className="mt-auto" />
+          )}
+        </AuthorizedElement>
+        
       </SidebarContent>
+
       <SidebarFooter>
-        <TeamSwitcher teams={data.teams}/>
-        <NavUser user={data.user} />
+        <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
+          {({ userData }) => (
+            <TeamSwitcher teams={data.teams}/>
+          )}
+        </AuthorizedElement>
+        <UnauthorizedElement>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Button variant='outline' size='sm' onClick={navigateLogin} style={{ flex: 1 }}>Prijava</Button>
+            <Button color='primary' size='sm' onClick={navigateSignup} style={{ flex: 1 }}>Registracija</Button>
+          </div>
+        </UnauthorizedElement>
+        <AuthorizedElement>
+          {({ userData }) => (
+            <NavUser user={{
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              email: userData.email,
+              avatar: null
+            }} />
+          )}
+        </AuthorizedElement>
+        
       </SidebarFooter>
     </Sidebar>
   )
