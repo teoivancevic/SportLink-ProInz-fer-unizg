@@ -13,9 +13,11 @@ export interface VerifRequest {
     otpCode: string,
 }
 
-export interface VerifResponse {
-    verified: boolean,
-}
+// export interface VerifResponse {
+//     verified: boolean,
+// }
+
+export type VerifResponse = string;
 
 export interface RegistrationRequest {
     firstName: string;
@@ -40,5 +42,4 @@ export interface ResendOTPRequest {
     userId: number,
 }
 
-export interface ResendOTPResponse {
-}
+export type ResendOTPResponse = string;

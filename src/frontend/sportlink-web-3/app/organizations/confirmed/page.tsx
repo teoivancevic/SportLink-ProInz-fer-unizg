@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/ui-custom/page-header"
 
-
+// admin authorized page
 export default function ConfirmedOrganizationsPage(){
 
     return (

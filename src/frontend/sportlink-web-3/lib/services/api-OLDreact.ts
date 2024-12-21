@@ -1,7 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
-import { LoginRequest, LoginResponse,RegistrationRequest, RegistrationResponse, VerifRequest, VerifResponse, ResendOTPRequest, ResendOTPResponse } from '../types/auth'
-import { CreateOrgRequest, CreateOrgResponse, GetOrganizationResponse } from '../types/org';
+import { LoginRequest, LoginResponse,RegistrationRequest, RegistrationResponse, VerifRequest, VerifResponse, ResendOTPRequest, ResendOTPResponse } from '../../types/auth'
+import { CreateOrgRequest, CreateOrgResponse, GetOrganizationResponse } from '../../types/org';
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

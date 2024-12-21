@@ -13,85 +13,97 @@ interface ApiResponse<T> {
 
 // Base API client
 class ApiClient {
-    private static async request<T>(
-        endpoint: string, 
-        options: RequestInit = {},
-        responseType: 'json' | 'text' = 'json'
-      ): Promise<T> {
-        const url = `${API_BASE_URL}${endpoint}`
-        const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null
-        
-        const defaultHeaders: HeadersInit = {
-          'accept': 'text/plain',
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-          ...options.headers,
-        }
-    
-        try {
-          const response = await fetch(url, {
-            ...options,
-            headers: defaultHeaders,
-          })
-    
-          if (response.status === 401) {
-            if (typeof window !== 'undefined') {
-              localStorage.removeItem('authToken')
-              window.location.href = '/login'
-            }
-            throw new Error('Unauthorized')
+  private static async request<T>(
+      endpoint: string, 
+      options: RequestInit = {},
+      responseType: 'json' | 'text' = 'json'
+    ): Promise<T> {
+      const url = `${API_BASE_URL}${endpoint}`
+      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null
+      
+      const defaultHeaders: HeadersInit = {
+        'accept': 'text/plain',
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+      }
+  
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers: defaultHeaders,
+        })
+  
+        if (response.status === 401) {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('authToken')
+            window.location.href = '/login'
           }
-    
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.statusText}`)
-          }
-    
-          // Handle different response types
-          return responseType === 'json' ? response.json() : response.text() as T
-        } catch (error) {
-          console.error('API request failed:', error)
-          throw error
+          throw new Error('Unauthorized')
         }
+  
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.statusText}`)
+        }
+  
+        // Handle different response types
+        const result = responseType === 'json' ? await response.json() : await response.text()
+        return {
+          data: result,
+          status: response.status,
+          ok: response.ok,
+        } as T
+      } catch (error) {
+        console.error('API request failed:', error)
+        throw error
       }
-    
-      static get<T>(endpoint: string) {
-        return this.request<T>(endpoint, { method: 'GET' })
-      }
-    
-      static post<T>(endpoint: string, data?: unknown, responseType: 'json' | 'text' = 'json') {
-        return this.request<T>(
-          endpoint, 
-          {
-            method: 'POST',
-            body: data ? JSON.stringify(data) : undefined,
-          },
-          responseType
-        )
-      }
+    }
+  
+    static get<T>(endpoint: string) {
+      return this.request<T>(endpoint, { method: 'GET' })
+    }
+  
+    static post<T>(endpoint: string, data?: unknown, responseType: 'json' | 'text' = 'json') {
+      return this.request<T>(
+        endpoint, 
+        {
+          method: 'POST',
+          body: data ? JSON.stringify(data) : undefined,
+        },
+        responseType
+      )
+    }
 
-  static put<T>(endpoint: string, data?: unknown, params?: Record<string, string>) {
-    const queryString = params ? new URLSearchParams(params).toString() : ''
-    const endpointWithParams = queryString ? `${endpoint}?${queryString}` : endpoint
-    
-    return this.request<T>(endpointWithParams, {
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    })
-  }
+static put<T>(endpoint: string, data?: unknown, params?: Record<string, string>) {
+  const queryString = params ? new URLSearchParams(params).toString() : ''
+  const endpointWithParams = queryString ? `${endpoint}?${queryString}` : endpoint
+  
+  return this.request<T>(endpointWithParams, {
+    method: 'PUT',
+    body: data ? JSON.stringify(data) : undefined,
+  }, 'text') // Force text response type for PUT requests
+}
 
-  static delete<T>(endpoint: string) {
-    return this.request<T>(endpoint, {
-      method: 'DELETE',
-    })
-  }
+static delete<T>(endpoint: string) {
+  return this.request<T>(endpoint, {
+    method: 'DELETE',
+  })
+}
 }
 
 // Auth service
 export const authService = {
-    login: async (data: LoginRequest) => {
-        const token = await ApiClient.post<string>('/api/Auth/login', data, 'text')
-        return token
-      },
+  login: async (data: LoginRequest) => {
+    const response = await ApiClient.post<string>(
+        '/api/Auth/login',
+        data,
+        'text'  // Explicitly request text response for login
+    )
+    if (!response?.data) {
+        throw new Error('Invalid login response')
+    }
+    return response
+  },
 
   loginGoogle: () => {
     if (typeof window !== 'undefined') {
@@ -99,18 +111,27 @@ export const authService = {
     }
   },
 
-  register: (data: RegistrationRequest) => 
-    ApiClient.post<RegistrationResponse>('/api/Auth/register', data),
+  register: async (data: RegistrationRequest) => {
+    const response = await ApiClient.post<RegistrationResponse>(
+      '/api/Auth/register', 
+      data,
+      'json'  // Explicitly request JSON response
+    )
+    if (!response.data || !response.data.id) {
+      throw new Error('Registration failed: Invalid response format')
+    }
+    return response.data
+  },
 
   verify: (userId: number, otpCode: string, data: VerifRequest) => 
-    ApiClient.put<VerifResponse>(
+    ApiClient.put<string>(
       `/api/Auth/verify`,
       data,
       { userId: userId.toString(), otpCode }
     ),
 
   resendOTP: (userId: number, data: ResendOTPRequest) => 
-    ApiClient.put<ResendOTPResponse>(
+    ApiClient.put<string>(
       '/api/Auth/resendOTP',
       data,
       { userId: userId.toString() }

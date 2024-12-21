@@ -5,6 +5,8 @@ import { AppSidebar } from "@/components/app-sidebar"
 import "./globals.css"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Separator } from "@radix-ui/react-separator"
+import { Toaster } from "@/components/ui/toaster"
+
 
 function DynamicBreadcrumbs() {
   const pathname = usePathname()
@@ -42,13 +44,17 @@ function DynamicBreadcrumbs() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const isAuthPage = pathname === '/signup' || pathname === '/login'
+  const isAuthPage = pathname.startsWith('/signup') || pathname.startsWith('/login')
 
   return (
     <html lang="en">
       <body>
         {isAuthPage ? (
-          children
+          <>
+            {children}
+            <Toaster />
+          </>
+          
         ) : (
           <SidebarProvider>
             <AppSidebar />
@@ -61,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </header>
               {children}
+              <Toaster />
             </SidebarInset>
           </SidebarProvider>
         )}
