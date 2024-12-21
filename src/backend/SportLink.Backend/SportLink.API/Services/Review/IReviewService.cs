@@ -6,5 +6,5 @@ namespace SportLink.API.Services.Review;
 
 public interface IReviewService
 {
-    Task<ActionResult<CreateReviewDto>> CreateReview(CreateReviewDto createReviewDto, int organizationId);
+    Task<ActionResult<GetReviewDto>> CreateReview(CreateReviewDto createReviewDto);
 }

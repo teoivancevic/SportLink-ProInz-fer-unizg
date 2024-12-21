@@ -17,12 +17,12 @@ public class ReviewController : ControllerBase
     }
 
     [HttpPost, Authorize(Roles = "OrganizationOwner,User", Policy = "jwt_policy")]
-    [Route("{organizationId}/createReview")]
-    public async Task<IActionResult> CreateReview(int organizationId, [FromBody] CreateReviewDto createReviewDto)
+    [Route("")]
+    public async Task<IActionResult> CreateReview([FromBody] CreateReviewDto createReviewDto)
     {
         if (ModelState.IsValid)
         {
-            var result = await _reviewService.CreateReview(createReviewDto, organizationId);
+            var result = await _reviewService.CreateReview(createReviewDto);
             if (result.Result is BadRequestObjectResult badRequest)
             {
                 ModelState.AddModelError(string.Empty, badRequest?.Value!.ToString()!);
@@ -30,5 +30,7 @@ public class ReviewController : ControllerBase
             }
             return Ok(createReviewDto);
         }
+
+        return BadRequest(ModelState);
     }
 }

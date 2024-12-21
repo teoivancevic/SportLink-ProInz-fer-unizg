@@ -4,6 +4,7 @@ namespace SportLink.Core.Models;
 
 public class CreateReviewDto
 {
+    public int organizationId { get; set; }
     public int Rating { get; set; }
     public string Description { get; set; }
 }
