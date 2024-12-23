@@ -18,7 +18,7 @@ public class ReviewController : ControllerBase
 
     [HttpPost, Authorize(Roles = "OrganizationOwner,User", Policy = "jwt_policy")]
     [Route("")]
-    public async Task<IActionResult> CreateReview([FromBody] CreateReviewDto createReviewDto)
+    public async Task<ActionResult<GetReviewDto>> CreateReview([FromBody] CreateReviewDto createReviewDto)
     {
         if (ModelState.IsValid)
         {
@@ -28,9 +28,27 @@ public class ReviewController : ControllerBase
                 ModelState.AddModelError(string.Empty, badRequest?.Value!.ToString()!);
                 return BadRequest(ModelState);
             }
-            return Ok(createReviewDto);
+
+            return result;
         }
 
         return BadRequest(ModelState);
     }
+    
+    [HttpDelete, Authorize(Roles = "User,OrganizationOwner", Policy = "jwt_policy")]
+    [Route("DeleteReview")]
+    public async Task<IActionResult> DeleteReview(int organizationId)
+    {
+        var result = await _reviewService.DeleteReview(organizationId);
+
+        if (result == null)
+        {
+            return BadRequest("No review found");
+        }
+
+        return Ok(result);
+    }
+    
+    
+
 }

@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SportLink.API.Data;
 using SportLink.Core.Enums;
 using SportLink.Core.Models;
@@ -31,20 +32,17 @@ public class ReviewService : IReviewService
         {
             return new BadRequestResult(); // Invalid user or organization
         }
-        
         if (user.Id == organization.OwnerId)
         {
-            return new ForbidResult(); // Organization owners cannot post reviews
+            return new ForbidResult();
         }
-        
-
         if (organization.VerificationStatus != VerificationStatusEnum.Accepted)
         {
             return new BadRequestResult();
         }
         
         //TODO provjeri postoji li vec taj review
-        var checkReview = await _context.Reviews.FindAsync(int.Parse(userId!), createReviewDto.organizationId);
+        var checkReview = await _context.Reviews.FindAsync(new object[] { int.Parse(userId!), createReviewDto.organizationId });
         if (checkReview != null)
         {
             return new BadRequestResult();
@@ -68,6 +66,48 @@ public class ReviewService : IReviewService
         return new OkObjectResult(retrieveDto);
 
     }
-    
-    
+
+    public async Task<List<GetReviewDto>> GetOrganizationReviews(int organizationId)
+    {
+        var reviews = await _context.Reviews.Where(r => r.OrganizationId == organizationId).ToListAsync();
+        return _mapper.Map<List<GetReviewDto>>(reviews);
+    }
+
+    public async Task<GetReviewDto> RespondReview(int organizationId, int userId, string response)
+    {
+        var loggedUserId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        var organization = await _context.Organizations.FindAsync(organizationId);
+        if (int.Parse(loggedUserId!) != organization.OwnerId)
+        {
+            return null;
+        }
+        var review = await _context.Reviews.FindAsync(new object[] { organizationId, userId });
+        
+        if (review == null)
+        {
+            return null;
+        }
+        review.Response = response;
+        await _context.SaveChangesAsync();
+        
+        GetReviewDto reviewDto = _mapper.Map<GetReviewDto>(review);
+        return reviewDto;
+
+    }
+
+    public async Task<GetReviewDto> DeleteReview(int organizationId)
+    {
+        var userId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        var review = await _context.Reviews.FindAsync(new object[] { organizationId, int.Parse(userId!) });
+        if (review == null)
+        {
+            return null;
+        }
+        _context.Reviews.Remove(review);
+        await _context.SaveChangesAsync();
+        GetReviewDto reviewDto = _mapper.Map<GetReviewDto>(review);
+        return reviewDto;
+    }
+
+
 }
