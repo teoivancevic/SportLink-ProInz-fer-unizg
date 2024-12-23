@@ -165,30 +165,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <Image src="/logo-sportlink.png" alt="Logo" width={200} height={50} />
         </a>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain navTitle="SportLink" items={data.navMain} />
+      <SidebarContent className="flex flex-col flex-grow">
+        <div className="flex-grow">
+          <NavMain navTitle="SportLink" items={data.navMain} />
+          
+          <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
+            {({ userData }) => (
+              <NavMain navTitle="Moja organizacija" items={data.navOrgOwner} />
+            )}
+          </AuthorizedElement>
+          
+          <AuthorizedElement roles={[UserRole.AppAdmin]}>
+            {({ userData }) => (
+              <NavMain navTitle="App Admin" items={data.navAppAdmin} />
+            )}
+          </AuthorizedElement>
+        </div>
         
-        <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
-          {({ userData }) => (
-            <NavMain navTitle="Moja organizacija" items={data.navOrgOwner} />
-          )}
-        </AuthorizedElement>
-        
-        <AuthorizedElement roles={[UserRole.AppAdmin]}>
-          {({ userData }) => (
-            <NavMain navTitle="App Admin" items={data.navAppAdmin} />
-          )}
-        </AuthorizedElement>
-        
+        {/* Secondary navigation at the bottom of content */}
         <AuthorizedElement roles={[UserRole.User]}>
-          {({ userData }) => (
-            <NavSecondary items={data.navSecondary} className="mt-auto" />
-          )}
+            {({ userData }) => (
+              <NavSecondary items={data.navSecondary} className='mt-auto'/>
+            )}
         </AuthorizedElement>
-        
       </SidebarContent>
 
       <SidebarFooter>
+        
         <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
           {({ userData }) => (
             <TeamSwitcher teams={data.teams}/>
