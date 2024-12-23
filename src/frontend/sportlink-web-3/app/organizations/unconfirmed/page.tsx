@@ -1,58 +1,96 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { PageHeader } from "@/components/ui-custom/page-header"
 import { OrganizationConfirmationCard } from "@/components/organization-confirmation-card"
+import { orgService } from "@/lib/services/api"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 interface Organization {
   id: number
   name: string
   description: string
   location: string
-  email: string
-  phone: string
+  contactEmail: string
+  contactPhoneNumber: string
 }
 
-// admin authorized page
-const organizations: Organization[] = [
-  {
-    id: 1,
-    name: "Tech Innovators Inc.",
-    description: "A cutting-edge technology company focused on AI and machine learning solutions.",
-    location: "San Francisco, CA",
-    email: "info@techinnovators.com",
-    phone: "+1 (415) 555-1234"
-  },
-  {
-    id: 2,
-    name: "Green Earth Initiatives",
-    description: "Non-profit organization dedicated to environmental conservation and sustainability.",
-    location: "Portland, OR",
-    email: "contact@greenearth.org",
-    phone: "+1 (503) 555-5678"
-  },
-  {
-    id: 3,
-    name: "Global Health Solutions",
-    description: "Healthcare company specializing in telemedicine and remote patient monitoring.",
-    location: "Boston, MA",
-    email: "info@globalhealthsolutions.com",
-    phone: "+1 (617) 555-9012"
-  }
-]
-
 export default function UnconfirmedOrganizationsPage() {
-  
+  const [organizations, setOrganizations] = useState<Organization[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchOrganizations = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await orgService.getOrganizations(false)
+      setOrganizations(response.data)
+    } catch (error) {
+      console.error('Error fetching organizations:', error)
+      setError('Došlo je do greške prilikom učitavanja organizacija.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchOrganizations()
+  }, [])
+
+  const handleConfirmationComplete = () => {
+    fetchOrganizations()
+  }
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="space-y-4">
+          {[1, 2, 3].map((n) => (
+            <Skeleton key={n} className="h-[200px] w-full" />
+          ))}
+        </div>
+      )
+    }
+
+    if (error) {
+      return (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )
+    }
+
+    if (!organizations.length) {
+      return (
+        <Alert>
+          <AlertDescription>
+            Trenutno nema organizacija koje čekaju na potvrdu.
+          </AlertDescription>
+        </Alert>
+      )
+    }
+
+    return organizations.map((org) => (
+      <OrganizationConfirmationCard
+        key={org.id}
+        organization={org}
+        onConfirmationComplete={handleConfirmationComplete}
+      />
+    ))
+  }
 
   return (
     <PageHeader 
-            title="Nepotrvđene organizacije"
-            description="Pregled i upravljanje novim registracijama organizacija."
-        >
-            {organizations.map((org) => (
-              <OrganizationConfirmationCard key={org.id} org={org} />
-        ))}
-        </PageHeader>
-    
+      title="Nepotvrđene organizacije"
+      description="Pregled i upravljanje novim registracijama organizacija."
+    >
+      <div className="space-y-4">
+        {renderContent()}
+      </div>
+    </PageHeader>
   )
 }
-

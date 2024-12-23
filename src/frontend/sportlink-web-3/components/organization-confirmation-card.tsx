@@ -1,112 +1,141 @@
-'use client'
-
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "./ui/card"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { MapPin, Mail, Phone } from 'lucide-react'
 import { useState } from "react"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { MapPin, Mail, Phone } from 'lucide-react'
+import { orgService } from "@/lib/services/api"
+
+interface Organization {
+  id: number
+  name: string
+  description: string
+  location: string
+  contactEmail: string
+  contactPhoneNumber: string
+}
 
 interface OrganizationConfirmationCardProps {
-    key: number
-    org: Organization
-  }
+  organization: Organization
+  onConfirmationComplete?: () => void
+}
 
-  interface Organization {
-    id: number
-    name: string
-    description: string
-    location: string
-    email: string
-    phone: string
-  }
-  
-  export function OrganizationConfirmationCard({ key, org }: OrganizationConfirmationCardProps) {
-    const [showDenyReason, setShowDenyReason] = useState<{ [key: number]: boolean }>({})
-    const [denyReason, setDenyReason] = useState<{ [key: number]: string }>({})
-    const [loading, setLoading] = useState<{ [key: number]: 'accept' | 'deny' | null }>({})
+// Add this type to handle the loading state
+interface LoadingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  loading?: boolean
+}
 
-  const handleAccept = async (id: number) => {
-    setLoading({ ...loading, [id]: 'accept' })
+// Update the Button component to handle loading state
+const LoadingButton = ({ loading, children, disabled, ...props }: LoadingButtonProps) => (
+  <Button 
+    disabled={loading || disabled} 
+    {...props}
+  >
+    {loading ? (
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        Loading...
+      </div>
+    ) : children}
+  </Button>
+)
+
+export function OrganizationConfirmationCard({ 
+  organization, 
+  onConfirmationComplete 
+}: OrganizationConfirmationCardProps) {
+  const [showDenyReason, setShowDenyReason] = useState(false)
+  const [denyReason, setDenyReason] = useState("")
+  const [isAccepting, setIsAccepting] = useState(false)
+  const [isDenying, setIsDenying] = useState(false)
+
+  const handleAccept = async () => {
+    setIsAccepting(true)
     try {
-      // Simulating an API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      console.log(`Accepted organization with id: ${id}`)
-      // Implement actual accept logic here
+      await orgService.acceptOrganization(organization.id)
+      onConfirmationComplete?.()
     } catch (error) {
-      console.error(`Error accepting organization with id: ${id}`, error)
+      console.error('Error accepting organization:', error)
     } finally {
-      setLoading({ ...loading, [id]: null })
+      setIsAccepting(false)
     }
   }
 
-  const handleDeny = async (id: number) => {
-    if (showDenyReason[id] && denyReason[id]) {
-      setLoading({ ...loading, [id]: 'deny' })
-      try {
-        // Simulating an API call
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        console.log(`Denied organization with id: ${id}. Reason: ${denyReason[id]}`)
-        // Implement actual deny logic here
-      } catch (error) {
-        console.error(`Error denying organization with id: ${id}`, error)
-      } finally {
-        setLoading({ ...loading, [id]: null })
-        setShowDenyReason({ ...showDenyReason, [id]: false })
-        setDenyReason({ ...denyReason, [id]: '' })
-      }
-    } else {
-      setShowDenyReason({ ...showDenyReason, [id]: true })
+  const handleDeny = async () => {
+    if (!showDenyReason) {
+      setShowDenyReason(true)
+      return
+    }
+
+    if (!denyReason.trim()) {
+      return // Don't proceed if no reason is provided
+    }
+
+    setIsDenying(true)
+    try {
+      await orgService.rejectOrganization(organization.id, denyReason)
+      onConfirmationComplete?.()
+    } catch (error) {
+      console.error('Error denying organization:', error)
+    } finally {
+      setIsDenying(false)
+      setShowDenyReason(false)
+      setDenyReason("")
     }
   }
-    
-    
-    return (
-        <Card key={org.id}>
-        <CardHeader>
-          <CardTitle>{org.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">{org.description}</p>
-          <div className="text-sm flex flex-wrap gap-4">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <span>{org.location}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span>{org.email}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              <span>{org.phone}</span>
-            </div>
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{organization.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground mb-4">
+          {organization.description}
+        </p>
+        <div className="text-sm flex flex-wrap gap-4">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <span>{organization.location}</span>
           </div>
-        </CardContent>
-        <CardFooter className="flex flex-col items-stretch gap-2">
-          <div className="flex gap-2">
-            <Button 
-              className="flex-1 border-2 border-destructive bg-transparent hover:bg-destructive text-destructive hover:text-destructive-foreground"
-              variant="outline"
-              onClick={() => {
-                if (!showDenyReason[org.id]) {
-                  setShowDenyReason(prev => ({...prev, [org.id]: true}));
-                } else if (denyReason[org.id]?.trim()) {  // Only allow confirmation if reason is provided
-                  handleDeny(org.id);
-                }
-              }}
-            >
-              {showDenyReason[org.id] ? "Confirm Deny" : "Deny"}
-            </Button>
-            <Button className="flex-1" onClick={() => handleAccept(org.id)}>Accept</Button>
+          <div className="flex items-center gap-2">
+            <Mail className="h-4 w-4 text-muted-foreground" />
+            <span>{organization.contactEmail}</span>
           </div>
-          {showDenyReason[org.id] && (
-            <Input
-              placeholder="Enter reason for denial"
-              value={denyReason[org.id] || ""}
-              onChange={(e) => setDenyReason({ ...denyReason, [org.id]: e.target.value })}
-            />
-          )}
-        </CardFooter>
-      </Card>
-    )
-  }
+          <div className="flex items-center gap-2">
+            <Phone className="h-4 w-4 text-muted-foreground" />
+            <span>{organization.contactPhoneNumber}</span>
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter className="flex flex-col items-stretch gap-2">
+        <div className="flex gap-2">
+          <LoadingButton 
+            className="flex-1 border-2 border-destructive bg-transparent hover:bg-destructive text-destructive hover:text-destructive-foreground"
+            variant="outline"
+            onClick={handleDeny}
+            disabled={isAccepting || (showDenyReason && !denyReason.trim())}
+            loading={isDenying}
+          >
+            {showDenyReason ? "Confirm Deny" : "Deny"}
+          </LoadingButton>
+          <LoadingButton 
+            className="flex-1" 
+            onClick={handleAccept}
+            disabled={isDenying || showDenyReason}
+            loading={isAccepting}
+          >
+            Accept
+          </LoadingButton>
+        </div>
+        {showDenyReason && (
+          <Input
+            placeholder="Enter reason for denial"
+            value={denyReason}
+            onChange={(e) => setDenyReason(e.target.value)}
+            disabled={isDenying}
+          />
+        )}
+      </CardFooter>
+    </Card>
+  )
+}

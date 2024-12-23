@@ -26,6 +26,7 @@ import { Mail, Phone, MapPin } from 'lucide-react'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { useLoadScript } from '@react-google-maps/api'
+import { orgService } from '@/lib/services/api';
 
 const autocompleteStyle = `
   .pac-container {
@@ -76,22 +77,22 @@ const autocompleteStyle = `
 `;
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'Organization name must be at least 2 characters.',
-  }),
-  description: z.string().min(10, {
-    message: 'Description must be at least 10 characters.',
-  }),
-  contactEmail: z.string().email({
-    message: 'Please enter a valid email address.',
-  }),
+  name: z.string()
+    .min(3, 'Ime mora sadržavati između 3 i 100 znakova')
+    .max(100, 'Ime mora sadržavati između 3 i 100 znakova'),
+  description: z.string()
+    .min(3, 'Opis mora sadržavati između 3 i 200 znakova')
+    .max(200, 'Opis mora sadržavati između 3 i 200 znakova'),
+  contactEmail: z.string()
+    .email('Neispravna e-mail adresa'),
   contactPhone: z.string().regex(/^\+[1-9]\d{1,14}$/, {
-    message: 'Please enter a valid phone number.',
-  }),
-  location: z.string().min(2, {
-    message: 'Location must be at least 2 characters.',
-  }),
+      message: 'Unesite pravi broj telefona',
+    }),
+  location: z.string()
+    .min(1, 'Grad je obavezan')
 })
+
+
 
 // Define libraries array outside component to prevent reloads
 // const libraries: ("places")[] = ['places'];
@@ -100,6 +101,7 @@ const libraries: Libraries = ['places'];
 export function CreateOrganizationForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
@@ -169,25 +171,29 @@ export function CreateOrganizationForm() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { toast } = useToast()
-    
     setIsSubmitting(true)
     try {
-      const result = await createOrganization(values)
-      if (result.success) {
-        toast({
-          title: 'Success',
-          description: result.message,
-        })
-        router.push('/organizations') // Redirect to organizations list page
-      } else {
-        throw new Error('Failed to create organization')
-      }
+      const response = await orgService.createOrganization(
+        values.name,
+        values.description,
+        values.contactEmail,
+        values.contactPhone,
+        values.location,
+        {
+          name: values.name,
+          description: values.description,
+          contactEmail: values.contactEmail,
+          contactPhoneNumber: values.contactPhone,
+          location: values.location
+        }
+      )
+      
+      router.push('/')
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to create organization. Please try again.',
-        variant: 'destructive',
+        title: "Greška",
+        description: "Neuspješna prijava. Provjerite podatke i pokušajte ponovo.",
+        variant: "destructive",
       })
     } finally {
       setIsSubmitting(false)

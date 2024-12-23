@@ -7,6 +7,7 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
+  UserCircle,
 } from "lucide-react"
 
 import { useRouter } from 'next/navigation';
@@ -32,6 +33,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { UserInfo } from "./ui-custom/user-info";
+import AuthorizedElement from "./auth/authorized-element";
 
 export function NavUser({
   user,
@@ -56,14 +59,10 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.firstName + user.lastName} />
-                <AvatarFallback className="rounded-lg">{user.firstName.charAt(0) + user.lastName.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.firstName + " " + user.lastName}</span>
-                <span className="truncate text-xs">{user.email}</span>
-              </div>
+                <UserInfo 
+                  user={user}
+                  className="flex-1"
+                />
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -74,17 +73,28 @@ export function NavUser({
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.firstName + user.lastName} />
-                  <AvatarFallback className="rounded-lg">{user.firstName.charAt(0) + user.lastName.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.firstName + " " + user.lastName}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
-              </div>
+              <UserInfo 
+                user={user}
+                className="px-1 py-1.5"
+              />
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <AuthorizedElement>
+                {({ userData }) => (
+                  <>
+                  
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted-foreground flex">
+                      <UserCircle className="size-3 text-muted-foreground mr-1" />
+                      Role
+                    </span>
+                    <span className="font-medium">{userData.role}</span>
+                  </div>
+                </>
+                )}
+              </AuthorizedElement>
+            </DropdownMenuItem>
             {/* <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>

@@ -1,8 +1,8 @@
 'use server'
 
-import { OrganizationFormData } from '@/types/organization'
+import { CreateOrgRequest, CreateOrgResponse } from '@/types/org'
 
-export async function createOrganization(data: OrganizationFormData) {
+export async function createOrganization(data: CreateOrgRequest) {
   // Simulate a delay
   await new Promise(resolve => setTimeout(resolve, 1000))
 
