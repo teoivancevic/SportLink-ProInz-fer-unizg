@@ -27,9 +27,10 @@ public class EmailService : IEmailService
         await SendEmailAsync(to, subject, body);
     }
 
-    public async Task SendRejectionEmailAsync(OrganizationDto organization, string reason)
+    public async Task SendRejectionEmailAsync(OrganizationDto organization, string reason, string ownerUserEmail)
     {
         var subject = "[SportLink] - Organization Rejection";
+        var to = ownerUserEmail;
         var body = $"""
                     Hi!
                     We are sorry to inform you that your organization has been rejected.
@@ -47,13 +48,13 @@ public class EmailService : IEmailService
                     SportLink Team
                     """;
 
-        await SendEmailAsync(organization.ContactEmail, subject, body);
+        await SendEmailAsync(to, subject, body);
     }
 
-    public async Task SendCreationEmailAsync(OrganizationDto organizationDto)
+    public async Task SendCreationEmailAsync(OrganizationDto organizationDto, string ownerUserEmail)
     {
         var subject = "[SportLink] - Organization Creation";
-        var to = organizationDto.ContactEmail;
+        var to = ownerUserEmail;
         var body = $"""
                     Hi!
                     We received your request to create an organization. 
@@ -75,9 +76,10 @@ public class EmailService : IEmailService
         await SendEmailAsync(to, subject, body);
     }
 
-    public async Task SendApprovalEmailAsync(string to)
+    public async Task SendApprovalEmailAsync(string ownerUserEmail)
     {
         var subject = "[SportLink] - Organization Approval";
+        var to = ownerUserEmail;
         var body = $"""
                     Hi!
                     We are happy to inform you that your organization has been approved.
