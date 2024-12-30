@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Services.Review;
 using SportLink.Core.Models;
 
@@ -37,7 +39,7 @@ public class ReviewController : ControllerBase
     
     [HttpDelete, Authorize(Roles = "User,OrganizationOwner", Policy = "jwt_policy")]
     [Route("DeleteReview")]
-    public async Task<IActionResult> DeleteReview(int organizationId)
+    public async Task<ActionResult> DeleteReview(int organizationId)
     {
         var result = await _reviewService.DeleteReview(organizationId);
 
@@ -48,7 +50,35 @@ public class ReviewController : ControllerBase
 
         return Ok(result);
     }
-    
+
+    [HttpGet]
+    [Route("GetOrganizationReviews")]
+    public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId)
+    {
+        var result = await _reviewService.GetOrganizationReviews(organizationId);
+        if (result == null)
+        {
+            return BadRequest("No reviews found");
+        }
+        return Ok(result);
+    }
+
+    [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+    [Route("RespondReview")]
+    public async Task<ActionResult<GetReviewDto>> RespondReview(int organizationId, int userId, string response)
+    { 
+        var result = await _reviewService.RespondReview(organizationId, userId, response);
+        if (string.IsNullOrWhiteSpace(response))
+        {
+            return BadRequest("Response cant be empty");
+        }
+        if (result == null)
+        { 
+            return BadRequest("Something went wrong"); 
+        }
+
+        return Ok(result);
+    }
     
 
 }

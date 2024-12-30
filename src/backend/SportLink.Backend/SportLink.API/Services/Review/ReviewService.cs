@@ -73,15 +73,20 @@ public class ReviewService : IReviewService
         return _mapper.Map<List<GetReviewDto>>(reviews);
     }
 
+    //kako vratiti bolju poruku?
     public async Task<GetReviewDto> RespondReview(int organizationId, int userId, string response)
     {
         var loggedUserId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         var organization = await _context.Organizations.FindAsync(organizationId);
+        if (loggedUserId == null || organization == null)
+        {
+            return null;
+        }
         if (int.Parse(loggedUserId!) != organization.OwnerId)
         {
             return null;
         }
-        var review = await _context.Reviews.FindAsync(new object[] { organizationId, userId });
+        var review = await _context.Reviews.FindAsync(new object[] { userId, organizationId });
         
         if (review == null)
         {
@@ -98,7 +103,7 @@ public class ReviewService : IReviewService
     public async Task<GetReviewDto> DeleteReview(int organizationId)
     {
         var userId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-        var review = await _context.Reviews.FindAsync(new object[] { organizationId, int.Parse(userId!) });
+        var review = await _context.Reviews.FindAsync(new object[] { int.Parse(userId!), organizationId });
         if (review == null)
         {
             return null;
