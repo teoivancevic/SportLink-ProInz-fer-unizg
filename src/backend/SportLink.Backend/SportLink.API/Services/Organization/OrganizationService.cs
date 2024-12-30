@@ -49,8 +49,9 @@ namespace SportLink.API.Services.Organization
                 await _context.SaveChangesAsync();
 
                 var orgDto = _mapper.Map<OrganizationDto>(organization);
+                var organizationOwner = await _context.Users.FindAsync(owner.Id);
 
-                await _emailService.SendCreationEmailAsync(orgDto);
+                await _emailService.SendCreationEmailAsync(orgDto, organizationOwner.Email);
 
                 return new OkObjectResult(orgDto);
             }
@@ -106,7 +107,8 @@ namespace SportLink.API.Services.Organization
                 //_context.Users.Update(organizationOwner);
                 await _context.SaveChangesAsync();
 
-                await _emailService.SendApprovalEmailAsync(organization.ContactEmail);
+                // await _emailService.SendApprovalEmailAsync(organization.ContactEmail);
+                await _emailService.SendApprovalEmailAsync(organizationOwner.Email);
                 return true;
             }
             else
@@ -119,13 +121,14 @@ namespace SportLink.API.Services.Organization
         public async Task<bool> DeclineOrganization(int id, string reason)
         {
             var organization = await _context.Organizations.FindAsync(id);
+            var organizationOwner = await _context.Users.FindAsync(organization?.OwnerId);
             if (organization?.VerificationStatus == VerificationStatusEnum.Unverified)
             {
                 organization.VerificationStatus = VerificationStatusEnum.Rejected;
                 organization.RejectionResponse = reason;
                 var orgDto = _mapper.Map<OrganizationDto>(organization);
 
-                await _emailService.SendRejectionEmailAsync(orgDto, reason);
+                await _emailService.SendRejectionEmailAsync(orgDto, reason, organizationOwner.Email); 
                 await _context.SaveChangesAsync();
                 return true;
             }
