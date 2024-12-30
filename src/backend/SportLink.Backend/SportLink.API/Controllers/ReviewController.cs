@@ -79,6 +79,23 @@ public class ReviewController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet]
+    [Route("GetReviewStats")]
+
+    public async Task<IActionResult> GetReviewStats(int organizationId)
+    {
+        var stats = await _reviewService.GetOrganizationReviewStats(organizationId);
+
+        // Create a response object
+        var response = new
+        {
+            AverageRating = stats.AverageRating,
+            ReviewCount = stats.ReviewCount
+        };
+
+        return Ok(response);
+    }
     
 
 }
