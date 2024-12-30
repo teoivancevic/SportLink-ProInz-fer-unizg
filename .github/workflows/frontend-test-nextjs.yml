@@ -1,11 +1,11 @@
 name: Frontend CI/CD (Next.js)
 on:
   push:
-    branches: [ 'fix/#36-bugs-nextjs-rewrite' ]
+    branches: [ "dev" ]
     paths: ["src/frontend/sportlink-web-3/**"]
   pull_request:
     types: [ "opened", "reopened", "closed", "synchronize" ]
-    branches: [ 'fix/#36-bugs-nextjs-rewrite' ]
+    branches: [ "dev" ]
     paths: ["src/frontend/sportlink-web-3/**"]
   workflow_dispatch:
 
