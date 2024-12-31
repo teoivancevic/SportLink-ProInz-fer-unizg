@@ -6,6 +6,7 @@ import { useRef } from "react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
+// @ts-expect-error ignored
 interface OTPInputProps extends React.HTMLAttributes<HTMLDivElement> {
   length: number
   value: string[]

@@ -5,25 +5,16 @@ import { UserRole } from '@/types/roles'
 
 import * as React from "react"
 import {
-  
   Command,
-  Frame,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Send,
-  Settings2,
-  SquareTerminal,
-  AudioWaveform,
   GalleryVerticalEnd,
   Home,
-  User,
   UsersRound,
   Building2,
   Search,
   Building,
   Star,
-  LayoutDashboard
+  LayoutDashboard,
+  AudioWaveform
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -35,10 +26,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger
 } from "@/components/ui/sidebar"
 import Image from "next/image"
 import { TeamSwitcher } from "./team-switcher"
@@ -209,7 +196,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               firstName: userData.firstName,
               lastName: userData.lastName,
               email: userData.email,
-              avatar: null
+              avatar: ""
             }} />
           )}
         </AuthorizedElement>

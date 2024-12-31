@@ -1,6 +1,6 @@
 'use server'
 
-import { CreateOrgRequest, CreateOrgResponse } from '@/types/org'
+import { CreateOrgRequest } from '@/types/org'
 
 export async function createOrganization(data: CreateOrgRequest) {
   // Simulate a delay

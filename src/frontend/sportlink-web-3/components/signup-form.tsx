@@ -9,9 +9,21 @@ import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { FcGoogle } from 'react-icons/fc'
 import { authService } from '@/lib/services/api'
-import type { RegistrationRequest, RegistrationResponse } from '@/types/auth'
+import type { RegistrationRequest } from '@/types/auth'
 import { useToast } from "@/hooks/use-toast"
 import { Eye, EyeOff } from "lucide-react"
+
+interface ApiError {
+  message: string;
+  status?: number;
+  code?: string;
+}
+
+interface GoogleAuthError {
+  message: string;
+  code?: string;
+  status?: number;
+}
 
 export default function SignupForm() {
   const [firstName, setFirstName] = useState('')
@@ -23,8 +35,8 @@ export default function SignupForm() {
   const router = useRouter()
   const { toast } = useToast()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     setIsLoading(true)
 
     try {
@@ -44,30 +56,46 @@ export default function SignupForm() {
 
       // Redirect to OTP verification page with ID
       router.push(`/signup/otp?id=${response.id}`)
-    } catch (error: any) {
-      console.error('Registration error:', error)
+    } catch (error: unknown) {
+      console.error('Registration error:', error);
+      let errorMessage = "An error occurred during registration. Please try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = (error as ApiError).message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Registration failed",
-        description: error?.message || "An error occurred during registration. Please try again.",
-      })
+        description: errorMessage,
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   const handleGoogleSignup = async () => {
     try {
-      await authService.loginGoogle()
-    } catch (error: any) {
-      console.error('Google signup error:', error)
+      await authService.loginGoogle();
+    } catch (error: unknown) {
+      console.error('Google signup error:', error);
+      let errorMessage = "Could not sign up with Google. Please try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = (error as GoogleAuthError).message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Google signup failed",
-        description: error?.message || "Could not sign up with Google. Please try again.",
-      })
+        description: errorMessage,
+      });
     }
-  }
+  };
 
   return (
     <Card className="w-[400px]">
