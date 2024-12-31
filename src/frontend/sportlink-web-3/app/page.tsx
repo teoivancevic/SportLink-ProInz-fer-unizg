@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/ui-custom/page-header"
-
+//import  RootLayout  from "@/app/org-profile/org-profile-layout"
 
 export default function ConfirmedOrganizationsPage(){
 
@@ -11,5 +11,10 @@ export default function ConfirmedOrganizationsPage(){
         <p>bla</p>
       </PageHeader>
     )
+
+    // return (
+    //   <RootLayout>
+    //   </RootLayout>
+    // )
     
 }
