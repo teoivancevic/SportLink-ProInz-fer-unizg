@@ -16,7 +16,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '@/lib/services/api'
-import type { LoginRequest } from '@/types/auth'
+// import type { LoginRequest } from '@/types/auth'
 import { Eye, EyeOff } from "lucide-react"
 
 export function LoginForm({
@@ -37,8 +37,9 @@ export function LoginForm({
 
     try {
       const response = await authService.login({ email, password })
-      
+      // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
       if (response?.data && typeof response.data === 'string') {
+        // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
         const token = response.data
         console.log('Received token type:', typeof token)
         console.log('Token format:', token.substring(0, 10) + '...')

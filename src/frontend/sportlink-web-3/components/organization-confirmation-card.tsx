@@ -111,7 +111,6 @@ export function OrganizationConfirmationCard({
         <div className="flex gap-2">
           <LoadingButton 
             className="flex-1 border-2 border-destructive bg-transparent hover:bg-destructive text-destructive hover:text-destructive-foreground"
-            variant="outline"
             onClick={handleDeny}
             disabled={isAccepting || (showDenyReason && !denyReason.trim())}
             loading={isDenying}

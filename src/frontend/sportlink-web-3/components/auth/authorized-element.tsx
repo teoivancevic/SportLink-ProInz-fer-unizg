@@ -1,4 +1,3 @@
-// components/auth/authorized-element.tsx
 'use client'
 import { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
@@ -10,6 +9,17 @@ interface UserData {
   role: UserRole
   firstName: string
   lastName: string
+}
+
+interface JWTPayload {
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': string
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': string
+  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': UserRole
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname': string
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname': string
+  exp: number
+  iss: string
+  aud: string
 }
 
 interface AuthorizedElementProps {
@@ -27,11 +37,11 @@ export default function AuthorizedElement({
     const token = localStorage.getItem('authToken')
     if (token) {
       try {
-        const decodedToken: any = jwtDecode(token)
+        const decodedToken = jwtDecode<JWTPayload>(token)
         const userData: UserData = {
           id: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
           email: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'],
-          role: decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] as UserRole,
+          role: decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
           firstName: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'],
           lastName: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'],
         }

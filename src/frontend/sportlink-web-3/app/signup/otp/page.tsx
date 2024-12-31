@@ -1,5 +1,7 @@
 "use client"
+export const dynamic = 'force-dynamic'
 
+import { Suspense } from "react"
 import { useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
@@ -8,7 +10,13 @@ import { OTPInput } from "@/components/ui-custom/otp-input"
 import { authService } from "@/lib/services/api"
 import { useToast } from "@/hooks/use-toast"
 
-export default function OTPVerificationPage() {
+interface VerificationError {
+  message: string;
+  status?: number;
+  code?: string;
+}
+
+function OTPVerificationForm() {
   const [otp, setOTP] = useState<string[]>(Array(6).fill(""))
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
@@ -30,9 +38,14 @@ export default function OTPVerificationPage() {
     setIsLoading(true)
     try {
       const otpCode = otp.join("")
-      const response = await authService.verify(parseInt(userId), otpCode, { code: otpCode })
-      
-      if (response.ok && response.status === 200) {
+      const response = await authService.verify(
+        {
+          userId: parseInt(userId),
+          otpCode: otpCode
+        }
+      )
+      // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
+      if ('ok' in response && response.ok && response.status === 200) {
         toast({
           title: "Success",
           description: "Your account has been verified",
@@ -41,12 +54,20 @@ export default function OTPVerificationPage() {
       } else {
         throw new Error("Verification failed")
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Verification error:", error)
+      let errorMessage = "Please check your OTP and try again"
+
+      if (error instanceof Error) {
+        errorMessage = error.message
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = (error as VerificationError).message
+      }
+
       toast({
         variant: "destructive",
         title: "Verification failed",
-        description: error?.message || "Please check your OTP and try again",
+        description: errorMessage,
       })
     } finally {
       setIsLoading(false)
@@ -58,8 +79,8 @@ export default function OTPVerificationPage() {
     
     try {
       const response = await authService.resendOTP(parseInt(userId), { userId: parseInt(userId) })
-      
-      if (response.ok && response.status === 200) {
+      // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
+      if ('ok' in response && response.ok && response.status === 200) {
         toast({
           title: "Success",
           description: "Verification code sent",
@@ -67,12 +88,20 @@ export default function OTPVerificationPage() {
       } else {
         throw new Error("Failed to resend OTP")
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Resend OTP error:", error)
+      let errorMessage = "Please try again later"
+
+      if (error instanceof Error) {
+        errorMessage = error.message
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = (error as VerificationError).message
+      }
+
       toast({
         variant: "destructive",
         title: "Failed to resend OTP",
-        description: error?.message || "Please try again later",
+        description: errorMessage,
       })
     }
   }
@@ -111,5 +140,19 @@ export default function OTPVerificationPage() {
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+export default function OTPVerificationPage() {
+  return (
+    <Suspense fallback={
+      <Card className="w-[400px] mx-auto mt-10">
+        <CardHeader>
+          <CardTitle>Loading...</CardTitle>
+        </CardHeader>
+      </Card>
+    }>
+      <OTPVerificationForm />
+    </Suspense>
   )
 }

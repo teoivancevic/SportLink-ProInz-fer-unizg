@@ -7,15 +7,8 @@ import { orgService } from "@/lib/services/api"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
+import { GetOrganizationResponse, Organization } from '@/types/org'
 
-interface Organization {
-  id: number
-  name: string
-  description: string
-  location: string
-  contactEmail: string
-  contactPhoneNumber: string
-}
 
 export default function UnconfirmedOrganizationsPage() {
   const [organizations, setOrganizations] = useState<Organization[]>([])
@@ -26,7 +19,9 @@ export default function UnconfirmedOrganizationsPage() {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await orgService.getOrganizations(false)
+      const response: GetOrganizationResponse = await orgService.getOrganizations(false)
+      console.log(response);
+
       setOrganizations(response.data)
     } catch (error) {
       console.error('Error fetching organizations:', error)

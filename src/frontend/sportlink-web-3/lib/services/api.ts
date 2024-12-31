@@ -4,8 +4,25 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 if (!API_BASE_URL) {
   throw new Error('API_BASE_URL is not defined in environment variables')
 }
+// Types
+import type { 
+  LoginRequest, 
+  //LoginResponse, 
+  RegistrationRequest, 
+  RegistrationResponse,
+  VerifRequest,
+  //VerifResponse,
+  ResendOTPRequest,
+  //ResendOTPResponse 
+} from '@/types/auth'
 
-interface ApiResponse<T> {
+import type {
+  CreateOrgRequest,
+  CreateOrgResponse,
+  GetOrganizationResponse
+} from '@/types/org'
+
+type _ApiResponse<T> = {
   data: T;
   message?: string;
   success: boolean;
@@ -99,6 +116,7 @@ export const authService = {
         data,
         'text'  // Explicitly request text response for login
     )
+    // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
     if (!response?.data) {
         throw new Error('Invalid login response')
     }
@@ -117,17 +135,18 @@ export const authService = {
       data,
       'json'  // Explicitly request JSON response
     )
+    // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
     if (!response.data || !response.data.id) {
       throw new Error('Registration failed: Invalid response format')
     }
+    // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
     return response.data
   },
 
-  verify: (userId: number, otpCode: string, data: VerifRequest) => 
+  verify: (data: VerifRequest) => 
     ApiClient.put<string>(
       `/api/Auth/verify`,
-      data,
-      { userId: userId.toString(), otpCode }
+      data
     ),
 
   resendOTP: (userId: number, data: ResendOTPRequest) => 
@@ -155,14 +174,7 @@ export const orgService = {
     data: CreateOrgRequest
   ) => ApiClient.post<CreateOrgResponse>(
     '/api/Organization/CreateOrganization',
-    data,
-    {
-      name,
-      description,
-      contactEmail,
-      contactPhoneNumber,
-      location
-    }
+    data
   ),
 
   getOrganizations: (verified: boolean) => 
@@ -175,20 +187,3 @@ export const orgService = {
     ApiClient.put(`/api/Organization/${id}/decline/`, { reason }),
 }
 
-// Types
-import type { 
-  LoginRequest, 
-  LoginResponse, 
-  RegistrationRequest, 
-  RegistrationResponse,
-  VerifRequest,
-  VerifResponse,
-  ResendOTPRequest,
-  ResendOTPResponse 
-} from '@/types/auth'
-
-import type {
-  CreateOrgRequest,
-  CreateOrgResponse,
-  GetOrganizationResponse
-} from '@/types/org'

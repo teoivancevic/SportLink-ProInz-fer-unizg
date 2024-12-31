@@ -1,7 +1,5 @@
 'use client'
-import { Libraries, LoadScriptProps } from '@react-google-maps/api';
-
-
+import { Libraries } from '@react-google-maps/api';
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,15 +17,15 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from "@/hooks/use-toast"
-import { ToastAction } from "@/components/ui/toast"
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { createOrganization } from '@/components/actions/createOrganization'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { useLoadScript } from '@react-google-maps/api'
 import { orgService } from '@/lib/services/api';
 
+
+// Style definitions remain the same
 const autocompleteStyle = `
   .pac-container {
     border-radius: 0.5rem;
@@ -76,6 +74,12 @@ const autocompleteStyle = `
   }
 `;
 
+interface OrgError {
+  message: string;
+  status?: number;
+  code?: string;
+}
+
 const formSchema = z.object({
   name: z.string()
     .min(3, 'Ime mora sadržavati između 3 i 100 znakova')
@@ -86,16 +90,21 @@ const formSchema = z.object({
   contactEmail: z.string()
     .email('Neispravna e-mail adresa'),
   contactPhone: z.string().regex(/^\+[1-9]\d{1,14}$/, {
-      message: 'Unesite pravi broj telefona',
-    }),
+    message: 'Unesite pravi broj telefona',
+  }),
   location: z.string()
     .min(1, 'Grad je obavezan')
-})
+});
 
+type FormValues = z.infer<typeof formSchema>;
 
+interface AutocompleteFieldProps {
+  field: {
+    value: string;
+    onChange: (value: string) => void;
+  };
+}
 
-// Define libraries array outside component to prevent reloads
-// const libraries: ("places")[] = ['places'];
 const libraries: Libraries = ['places'];
 
 export function CreateOrganizationForm() {
@@ -106,46 +115,50 @@ export function CreateOrganizationForm() {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
     libraries,
-    language: 'hr', // Set to Croatian
+    language: 'hr',
   });
 
   const AutocompleteComponent = useMemo(() => {
-    return ({ field }: any) => {
+    const Component = ({ field }: AutocompleteFieldProps) => {
       const autocompleteRef = useRef<HTMLInputElement>(null);
-  
+
       useEffect(() => {
         if (!autocompleteRef.current || !window.google) return;
-  
-        const autocomplete = new google.maps.places.Autocomplete(autocompleteRef.current, {
-          componentRestrictions: { country: 'HR' }, // Restrict to Croatia
+      
+        const inputElement = autocompleteRef.current; // Capture the current value
+      
+        const autocomplete = new google.maps.places.Autocomplete(inputElement, {
+          componentRestrictions: { country: 'HR' },
           fields: ['formatted_address', 'geometry'],
           types: ['geocode']
         });
-
+      
         const styleElement = document.createElement('style');
-    styleElement.textContent = autocompleteStyle;
-    document.head.appendChild(styleElement);
-  
+        styleElement.textContent = autocompleteStyle;
+        document.head.appendChild(styleElement);
+      
         const listener = autocomplete.addListener('place_changed', () => {
           const place = autocomplete.getPlace();
           if (place.formatted_address) {
             field.onChange(place.formatted_address);
           }
         });
-  
-        // Prevent form submission on enter
-        autocompleteRef.current.addEventListener('keydown', (e) => {
+      
+        const preventSubmit = (e: KeyboardEvent) => {
           if (e.key === 'Enter') {
             e.preventDefault();
           }
-        });
-  
+        };
+      
+        inputElement.addEventListener('keydown', preventSubmit);
+      
         return () => {
           google.maps.event.removeListener(listener);
+          inputElement.removeEventListener('keydown', preventSubmit);
           styleElement.remove();
         };
       }, [field]);
-  
+
       return (
         <Input
           ref={autocompleteRef}
@@ -157,9 +170,12 @@ export function CreateOrganizationForm() {
         />
       );
     };
-  }, [isLoaded]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+    Component.displayName = 'AutocompleteComponent';
+    return Component;
+  }, []);
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -168,12 +184,12 @@ export function CreateOrganizationForm() {
       contactPhone: '',
       location: '',
     },
-  })
+  });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true)
+  async function onSubmit(values: FormValues) {
+    setIsSubmitting(true);
     try {
-      const response = await orgService.createOrganization(
+      await orgService.createOrganization(
         values.name,
         values.description,
         values.contactEmail,
@@ -186,17 +202,26 @@ export function CreateOrganizationForm() {
           contactPhoneNumber: values.contactPhone,
           location: values.location
         }
-      )
+      );
       
-      router.push('/')
-    } catch (error) {
+      router.push('/');
+    } catch (error: unknown) {
+      console.error('Organization creation error:', error);
+      let errorMessage = "Neuspješna prijava. Provjerite podatke i pokušajte ponovo.";
+  
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = (error as OrgError).message;
+      }
+  
       toast({
         title: "Greška",
-        description: "Neuspješna prijava. Provjerite podatke i pokušajte ponovo.",
+        description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -206,6 +231,7 @@ export function CreateOrganizationForm() {
   }
 
   return (
+    // Your existing JSX remains the same
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>Create a New Organization</CardTitle>
@@ -310,6 +336,7 @@ export function CreateOrganizationForm() {
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 }
 
+CreateOrganizationForm.displayName = 'CreateOrganizationForm';

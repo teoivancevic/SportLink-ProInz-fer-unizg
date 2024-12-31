@@ -25,4 +25,6 @@ export interface Organization{
     location: string
 }
 // this is a list of organizations
-export type GetOrganizationResponse = Organization[];
+export interface GetOrganizationResponse {
+    data: Organization[]  // If the API returns { data: [...organizations] }
+}
