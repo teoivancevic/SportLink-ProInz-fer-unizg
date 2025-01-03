@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Services.Review;
+using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
 namespace SportLink.API.Controllers;
@@ -53,9 +54,9 @@ public class ReviewController : ControllerBase
 
     [HttpGet]
     [Route("GetOrganizationReviews")]
-    public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId)
+    public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId, [FromQuery] SortOptionEnum sortOption = SortOptionEnum.UpdatedAtDescending)
     {
-        var result = await _reviewService.GetOrganizationReviews(organizationId);
+        var result = await _reviewService.GetOrganizationReviews(organizationId, sortOption);
         if (result == null)
         {
             return BadRequest("No reviews found");
@@ -95,6 +96,14 @@ public class ReviewController : ControllerBase
         };
 
         return Ok(response);
+    }
+
+    [HttpGet]
+    [Route("GetRatingCount")]
+    public async Task<IActionResult> GetRatingCount(int organizationId)
+    {
+        var stats = await _reviewService.GetOrganizatoionRatingCounts(organizationId);
+        return Ok(stats);
     }
     
 

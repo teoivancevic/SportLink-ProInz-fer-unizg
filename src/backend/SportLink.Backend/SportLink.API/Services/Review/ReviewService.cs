@@ -67,11 +67,27 @@
 
         }
 
-        public async Task<List<GetReviewDto>> GetOrganizationReviews(int organizationId)
+        public async Task<List<GetReviewDto>> GetOrganizationReviews(int organizationId,
+            SortOptionEnum sortOption = SortOptionEnum.UpdatedAtDescending)
         {
-            var reviews = await _context.Reviews.Where(r => r.OrganizationId == organizationId).ToListAsync();
+            var query = _context.Reviews
+                .Where(r => r.OrganizationId == organizationId)
+                .Include(r => r.User)
+                .Include(r => r.Organization);
+            
+            var sortedQuery = sortOption switch
+            {
+                SortOptionEnum.UpdatedAtDescending => query.OrderByDescending(r => r.UpdatedAt),
+                SortOptionEnum.UpdatedAtAscending => query.OrderBy(r => r.UpdatedAt),
+                SortOptionEnum.RatingDescending => query.OrderByDescending(r => r.Rating),
+                SortOptionEnum.RatingAscending => query.OrderBy(r => r.Rating),
+                _ => query.OrderByDescending(r => r.UpdatedAt), // Default case
+            };
+
+            var reviews = await sortedQuery.ToListAsync();
             return _mapper.Map<List<GetReviewDto>>(reviews);
         }
+        
 
         //kako vratiti bolju poruku?
         public async Task<GetReviewDto> RespondReview(int organizationId, int userId, string response)
@@ -121,6 +137,19 @@
             int reviewCount = reviews.Count();
             
             return (averageRating, reviewCount);
+        }
+
+        public async Task<Dictionary<int, int>> GetOrganizatoionRatingCounts(int organizationId)
+        {
+            var reviewCounts = await _context.Reviews
+                .Where(r => r.OrganizationId == organizationId)
+                .GroupBy(r => r.Rating)
+                .Select(g => new { Rating = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Rating, x => x.Count);
+            
+            var completeCounts = Enumerable.Range(1, 5)
+                .ToDictionary(rating => rating, rating => reviewCounts.ContainsKey(rating) ? reviewCounts[rating] : 0);
+            return completeCounts;
         }
 
     }
