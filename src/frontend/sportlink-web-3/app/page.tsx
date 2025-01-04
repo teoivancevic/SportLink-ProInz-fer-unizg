@@ -1,20 +1,19 @@
 import { PageHeader } from "@/components/ui-custom/page-header"
-//import  RootLayout  from "@/app/org-profile/org-profile-layout"
+import OrganisationHomePage from "./org-profile/page"
 
 export default function ConfirmedOrganizationsPage(){
 
     return (
-      <PageHeader 
-        title="Naslovnica"
-        description="Bla dobrodosli u sportlink brrrrr."
-      >
-        <p>bla</p>
-      </PageHeader>
+      <div className="container mx-auto px-4 mt-[-20px]">
+        <OrganisationHomePage />
+      </div>
     )
-
-    // return (
-    //   <RootLayout>
-    //   </RootLayout>
-    // )
     
 }
+
+      // <PageHeader 
+      //   title="Naslovnica"
+      //   description="Bla dobrodosli u sportlink brrrrr."
+      // >
+      //   <p>bla</p>
+      // </PageHeader>
