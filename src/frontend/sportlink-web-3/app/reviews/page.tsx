@@ -27,7 +27,41 @@ const reviews = [
     author: "Ivana M.",
     memberSince: "6 mjeseci"
   },
-  // Add more mock reviews as needed
+  {
+    id: 4,
+    rating: 3,
+    comment: "Dobri programi, ali ponekad je gužva u večernjim satima.",
+    author: "Tomislav R.",
+    memberSince: "3 mjeseca"
+  },
+  {
+    id: 5,
+    rating: 5,
+    comment: "Nevjerojatno motivirajuće okruženje. Postigla sam ciljeve koje nisam mislila da su mogući!",
+    author: "Maja Š.",
+    memberSince: "1 godina"
+  },
+  {
+    id: 6,
+    rating: 4,
+    comment: "Kvalitetna oprema i čisti prostori. Jedina zamjerka je manjak parkirnih mjesta.",
+    author: "Davor B.",
+    memberSince: "8 mjeseci"
+  },
+  {
+    id: 7,
+    rating: 5,
+    comment: "Obožavam grupne treninge! Instruktori su energični i pažljivi prema svima.",
+    author: "Petra L.",
+    memberSince: "4 mjeseca"
+  },
+  {
+    id: 8,
+    rating: 4,
+    comment: "Fleksibilno radno vrijeme i širok izbor opreme. Ponekad nedostaje osobniji pristup.",
+    author: "Igor M.",
+    memberSince: "2 godine"
+  },
 ]
 
 export default function ReviewsPage() {
