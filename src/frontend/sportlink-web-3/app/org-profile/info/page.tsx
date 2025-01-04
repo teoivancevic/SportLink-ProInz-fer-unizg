@@ -4,6 +4,7 @@ import { Star, Edit } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import EditProfilePopup from './EditProfilePopup'
+import { useRouter } from 'next/navigation'
 
 interface OrganizationInfo {
   name: string;
@@ -27,6 +28,11 @@ export default function InformacijeContent() {
   const handleEditSubmit = (newInfo: OrganizationInfo) => {
     setOrgInfo(newInfo)
     setIsEditPopupOpen(false)
+  }
+
+  const router = useRouter()
+  const handleReviewClick = () => {
+    router.push('/reviews')
   }
 
   return (
@@ -72,25 +78,27 @@ export default function InformacijeContent() {
         </Card>
       </div>
 
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>Recenzije</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center mb-4">
-            <div className="flex">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star key={star} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              ))}
+      <div onClick={handleReviewClick} className="cursor-pointer">
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Recenzije</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center mb-4">
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star key={star} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <span className="ml-2 text-lg font-semibold">4.8 / 5</span>
             </div>
-            <span className="ml-2 text-lg font-semibold">4.8 / 5</span>
-          </div>
-          <blockquote className="italic border-l-4 border-gray-300 pl-4 py-2 mb-4">
-            "Izvrsna organizacija s vrhunskim trenerima i odličnim programima za sve uzraste!"
-          </blockquote>
-          <p className="text-sm text-gray-600">- Ana K., član 2 godine</p>
-        </CardContent>
-      </Card>
+            <blockquote className="italic border-l-4 border-gray-300 pl-4 py-2 mb-4">
+              "Izvrsna organizacija s vrhunskim trenerima i odličnim programima za sve uzraste!"
+            </blockquote>
+            <p className="text-sm text-gray-600">- Ana K., član 2 godine</p>
+          </CardContent>
+        </Card>
+      </div>
 
       <EditProfilePopup
         isOpen={isEditPopupOpen}
