@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportLink.API.Data;
+using SportLink.API.Data.Entities;
 using SportLink.API.Services.Email;
 using SportLink.Core.Enums;
 using SportLink.Core.Models;
@@ -133,6 +134,72 @@ namespace SportLink.API.Services.Organization
             {
                 return false;
             }
+        }
+
+        // ---------------------- Organization's Profile ---------------------- //
+
+        public async Task<ProfileDto> GetProfile(int id)
+        {
+            var profile = await _context.Organizations.FindAsync(id);
+            if (profile is not null && profile.VerificationStatus == VerificationStatusEnum.Accepted)
+            {
+                return _mapper.Map<ProfileDto>(profile);
+            }
+
+            return null!;
+        }
+
+        public async Task<List<TournamentDto>> GetTournaments(int id)
+        {
+            var tournaments = await _context.Tournaments.Where(x => x.OrganizationId == id).ToListAsync();
+            return _mapper.Map<List<TournamentDto>>(tournaments);
+        }
+
+        public async Task<List<TrainingGroupDto>> GetTrainingGroups(int id)
+        {
+            var trainingGroups = await _context.TrainingGroups.Where(x => x.OrganizationId == id).ToListAsync();
+            return _mapper.Map<List<TrainingGroupDto>>(trainingGroups);
+        }
+
+        public async Task<List<SportCourtDto>> GetSportCourts(int id)
+        {
+            //var sportCourts = await _context.CourtBookings.Where(x => x.OrganizationId == id).ToListAsync();
+            //return _mapper.Map<List<SportCourtDto>>(sportCourts);
+            return null!;
+        }
+
+        public async Task<bool> UpdateProfile(int id, ProfileDto profileDto)
+        {
+            var profile = await _context.Organizations.FindAsync(id);
+            if (profile is not null && profile.VerificationStatus == VerificationStatusEnum.Accepted)
+            {
+                profile.Name = profileDto.Name ?? profile.Name;
+                profile.Description = profileDto.Description ?? profile.Description;
+                profile.ContactEmail = profileDto.ContactEmail ?? profile.ContactEmail;
+                profile.ContactPhoneNumber = profileDto.ContactPhoneNumber ?? profile.ContactPhoneNumber;
+                profile.Location = profileDto.Location ?? profile.Location;
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> AddTournament(int id, TournamentDto tournamentDto)
+        {    // provjerit postoji li ta org.?
+            tournamentDto.OrganizationId = id;
+            await _context.Tournaments.AddAsync(_mapper.Map<Tournament>(tournamentDto));
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> AddTrainingGroup(int id, TrainingGroupDto trainingGroupDto)
+        {
+            trainingGroupDto.OrganizationId = id;
+            await _context.TrainingGroups.AddAsync(_mapper.Map<TrainingGroup>(trainingGroupDto));
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

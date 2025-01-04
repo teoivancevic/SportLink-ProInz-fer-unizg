@@ -109,5 +109,95 @@ namespace SportLink.API.Controllers
             }
             return Ok("Organizacija uspješno odbijena.");
         }
+
+        // ---------------------- Organization's Profile ---------------------- //
+
+        [HttpGet, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]        // Roles?
+        [Route("{id}")]
+        public async Task<ActionResult<ProfileDto>> GetProfile(int id)
+        {
+            var profile = await _organizationService.GetProfile(id);
+            if (profile is null)
+            {
+                return NotFound("Profil organizacije ne postoji.");
+            }
+            return Ok(profile);
+        }
+
+        [HttpPut, Authorize(Policy = "jwt_policy")]
+        [Route("{id}/tournaments")]
+        public async Task<ActionResult<List<TournamentDto>>> GetTournaments(int id)
+        {
+            var tournaments = await _organizationService.GetTournaments(id);
+            if (tournaments is null)
+            {
+                return NotFound("Nema formiranih turnira.");
+            }
+            return Ok(tournaments);
+        }
+
+        [HttpGet, Authorize(Policy = "jwt_policy")]
+        [Route("{id}/training-groups")]
+        public async Task<ActionResult<List<TrainingGroupDto>>> GetTrainingGroups(int id)
+        {
+            var trainingGroups = await _organizationService.GetTrainingGroups(id);
+            if (trainingGroups is null)
+            {
+                return NotFound("Nema formiranih grupa za trening.");
+            }
+            return Ok(trainingGroups);
+        }
+
+        [HttpGet, Authorize(Policy = "jwt_policy")]
+        [Route("{id}/sport-courts")]
+        public async Task<ActionResult<List<SportCourtDto>>> GetSportCourts(int id)
+        {
+            var sportCourts = await _organizationService.GetSportCourts(id);
+            if (sportCourts is null)
+            {
+                return NotFound("Organizacija nema raspoloživih terena.");
+            }
+            return Ok(sportCourts);
+        }
+
+        [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+        [Route("{id}/update")]
+        public async Task<ActionResult<bool>> UpdateProfile(int id, [FromBody] ProfileDto profile)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _organizationService.UpdateProfile(id, profile);
+                if (!result)
+                {
+                    return BadRequest("Profil neuspješno ažuriran.");
+                }
+                return Ok(profile);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+        [Route("{id}/add-tournament")]
+        public async Task<ActionResult<bool>> AddTournament(int id, [FromBody] TournamentDto tournament)
+        {
+            var result = await _organizationService.AddTournament(id, tournament);
+            if (!result)
+            {
+                return BadRequest("Turnir neuspješno dodan.");
+            }
+            return Ok(tournament);
+        }
+
+        [HttpPost, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+        [Route("{id}/add-training-group")]
+        public async Task<ActionResult<bool>> AddTrainingGroup(int id, [FromBody] TrainingGroupDto trainingGroup)
+        {
+            var result = await _organizationService.AddTrainingGroup(id, trainingGroup);
+            if (!result)
+            {
+                return BadRequest("Grupa za trening neuspješno dodana.");
+            }
+            return Ok(trainingGroup);
+        }
     }
 }
