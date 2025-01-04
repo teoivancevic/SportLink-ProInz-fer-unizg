@@ -5,7 +5,8 @@ namespace SportLink.API.Services.Email;
 public interface IEmailService
 {
     Task SendVerificationEmailAsync(string to, string otpCode);
-    Task SendRejectionEmailAsync(OrganizationDto organization, string reason);
-    Task SendCreationEmailAsync(OrganizationDto organization);
-    Task SendApprovalEmailAsync(string to);
+    
+    Task SendRejectionEmailAsync(OrganizationDto organization, string reason, string ownerUserEmail);
+    Task SendCreationEmailAsync(OrganizationDto organization, string ownerUserEmail);
+    Task SendApprovalEmailAsync(string ownerUserEmail);
 }

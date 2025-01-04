@@ -17,7 +17,7 @@ import { UserRole } from '../types/roles';
 import { UserButton } from './UserButton';
 
 const unauthorizedMockdata = [
-  { label: 'Početna', icon: IconHome },
+  { label: 'Početna', icon: IconHome, link: '/lajhsbd' },
   {
     label: 'Pretraživanje',
     icon: IconSearch,
