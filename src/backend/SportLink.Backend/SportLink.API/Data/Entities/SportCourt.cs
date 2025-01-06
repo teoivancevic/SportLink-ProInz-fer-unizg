@@ -48,7 +48,7 @@ public class SportCourtConfigurationBuilder : IEntityTypeConfiguration<SportCour
         builder.HasOne(x => x.SportsObject)
             .WithMany(o => o.SportCourts)
             .HasForeignKey(x => x.SportsObjectId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
