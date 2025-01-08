@@ -18,8 +18,10 @@ using SportLink.API.Services.Auth;
 using SportLink.API.Services.Email;
 using SportLink.API.Services.Organization;
 using SportLink.API.Services.OTPCode;
+using SportLink.API.Services.Search;
 using SportLink.API.Services.User;
 using SportLink.Core.Handlers;
+using SportLink.Core.Helpers;
 using SportLink.Core.Models;
 
 var logger = LoggerFactory.Create(config =>
@@ -135,6 +137,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
+builder.Services.AddScoped<ISearchService<TournamentDto, TournamentSearchParameters>, TournamentSearchService>();
 
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
