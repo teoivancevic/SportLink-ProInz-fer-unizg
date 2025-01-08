@@ -12,7 +12,7 @@ public class SportCourt : BaseEntity
     //ako zelimo pratit koliko ima terena za taj sport (mozda nepotrebno posto nemamo rezervacije)
     public int AvailableCourts { get; set; } 
     public int SportsObjectId { get; set; }
-    public string CurrencyISO { get; set; }
+    // public string CurrencyISO { get; set; }
     public decimal minHourlyPrice { get; set; }
     public decimal maxHourlyPrice { get; set; }
     
@@ -48,7 +48,7 @@ public class SportCourtConfigurationBuilder : IEntityTypeConfiguration<SportCour
         builder.HasOne(x => x.SportsObject)
             .WithMany(o => o.SportCourts)
             .HasForeignKey(x => x.SportsObjectId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
