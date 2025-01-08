@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Data;
 using SportLink.API.Data.Entities;
 using SportLink.API.Services.Email;
@@ -129,7 +130,7 @@ namespace SportLink.API.Services.Organization
                 organization.RejectionResponse = reason;
                 var orgDto = _mapper.Map<OrganizationDto>(organization);
 
-                await _emailService.SendRejectionEmailAsync(orgDto, reason, organizationOwner.Email); 
+                await _emailService.SendRejectionEmailAsync(orgDto, reason, organizationOwner.Email);
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -141,37 +142,68 @@ namespace SportLink.API.Services.Organization
 
         // ---------------------- Organization's Profile ---------------------- //
 
-        public async Task<ProfileDto> GetProfile(int id)
-        {
-            var profile = await _context.Organizations.FindAsync(id);
-            if (profile is not null && profile.VerificationStatus == VerificationStatusEnum.Accepted)
-            {
-                return _mapper.Map<ProfileDto>(profile);
-            }
+        // public async Task<ProfileDto> GetProfile(int id)
+        // {
+        //     var profile = await _context.Organizations.FindAsync(id);
+        //     if (profile is not null && profile.VerificationStatus == VerificationStatusEnum.Accepted)
+        //     {
+        //         return _mapper.Map<ProfileDto>(profile);
+        //     }
 
-            return null!;
-        }
+        //     return null!;
+        // }
 
         public async Task<List<TournamentDto>> GetTournaments(int id)
         {
             var tournaments = await _context.Tournaments.Where(x => x.OrganizationId == id).ToListAsync();
+            if (tournaments.IsNullOrEmpty())
+            {
+                return null!;
+            }
             return _mapper.Map<List<TournamentDto>>(tournaments);
         }
 
         public async Task<List<TrainingGroupDto>> GetTrainingGroups(int id)
         {
             var trainingGroups = await _context.TrainingGroups.Where(x => x.OrganizationId == id).ToListAsync();
+            if (trainingGroups.IsNullOrEmpty())
+            {
+                return null!;
+            }
             return _mapper.Map<List<TrainingGroupDto>>(trainingGroups);
         }
 
         public async Task<List<SportCourtDto>> GetSportCourts(int id)
         {
-            //var sportCourts = await _context.CourtBookings.Where(x => x.OrganizationId == id).ToListAsync();
-            //return _mapper.Map<List<SportCourtDto>>(sportCourts);
-            return null!;
+            var sportCourts = await _context.CourtBookings.Include(sc => sc.SportsObject).Where(sc => sc.SportsObject.OrganizationId == id).ToListAsync();
+
+            // var sportCourts = await _context.SportCourts
+            // .Include(sc => sc.SportsObject) // Include the related SportsObject
+            // .ThenInclude(so => so.WorkTimes) // Include WorkTimes if needed
+            // .Where(sc => sc.SportsObject.OrganizationId == organizationId) // Filter by OrganizationId
+            // .Select(sc => new SportCourtDto
+            // {
+            //     SportId = sc.SportId,
+            //     AvailableCourts = sc.AvailableCourts,
+            //     SportsObjectId = sc.SportsObjectId,
+            //     CurrencyISO = sc.CurrencyISO,
+            //     minHourlyPrice = sc.minHourlyPrice,
+            //     maxHourlyPrice = sc.maxHourlyPrice,
+            //     Description = sc.SportsObject.Description,
+            //     Location = sc.SportsObject.Location,
+            //     OrganizationId = sc.SportsObject.OrganizationId,
+            //     DaysOfWeek = sc.SportsObject.WorkTimes.SelectMany(wt => new WorkTimeDto {
+            //         DaysOfWeek = wt.DaysOfWeek,
+            //         OpenFrom = wt.OpenFrom,
+            //         OpenTo = wt.OpenTo
+            //      }).ToList()
+            // })
+            // .ToListAsync();
+            // return sportCourts;
+            return _mapper.Map<List<SportCourtDto>>(sportCourts);
         }
 
-        public async Task<bool> UpdateProfile(int id, ProfileDto profileDto)
+        public async Task<ActionResult<ProfileDto>> UpdateProfile(int id, ProfileDto profileDto)
         {
             var profile = await _context.Organizations.FindAsync(id);
             if (profile is not null && profile.VerificationStatus == VerificationStatusEnum.Accepted)
@@ -183,25 +215,74 @@ namespace SportLink.API.Services.Organization
                 profile.Location = profileDto.Location ?? profile.Location;
                 await _context.SaveChangesAsync();
 
-                return true;
+                return new OkObjectResult(_mapper.Map<ProfileDto>(profile));
             }
 
-            return false;
+            return null!;
         }
 
         public async Task<bool> AddTournament(int id, TournamentDto tournamentDto)
-        {    // provjerit postoji li ta org.?
+        {
+            var org = await _context.Organizations.FindAsync(id);
+            if (org is null)
+            {
+                return false;
+            }
             tournamentDto.OrganizationId = id;
-            await _context.Tournaments.AddAsync(_mapper.Map<Tournament>(tournamentDto));
+            _context.Tournaments.Add(_mapper.Map<Tournament>(tournamentDto));
             await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> AddTrainingGroup(int id, TrainingGroupDto trainingGroupDto)
         {
+            var org = await _context.Organizations.FindAsync(id);
+            if (org is null)
+            {
+                return false;
+            }
             trainingGroupDto.OrganizationId = id;
-            await _context.TrainingGroups.AddAsync(_mapper.Map<TrainingGroup>(trainingGroupDto));
+            _context.TrainingGroups.Add(_mapper.Map<TrainingGroup>(trainingGroupDto));
             await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> AddSportCourt(int id, SportCourtDto sportCourtDto)
+        {
+            var org = await _context.Organizations.FindAsync(id);
+            if (org is null)
+            {
+                return false;
+            }
+
+            var sportsObject = new SportsObject
+            {
+                Description = sportCourtDto.Description,
+                Location = sportCourtDto.Location,
+                OrganizationId = sportCourtDto.OrganizationId,
+                WorkTimes = sportCourtDto.WorkTimes.Select(wt => new WorkTime
+                {
+                    DaysOfWeek = wt.DaysOfWeek,
+                    OpenFrom = wt.OpenFrom,
+                    OpenTo = wt.OpenTo
+                }).ToList()
+            };
+
+            _context.CourtBookings.Add(_mapper.Map<SportCourt>(sportCourtDto)); // zapravo: _context.SportsObject.Add(sportsObject);
+            await _context.SaveChangesAsync();
+
+            var sportCourt = new SportCourt
+            {
+                SportId = sportCourtDto.SportId,
+                AvailableCourts = sportCourtDto.AvailableCourts,
+                CurrencyISO = sportCourtDto.CurrencyISO,
+                minHourlyPrice = sportCourtDto.MinHourlyPrice,
+                maxHourlyPrice = sportCourtDto.MaxHourlyPrice,
+                SportsObjectId = sportsObject.Id
+            };
+
+            // zapravo: _context.SportCourts.Add(sportCourt);
+            _context.CourtBookings.Add(sportCourt);
             return true;
         }
     }

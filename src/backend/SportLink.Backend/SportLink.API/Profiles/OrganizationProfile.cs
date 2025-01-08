@@ -9,5 +9,13 @@ public class OrganizationProfile : Profile
     {
         CreateMap<OrganizationDto, Organization>();
         CreateMap<Organization, OrganizationDto>();
+        CreateMap<TournamentDto, Tournament>();
+        CreateMap<Tournament, TournamentDto>();
+        CreateMap<TrainingGroupDto, TrainingGroup>();
+        CreateMap<TrainingGroup, TrainingGroupDto>();
+        CreateMap<SportCourtDto, SportCourt>();
+        CreateMap<SportCourt, SportCourtDto>();
+        CreateMap<ProfileDto, Organization>();
+        CreateMap<Organization, ProfileDto>();
     }
 }

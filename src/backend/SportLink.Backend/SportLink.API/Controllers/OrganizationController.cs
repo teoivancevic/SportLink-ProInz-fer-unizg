@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SportLink.API.Services.Organization;
+using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
 namespace SportLink.API.Controllers
@@ -112,19 +113,19 @@ namespace SportLink.API.Controllers
 
         // ---------------------- Organization's Profile ---------------------- //
 
-        [HttpGet, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]        // Roles?
-        [Route("{id}")]
-        public async Task<ActionResult<ProfileDto>> GetProfile(int id)
-        {
-            var profile = await _organizationService.GetProfile(id);
-            if (profile is null)
-            {
-                return NotFound("Profil organizacije ne postoji.");
-            }
-            return Ok(profile);
-        }
+        // [HttpGet, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]        // Roles?
+        // [Route("{id}")]
+        // public async Task<ActionResult<ProfileDto>> GetProfile(int id)
+        // {
+        //     var profile = await _organizationService.GetProfile(id);
+        //     if (profile is null)
+        //     {
+        //         return NotFound("Profil organizacije ne postoji.");
+        //     }
+        //     return Ok(profile);
+        // }
 
-        [HttpPut, Authorize(Policy = "jwt_policy")]
+        [HttpGet, Authorize(Policy = "jwt_policy")]
         [Route("{id}/tournaments")]
         public async Task<ActionResult<List<TournamentDto>>> GetTournaments(int id)
         {
@@ -141,7 +142,12 @@ namespace SportLink.API.Controllers
         public async Task<ActionResult<List<TrainingGroupDto>>> GetTrainingGroups(int id)
         {
             var trainingGroups = await _organizationService.GetTrainingGroups(id);
-            if (trainingGroups is null)
+            var org = await _organizationService.GetSingleOrganization(id);
+            if (org is null)
+            {
+                return NotFound("Organizacija ne postoji.");
+            }
+            if (trainingGroups is null && org is not null)
             {
                 return NotFound("Nema formiranih grupa za trening.");
             }
@@ -153,7 +159,12 @@ namespace SportLink.API.Controllers
         public async Task<ActionResult<List<SportCourtDto>>> GetSportCourts(int id)
         {
             var sportCourts = await _organizationService.GetSportCourts(id);
-            if (sportCourts is null)
+            var org = await _organizationService.GetSingleOrganization(id);
+            if (org is null)
+            {
+                return NotFound("Organizacija ne postoji.");
+            }
+            if (sportCourts is null && org is not null)
             {
                 return NotFound("Organizacija nema raspoloživih terena.");
             }
@@ -167,7 +178,7 @@ namespace SportLink.API.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _organizationService.UpdateProfile(id, profile);
-                if (!result)
+                if (result is null)
                 {
                     return BadRequest("Profil neuspješno ažuriran.");
                 }
@@ -180,6 +191,10 @@ namespace SportLink.API.Controllers
         [Route("{id}/add-tournament")]
         public async Task<ActionResult<bool>> AddTournament(int id, [FromBody] TournamentDto tournament)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _organizationService.AddTournament(id, tournament);
             if (!result)
             {
@@ -192,12 +207,32 @@ namespace SportLink.API.Controllers
         [Route("{id}/add-training-group")]
         public async Task<ActionResult<bool>> AddTrainingGroup(int id, [FromBody] TrainingGroupDto trainingGroup)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _organizationService.AddTrainingGroup(id, trainingGroup);
             if (!result)
             {
                 return BadRequest("Grupa za trening neuspješno dodana.");
             }
             return Ok(trainingGroup);
+        }
+
+        [HttpPost, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+        [Route("{id}/add-sport-court")]
+        public async Task<ActionResult<bool>> AddSportCourt(int id, [FromBody] SportCourtDto sportCourt)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _organizationService.AddSportCourt(id, sportCourt);
+            if (!result)
+            {
+                return BadRequest("Teren neuspješno dodan.");
+            }
+            return Ok(sportCourt);
         }
     }
 }

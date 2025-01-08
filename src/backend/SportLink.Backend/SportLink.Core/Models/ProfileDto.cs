@@ -1,4 +1,3 @@
-//using SportLink.API.Data.Entities;
 namespace SportLink.Core.Models;
 public class ProfileDto
 {
@@ -8,7 +7,5 @@ public class ProfileDto
     public string ContactEmail { get; set; }
     public string ContactPhoneNumber { get; set; }
     public string Location { get; set; }
-    public int OwnerId { get; set; }
-
-    //public virtual ICollection<SportLink.API.Data.Entities.SocialNetwork> SocialNetworks { get; set; }
+    public List<SocialNetworkDto> SocialNetworks { get; set; }
 }
