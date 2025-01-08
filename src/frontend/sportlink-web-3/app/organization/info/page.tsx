@@ -3,8 +3,9 @@ import { useState } from 'react'
 import { Star, Edit } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import EditProfilePopup from './EditProfilePopup'
+import EditProfilePopup from '../../../components/EditProfilePopup'
 import { useRouter } from 'next/navigation'
+import NavMenu from "@/components/nav-org-profile";
 
 interface OrganizationInfo {
   name: string;
@@ -32,11 +33,12 @@ export default function InformacijeContent() {
 
   const router = useRouter()
   const handleReviewClick = () => {
-    router.push('/reviews')
+    router.push('./reviews')
   }
 
   return (
     <div className="container mx-auto p-4 space-y-8">
+      <NavMenu></NavMenu>
       <h1 className="text-3xl font-bold mb-6">Informacije</h1>
       
       <div className="grid md:grid-cols-2 gap-8">

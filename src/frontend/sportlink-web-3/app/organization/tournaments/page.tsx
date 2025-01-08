@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CalendarIcon, MapPinIcon, DollarSignIcon, ActivityIcon } from 'lucide-react'
+import NavMenu from "@/components/nav-org-profile";
 
 interface Competition {
   id: number;
@@ -91,7 +92,8 @@ function CompetitionCard({ competition }: { competition: Competition }) {
 
 export default function NatjecanjaContent() {
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto p-4 space-y-8">
+      <NavMenu></NavMenu>
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">Natjecanja</h1>
       </div>
