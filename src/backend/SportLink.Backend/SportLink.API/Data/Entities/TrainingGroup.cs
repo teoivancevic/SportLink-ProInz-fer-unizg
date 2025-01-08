@@ -53,6 +53,6 @@ public class TrainingGroupConfigurationBuilder : IEntityTypeConfiguration<Traini
         builder.HasOne(x => x.Organization)
             .WithMany(o => o.TrainingGroups)
             .HasForeignKey(x => x.OrganizationId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

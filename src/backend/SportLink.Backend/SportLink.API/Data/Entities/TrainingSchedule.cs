@@ -6,8 +6,8 @@ namespace SportLink.API.Data.Entities;
 public class TrainingSchedule : BaseEntity
 {
     public DayOfWeek DayOfWeek { get; set; }
-    public TimeSpan StartTime { get; set; }
-    public TimeSpan EndTime { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
     public int TrainingGroupId { get; set; }
     
     public virtual TrainingGroup TrainingGroup { get; set; }

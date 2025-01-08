@@ -41,6 +41,6 @@ public class SocialNetworkConfigurationBuilder : IEntityTypeConfiguration<Social
         builder.HasOne(r => r.Organization)
             .WithMany(o => o.SocialNetworks) 
             .HasForeignKey(r => r.OrganizationId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
