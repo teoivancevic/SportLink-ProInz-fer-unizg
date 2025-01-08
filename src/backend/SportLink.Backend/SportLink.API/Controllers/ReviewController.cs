@@ -53,7 +53,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet]
-    [Route("GetOrganizationReviews")]
+    [Route("{organizationId}/GetOrganizationReviews")]
     public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId, [FromQuery] SortOptionEnum sortOption = SortOptionEnum.UpdatedAtDescending)
     {
         var result = await _reviewService.GetOrganizationReviews(organizationId, sortOption);
@@ -82,7 +82,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet]
-    [Route("GetReviewStats")]
+    [Route("{organizationId}/GetReviewStats")]
 
     public async Task<IActionResult> GetReviewStats(int organizationId)
     {
@@ -99,7 +99,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet]
-    [Route("GetRatingCount")]
+    [Route("{organizationId}GetRatingCount")]
     public async Task<IActionResult> GetRatingCount(int organizationId)
     {
         var stats = await _reviewService.GetOrganizatoionRatingCounts(organizationId);
