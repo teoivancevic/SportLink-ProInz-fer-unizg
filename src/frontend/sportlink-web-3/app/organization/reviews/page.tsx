@@ -1,8 +1,11 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { AuthorizedElement } from '@/components/auth/authorized-element'
 import { Star, ArrowLeft } from 'lucide-react'
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 
 // Mock data for reviews
 const reviews = [
@@ -66,8 +69,22 @@ const reviews = [
 
 export default function ReviewsPage() {
   const router = useRouter()
+  const [newReview, setNewReview] = useState({ rating: 0, comment: '' })
   const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
 
+  const handleStarClick = (rating: number) => {
+    setNewReview(prev => ({ ...prev, rating }))
+  }
+
+  const handleCommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNewReview(prev => ({ ...prev, comment: event.target.value }))
+  }
+
+  const handleSubmitReview = () => {
+    // TODO : send review to backend
+    console.log('Submitting review:', newReview)
+    setNewReview({ rating: 0, comment: '' })
+  }
   return (
     <div className="container mx-auto px-4 py-8">
       <Button 
@@ -89,6 +106,37 @@ export default function ReviewsPage() {
           ))}
         </div>
       </div>
+      {/* <AuthorizedElement>
+        {({ userData }) => ( */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Dodajte Vašu Recenziju</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center mb-4">
+              <p className="mr-2">Vaša ocjena:</p>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star 
+                  key={star} 
+                  className={`w-6 h-6 cursor-pointer ${star <= newReview.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                  onClick={() => handleStarClick(star)}
+                />
+              ))}
+            </div>
+            <Textarea
+              placeholder="Napišite vašu recenziju ovdje..."
+              className="mb-4"
+              value={newReview.comment}
+              onChange={handleCommentChange}
+            />
+            <Button onClick={handleSubmitReview} disabled={newReview.rating === 0 || newReview.comment.trim() === ''}>
+              Pošalji Recenziju
+            </Button>
+          </CardContent>
+        </Card>
+      {/* )}
+      </AuthorizedElement> */}
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {reviews.map((review) => (
           <Card key={review.id} className="h-full">
