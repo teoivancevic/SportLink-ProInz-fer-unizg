@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Services.Organization;
 using SportLink.Core.Enums;
 using SportLink.Core.Models;
@@ -129,8 +130,13 @@ namespace SportLink.API.Controllers
         [Route("{id}/tournaments")]
         public async Task<ActionResult<List<TournamentDto>>> GetTournaments(int id)
         {
+            var org = await _organizationService.GetSingleOrganization(id);
+            if (org is null)
+            {
+                return NotFound("Organizacija ne postoji.");
+            }
             var tournaments = await _organizationService.GetTournaments(id);
-            if (tournaments is null)
+            if (tournaments.IsNullOrEmpty() && org is not null)
             {
                 return NotFound("Nema formiranih turnira.");
             }
@@ -141,13 +147,13 @@ namespace SportLink.API.Controllers
         [Route("{id}/training-groups")]
         public async Task<ActionResult<List<TrainingGroupDto>>> GetTrainingGroups(int id)
         {
-            var trainingGroups = await _organizationService.GetTrainingGroups(id);
             var org = await _organizationService.GetSingleOrganization(id);
             if (org is null)
             {
                 return NotFound("Organizacija ne postoji.");
             }
-            if (trainingGroups is null && org is not null)
+            var trainingGroups = await _organizationService.GetTrainingGroups(id);
+            if (trainingGroups.IsNullOrEmpty() && org is not null)
             {
                 return NotFound("Nema formiranih grupa za trening.");
             }
@@ -158,13 +164,13 @@ namespace SportLink.API.Controllers
         [Route("{id}/sport-courts")]
         public async Task<ActionResult<List<SportCourtDto>>> GetSportCourts(int id)
         {
-            var sportCourts = await _organizationService.GetSportCourts(id);
             var org = await _organizationService.GetSingleOrganization(id);
             if (org is null)
             {
                 return NotFound("Organizacija ne postoji.");
             }
-            if (sportCourts is null && org is not null)
+            var sportCourts = await _organizationService.GetSportCourts(id);
+            if (sportCourts.IsNullOrEmpty() && org is not null)
             {
                 return NotFound("Organizacija nema raspoloživih terena.");
             }

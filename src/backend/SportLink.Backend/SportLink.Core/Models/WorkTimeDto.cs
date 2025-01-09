@@ -9,7 +9,9 @@ namespace SportLink.Core.Models
     {
         public int SportsObjectId { get; set; }
         public List<DayOfWeek> DaysOfWeek { get; set; }
-        public TimeOnly OpenFrom { get; set; }
-        public TimeOnly OpenTo { get; set; }
+        public static List<DayOfWeek> ToDaysOfWeekList(string daysOfWeekString) => daysOfWeekString.Split(',').Select(day => (DayOfWeek)Enum.Parse(typeof(DayOfWeek), day)).ToList();
+        public static string ToDaysOfWeekString(List<DayOfWeek> daysOfWeek) => string.Join(",", daysOfWeek);
+        public string OpenFrom { get; set; }
+        public string OpenTo { get; set; }
     }
 }

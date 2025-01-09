@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace SportLink.API.Data.Entities;
 
 public class WorkTime : BaseEntity
-{ 
+{
     public int Id { get; set; }
     public int SportsObjectId { get; set; }
-    public List<DayOfWeek> DaysOfWeek { get; set; } 
+    public string DaysOfWeek { get; set; }
     public TimeOnly OpenFrom { get; set; }
     public TimeOnly OpenTo { get; set; }   //npr. 8.30 je (8, 30)
 
