@@ -139,7 +139,7 @@
             return (averageRating, reviewCount);
         }
 
-        public async Task<Dictionary<int, int>> GetOrganizatoionRatingCounts(int organizationId)
+        public async Task<Dictionary<int, int>> GetOrganizatoionRatingDistribution(int organizationId)
         {
             var reviewCounts = await _context.Reviews
                 .Where(r => r.OrganizationId == organizationId)
