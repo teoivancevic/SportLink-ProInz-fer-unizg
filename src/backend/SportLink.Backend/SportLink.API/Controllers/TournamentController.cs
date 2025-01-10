@@ -17,7 +17,8 @@ public class TournamentController : ControllerBase
         _searchService = searchService;
     }
 
-    [HttpGet("search")]
+    [HttpGet]
+    [Route("search")]
     public async Task<ActionResult<List<TournamentDto>>> SearchAsync([FromQuery] TournamentSearchParameters parameters)
     {
         try

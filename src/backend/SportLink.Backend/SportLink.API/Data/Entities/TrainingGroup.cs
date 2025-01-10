@@ -8,6 +8,7 @@ namespace SportLink.API.Data.Entities;
 public class TrainingGroup : BaseEntity
 {
     public int Id { get; set; }
+    public string Name { get; set; }
     public int AgeFrom { get; set; }
     public int AgeTo { get; set; }
     public SexEnum Sex { get; set; }
@@ -28,6 +29,8 @@ public class TrainingGroupConfigurationBuilder : IEntityTypeConfiguration<Traini
     {
         builder.ToTable(nameof(TrainingGroup));
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Name)
+            .IsRequired();
         builder.Property(x => x.AgeFrom)
             .IsRequired();
         builder.Property(x => x.AgeTo)

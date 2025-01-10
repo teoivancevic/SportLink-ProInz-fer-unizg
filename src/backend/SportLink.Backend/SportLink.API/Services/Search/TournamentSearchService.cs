@@ -34,14 +34,14 @@ public class TournamentSearchService : ISearchService<TournamentDto, TournamentS
             query = query.Where(t => parameters.SportIds.Contains(t.SportId));
         }
 
-        if (parameters.minPrice.HasValue)
+        if (parameters.MinPrice.HasValue)
         {
-            query = query.Where(t => t.EntryFee > parameters.minPrice);
+            query = query.Where(t => t.EntryFee >= parameters.MinPrice);
         }
 
-        if (parameters.maxPrice.HasValue)
+        if (parameters.MaxPrice.HasValue)
         {
-            query = query.Where(t => t.EntryFee < parameters.maxPrice);
+            query = query.Where(t => t.EntryFee <= parameters.MaxPrice);
         }
         
         if (parameters.StartDate.HasValue)
