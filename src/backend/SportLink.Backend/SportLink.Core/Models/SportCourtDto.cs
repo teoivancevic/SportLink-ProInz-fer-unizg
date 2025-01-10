@@ -7,7 +7,7 @@ namespace SportLink.Core.Models
 {
     public class SportCourtDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public int SportId { get; set; }
         public int AvailableCourts { get; set; }
         public int SportsObjectId { get; set; }

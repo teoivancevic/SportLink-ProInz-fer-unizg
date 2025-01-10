@@ -12,7 +12,7 @@ namespace SportLink.API.Services.Organization
     {
         Task<ActionResult<OrganizationDto>> CreateOrganization(OrganizationDto organization);
         Task<List<OrganizationDto>> GetOrganizations(bool isVerified);
-        Task<OrganizationDto> GetSingleOrganization(int id);
+        Task<ProfileDto> GetSingleOrganization(int id);
         Task<bool> VerifyOrganization(int id);
         Task<bool> DeclineOrganization(int id, string reason);
         Task<List<OrganizationDto>> GetMyOrganizations();

@@ -8,6 +8,6 @@ public class ProfileDto
     public string ContactPhoneNumber { get; set; }
     public string Location { get; set; }
     public List<SocialNetworkDto> SocialNetworks { get; set; }
-    public string Sport { get; set; }   // ili ne, nije tako u bazi
-    public decimal Rating { get; set; }
+    //public string Sport { get; set; }   // ili ne, nije tako u bazi
+    public double Rating { get; set; }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Data;
 using SportLink.API.Data.Entities;
 using SportLink.API.Services.Email;
+using SportLink.API.Services.Review;
 using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
@@ -22,12 +24,14 @@ namespace SportLink.API.Services.Organization
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailService _emailService;
-        public OrganizationService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IEmailService emailService)
+        private readonly IReviewService _reviewService;
+        public OrganizationService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IEmailService emailService, IReviewService reviewService)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _emailService = emailService;
+            _reviewService = reviewService;
         }
 
         public async Task<ActionResult<OrganizationDto>> CreateOrganization(OrganizationDto organizationDto)
@@ -63,12 +67,34 @@ namespace SportLink.API.Services.Organization
             }
         }
 
-        public async Task<OrganizationDto> GetSingleOrganization(int id)
+        public async Task<ProfileDto> GetSingleOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
             if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
             {
-                return _mapper.Map<OrganizationDto>(organization);
+                var (AverageRating, ReviewCount) = await _reviewService.GetOrganizationReviewStats(id);
+                var rating = AverageRating;
+                var profile = await _context.Organizations
+                            .Include(x => x.SocialNetworks)
+                            .Where(x => x.Id == id)
+                            .Select(x => new ProfileDto
+                            {
+                                Id = x.Id,
+                                Name = x.Name,
+                                Description = x.Description,
+                                ContactEmail = x.ContactEmail,
+                                ContactPhoneNumber = x.ContactPhoneNumber,
+                                Location = x.Location,
+                                Rating = rating,
+                                SocialNetworks = x.SocialNetworks.Select(s => new SocialNetworkDto
+                                {
+                                    Type = s.Type,
+                                    Link = s.Link,
+                                    Username = s.Username,
+                                    OrganizationId = s.OrganizationId
+                                }).ToList()
+                            }).FirstOrDefaultAsync();
+                return profile!;
             }
             else
             {
@@ -142,20 +168,23 @@ namespace SportLink.API.Services.Organization
 
         // ---------------------- Organization's Profile ---------------------- //
 
-        // public async Task<ProfileDto> GetProfile(int id)
-        // {
-        //     var profile = await _context.Organizations.FindAsync(id);
-        //     if (profile is not null && profile.VerificationStatus == VerificationStatusEnum.Accepted)
-        //     {
-        //         return _mapper.Map<ProfileDto>(profile);
-        //     }
-
-        //     return null!;
-        // }
-
         public async Task<List<TournamentDto>> GetTournaments(int id)
         {
-            var tournaments = await _context.Tournaments.Where(x => x.OrganizationId == id).ToListAsync();
+            var tournaments = await _context.Tournaments.Include(x => x.Sport).Where(x => x.OrganizationId == id).Select(
+                x => new TournamentDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    TimeFrom = x.TimeFrom,
+                    TimeTo = x.TimeTo,
+                    EntryFee = x.EntryFee,
+                    Description = x.Description,
+                    Location = x.Location,
+                    OrganizationId = x.OrganizationId,
+                    OrganizationName = x.Organization.Name,
+                    SportName = x.Sport.Name
+                }
+            ).ToListAsync();
             if (tournaments.IsNullOrEmpty())
             {
                 return null!;
@@ -176,12 +205,11 @@ namespace SportLink.API.Services.Organization
         public async Task<List<SportCourtDto>> GetSportCourts(int id)
         {
             //var sportCourts = await _context.SportCourts.Include(sc => sc.SportsObject).Where(sc => sc.SportsObject.OrganizationId == id).ToListAsync();
-            // var workTimes = await _context.WorkTimes.Where(wt => wt.SportsObjectId == 1).ToListAsync();
-            // Console.WriteLine(workTimes);
+
             var sportCourts = await _context.SportCourts
-            .Include(sc => sc.SportsObject) // Include the related SportsObject
-            .ThenInclude(so => so.WorkTimes) // Include WorkTimes if needed
-            .Where(sc => sc.SportsObject.OrganizationId == id) // Filter by OrganizationId
+            .Include(sc => sc.SportsObject)
+            .ThenInclude(so => so.WorkTimes)
+            .Where(sc => sc.SportsObject.OrganizationId == id)
             .Select(sc => new SportCourtDto
             {
                 SportId = sc.SportId,
@@ -209,6 +237,7 @@ namespace SportLink.API.Services.Organization
         public async Task<ActionResult<ProfileDto>> UpdateProfile(int id, ProfileDto profileDto)
         {
             var profile = await _context.Organizations.FindAsync(id);
+            var existingSocialNetworks = await _context.SocialNetworks.Where(x => x.OrganizationId == id).ToListAsync();
             if (profile is not null && profile.VerificationStatus == VerificationStatusEnum.Accepted)
             {
                 profile.Name = profileDto.Name ?? profile.Name;
@@ -216,11 +245,41 @@ namespace SportLink.API.Services.Organization
                 profile.ContactEmail = profileDto.ContactEmail ?? profile.ContactEmail;
                 profile.ContactPhoneNumber = profileDto.ContactPhoneNumber ?? profile.ContactPhoneNumber;
                 profile.Location = profileDto.Location ?? profile.Location;
+                List<SocialNetwork> updatedSocialNetworks = existingSocialNetworks;
+                foreach (var sn in profileDto.SocialNetworks)
+                {
+                    var existing = updatedSocialNetworks.FirstOrDefault(x => x.Type == sn.Type);
+                    if (existing is null)
+                    {
+                        updatedSocialNetworks.Add(new SocialNetwork
+                        {
+                            Type = sn.Type,
+                            Link = sn.Link,
+                            Username = sn.Username,
+                            OrganizationId = id
+                        });
+                    }
+                    else if (existing is not null && (existing.Link != sn.Link || existing.Username != sn.Username))
+                    {
+                        existing.Link = sn.Link;
+                        existing.Username = sn.Username;
+                    }
+                }
+
+                foreach (var sn in updatedSocialNetworks)
+                {
+                    var matching = profileDto.SocialNetworks?.FirstOrDefault(x => x.Type == sn.Type);
+                    if (matching is null)
+                    {
+                        updatedSocialNetworks.Remove(sn);
+                    }
+                }
+
+                profile.SocialNetworks = updatedSocialNetworks;
                 await _context.SaveChangesAsync();
 
-                return new OkObjectResult(_mapper.Map<ProfileDto>(profile));
+                return new OkObjectResult(profileDto);
             }
-
             return null!;
         }
 
@@ -303,7 +362,6 @@ namespace SportLink.API.Services.Organization
                 SportsObjectId = sportsObject.Id
             };
 
-            // zapravo: _context.SportCourts.Add(sportCourt);
             _context.SportCourts.Add(sportCourt);
             await _context.SaveChangesAsync();
             return true;

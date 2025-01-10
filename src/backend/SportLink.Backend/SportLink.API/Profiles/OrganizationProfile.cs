@@ -13,6 +13,8 @@ public class OrganizationProfile : Profile
         CreateMap<Tournament, TournamentDto>();
         CreateMap<TrainingGroupDto, TrainingGroup>();
         CreateMap<TrainingGroup, TrainingGroupDto>();
+        CreateMap<TrainingScheduleDto, TrainingSchedule>();
+        CreateMap<TrainingSchedule, TrainingScheduleDto>();
         CreateMap<SportCourtDto, SportCourt>();
         CreateMap<SportCourt, SportCourtDto>();
         CreateMap<ProfileDto, Organization>();
