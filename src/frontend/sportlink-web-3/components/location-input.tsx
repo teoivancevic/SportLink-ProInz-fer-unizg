@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
 import { Libraries } from '@react-google-maps/api';
-import { useRef, useEffect, useMemo } from 'react'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { MapPin } from 'lucide-react'
-import { useLoadScript } from '@react-google-maps/api'
+import { useEffect, useRef, useState } from 'react';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { MapPin } from 'lucide-react';
+import { useLoadScript } from '@react-google-maps/api';
 
 const autocompleteStyle = `
   .pac-container {
@@ -69,90 +69,71 @@ export function LocationInput({ value, onChange }: LocationInputProps) {
     language: 'hr',
   });
 
-  const AutocompleteComponent = useMemo(() => {
-    const Component = ({ value, onChange }: LocationInputProps) => {
-      const autocompleteRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [internalValue, setInternalValue] = useState(value);
 
-      useEffect(() => {
+  useEffect(() => {
+    if (!isLoaded || !inputRef.current || !window.google) return;
 
-        if (!autocompleteRef.current || !window.google) {
-            console.log("Google Maps API not loaded or input ref not found");
-            return;
-          }
-      
-        const inputElement = autocompleteRef.current; 
-      
-        const autocomplete = new google.maps.places.Autocomplete(inputElement, {
-          componentRestrictions: { country: 'HR' },
-          fields: ['formatted_address', 'geometry'],
-          types: ['geocode']
-        });
-      
-        const styleElement = document.createElement('style');
-        styleElement.textContent = autocompleteStyle;
-        document.head.appendChild(styleElement);
+    const inputElement = inputRef.current;
 
-        const listener = autocomplete.addListener('place_changed', () => {
-            const place = autocomplete.getPlace();
-            if (place.adr_address) {
-                onChange(place.adr_address);
-            }
-            
-           
-            if (place.formatted_address) {
-                onChange(place.formatted_address);
-            }
-          });
-      
-        const preventSubmit = (e: KeyboardEvent) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-          }
-        };
-      
-        inputElement.addEventListener('keydown', preventSubmit);
-      
-        return () => {
-          google.maps.event.removeListener(listener);
-          inputElement.removeEventListener('keydown', preventSubmit);
-          styleElement.remove();
-        };
-      }, [onChange]);
+    const autocomplete = new google.maps.places.Autocomplete(inputElement, {
+      componentRestrictions: { country: 'HR' },
+      fields: ['formatted_address', 'geometry'],
+      types: ['geocode'],
+    });
 
-      return (
-        <Input
-          ref={autocompleteRef}
-          placeholder="Unesite adresu..."
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          autoComplete="off"
-          required
-        />
-      );
+    const styleElement = document.createElement('style');
+    styleElement.textContent = autocompleteStyle;
+    document.head.appendChild(styleElement);
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place.formatted_address) {
+        setInternalValue(place.formatted_address);
+        onChange(place.formatted_address);
+      }
+    });
+
+    const preventSubmit = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+      }
     };
+    inputElement.addEventListener('keydown', preventSubmit);
 
-    Component.displayName = 'AutocompleteComponent';
-    return Component;
-  }, []);
+    return () => {
+      google.maps.event.clearInstanceListeners(autocomplete);
+      inputElement.removeEventListener('keydown', preventSubmit);
+      styleElement.remove();
+    };
+  }, [isLoaded]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInternalValue(newValue);
+    onChange(newValue);
+  };
 
   if (loadError) {
-    console.error('Google Maps failed to load:', loadError);
     return <div>Error loading Google Maps</div>;
   }
 
   return (
     <div className="space-y-2">
-        <Label className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            Lokacija
-        </Label>
-        {isLoaded ? (
-            <AutocompleteComponent value={value} onChange={onChange} />
-        ) : (
-            <Input placeholder="Loading..." disabled />
-        )}
+      <Label className="flex items-center gap-2">
+        <MapPin className="h-4 w-4" />
+        Lokacija
+      </Label>
+      <Input
+        ref={inputRef}
+        placeholder="Unesite adresu..."
+        type="text"
+        value={internalValue}
+        onChange={handleInputChange}
+        autoComplete="off"
+        required
+      />
     </div>
   );
 }
-

@@ -64,7 +64,7 @@ function CompetitionCard({ competition, onEdit, onDelete, popupOpened }: { compe
           <div className="flex items-center">
             <CalendarIcon className="mr-2 h-4 w-4" />
             <span className="text-sm">
-              {new Date(competition.timeFrom).toLocaleString()} - {new Date(competition.timeTo).toLocaleString()}
+              {new Date(competition.timeFrom).toLocaleString('hr-HR', { dateStyle: 'short', timeStyle: 'short' })} - {new Date(competition.timeTo).toLocaleString('hr-HR', { dateStyle: 'short', timeStyle: 'short' })}
             </span>
           </div>
           <div className="flex items-center">
@@ -86,7 +86,7 @@ function CompetitionCard({ competition, onEdit, onDelete, popupOpened }: { compe
             Uredi
           </Button>
           <Button variant="outline" size="sm" onClick={() => {
-            if (confirm(`Are you sure you want to delete the tournament "${competition.name}"?`)) {
+            if (confirm(`Jeste li sigurni da želite izbrisati natjecanje "${competition.name}"?`)) {
               onDelete(competition.id)
             }
           }} disabled={popupOpened}>
