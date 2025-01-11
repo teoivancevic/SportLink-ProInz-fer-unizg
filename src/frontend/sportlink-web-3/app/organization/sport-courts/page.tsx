@@ -21,9 +21,9 @@ export default function SportCourtsContent() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="container mx-auto p-4 space-y-4">
       <NavMenu />
-      <main className="flex-grow container mx-auto p-4 space-y-8">
+      <main className="flex-grow container space-y-4">
         <h1 className="text-3xl font-bold">Sportski Objekti i Tereni</h1>
         <p className="text-xl">Pregledajte naše sportske objekte, dostupne terene i njihove rasporede.</p>
         
