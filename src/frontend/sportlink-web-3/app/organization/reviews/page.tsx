@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { AuthorizedElement } from '@/components/auth/authorized-element'
+import AuthorizedElement from '@/components/auth/authorized-element'
 import { Star, ArrowLeft } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -106,8 +106,8 @@ export default function ReviewsPage() {
           ))}
         </div>
       </div>
-      {/* <AuthorizedElement>
-        {({ userData }) => ( */}
+      <AuthorizedElement>
+        {({ userData }) => (
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Dodajte Vašu Recenziju</CardTitle>
@@ -134,8 +134,8 @@ export default function ReviewsPage() {
             </Button>
           </CardContent>
         </Card>
-      {/* )}
-      </AuthorizedElement> */}
+      )}
+      </AuthorizedElement>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {reviews.map((review) => (
