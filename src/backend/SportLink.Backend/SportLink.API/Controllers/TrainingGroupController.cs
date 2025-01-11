@@ -28,7 +28,7 @@ public class TrainingGroupController : ControllerBase
 
             if (result == null || !result.Any())
 
-    {
+            {
                 return NotFound("No training groups found matching the search criteria.");
             }
 

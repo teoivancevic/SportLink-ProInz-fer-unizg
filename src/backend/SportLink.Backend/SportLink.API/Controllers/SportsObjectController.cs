@@ -25,7 +25,7 @@ public class SportsObjectController : ControllerBase
         var results = await _searchService.SearchAsync(parameters);
         if (results is null)
         {
-            return NotFound();
+            return NotFound("No such Sport Objects found");
         }
         return Ok(results);
     }

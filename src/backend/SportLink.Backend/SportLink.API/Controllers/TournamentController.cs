@@ -24,6 +24,10 @@ public class TournamentController : ControllerBase
         try
         {
             var results = await _searchService.SearchAsync(parameters);
+            if (results == null)
+            {
+                return NotFound("No such Sport Objects found");
+            }
             return Ok(results);
         }
         catch (Exception ex)
