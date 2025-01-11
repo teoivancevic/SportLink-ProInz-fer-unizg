@@ -48,11 +48,6 @@ public class TrainingGroupSearchService : ISearchService<TrainingGroupSearchDto,
             query = query.Where(tg => tg.Sex == parameters.Sex);
         }
 
-        if (parameters.MinPrice.HasValue)
-        {
-            query = query.Where(tg => tg.MonthlyPrice >= parameters.MinPrice);
-        }
-
         if (parameters.MaxPrice.HasValue)
         {
             query = query.Where(tg => tg.MonthlyPrice <= parameters.MaxPrice);

@@ -34,11 +34,6 @@ public class TournamentSearchService : ISearchService<TournamentDto, TournamentS
             query = query.Where(t => parameters.SportIds.Contains(t.SportId));
         }
 
-        if (parameters.MinPrice.HasValue)
-        {
-            query = query.Where(t => t.EntryFee >= parameters.MinPrice);
-        }
-
         if (parameters.MaxPrice.HasValue)
         {
             query = query.Where(t => t.EntryFee <= parameters.MaxPrice);

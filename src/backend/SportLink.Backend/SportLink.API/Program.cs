@@ -140,6 +140,7 @@ builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
 builder.Services.AddScoped<ISearchService<TournamentDto, TournamentSearchParameters>, TournamentSearchService>();
 builder.Services
     .AddScoped<ISearchService<TrainingGroupSearchDto, TrainingGroupSearchParameters>, TrainingGroupSearchService>();
+builder.Services.AddScoped<ISearchService<SportObjectSearchDto, SearchParameters>, SportObjectSearchService>();
 
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
