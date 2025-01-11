@@ -4,10 +4,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const menuItems = [
-  { href: '/organization', label: 'General info' },
-  { href: '/organization/training-groups', label: 'Traning Groups' },
-  { href: '/organization/sport-courts', label: 'Sport courts' },
-  { href: '/organization/tournaments', label: 'Tournaments' },
+  { href: '/organization', label: 'Profil organizacije' },
+  { href: '/organization/training-groups', label: 'Grupni treninzi' },
+  { href: '/organization/sport-courts', label: 'Sportski tereni' },
+  { href: '/organization/tournaments', label: 'Natjecanja' },
 ]
 
 export default function NavMenu() {

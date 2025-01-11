@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { LocationInput } from "@/components/location-input"
 
 interface EditProfilePopupProps {
   isOpen: boolean
@@ -33,6 +34,10 @@ export default function EditProfilePopup({ isOpen, onClose, onSubmit, initialDat
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prevData => ({ ...prevData, [name]: value }))
+  }
+
+  const handleLocationChange = (value: string) => {
+    setFormData(prevData => ({ ...prevData, location: value }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -86,12 +91,9 @@ export default function EditProfilePopup({ isOpen, onClose, onSubmit, initialDat
             />
           </div>
           <div>
-            <Label htmlFor="location">Lokacija</Label>
-            <Input
-              id="location"
-              name="location"
+            <LocationInput
               value={formData.location}
-              onChange={handleChange}
+              onChange={handleLocationChange}
             />
           </div>
           <div className="flex justify-end space-x-4">
