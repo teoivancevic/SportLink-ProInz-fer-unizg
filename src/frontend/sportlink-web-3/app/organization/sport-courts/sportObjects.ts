@@ -7,7 +7,6 @@ export interface WorkTime {
   export interface SportCourt {
     id: number;
     name: string;
-    minHourlyPrice: number;
     maxHourlyPrice: number;
     quantity: number;
     sport: string;
@@ -33,9 +32,9 @@ export interface WorkTime {
         { day: "Subota-Nedjelja", from: "08:00", to: "20:00" },
       ],
       sportCourts: [
-        { id: 1, name: "Teniski teren", minHourlyPrice: 50, maxHourlyPrice: 80, quantity: 4, sport: "Tenis" },
-        { id: 2, name: "Košarkaško igralište", minHourlyPrice: 40, maxHourlyPrice: 60, quantity: 2, sport: "Košarka" },
-        { id: 3, name: "Nogometni teren", minHourlyPrice: 100, maxHourlyPrice: 150, quantity: 1, sport: "Nogomet" },
+        { id: 1, name: "Teniski teren", maxHourlyPrice: 80, quantity: 4, sport: "Tenis" },
+        { id: 2, name: "Košarkaško igralište", maxHourlyPrice: 60, quantity: 2, sport: "Košarka" },
+        { id: 3, name: "Nogometni teren", maxHourlyPrice: 150, quantity: 1, sport: "Nogomet" },
       ],
     },
     {
@@ -49,8 +48,8 @@ export interface WorkTime {
         { day: "Nedjelja", from: "09:00", to: "20:00" },
       ],
       sportCourts: [
-        { id: 4, name: "Teretana", minHourlyPrice: 30, maxHourlyPrice: 50, quantity: 1, sport: "Fitness" },
-        { id: 5, name: "Dvorana za grupne treninge", minHourlyPrice: 60, maxHourlyPrice: 100, quantity: 2, sport: "Grupni treninzi" },
+        { id: 4, name: "Teretana", maxHourlyPrice: 50, quantity: 1, sport: "Fitness" },
+        { id: 5, name: "Dvorana za grupne treninge", maxHourlyPrice: 100, quantity: 2, sport: "Grupni treninzi" },
       ],
     },
     {
@@ -62,9 +61,9 @@ export interface WorkTime {
         { day: "Ponedjeljak-Nedjelja", from: "07:00", to: "21:00" },
       ],
       sportCourts: [
-        { id: 6, name: "Olimpijski bazen", minHourlyPrice: 80, maxHourlyPrice: 120, quantity: 1, sport: "Plivanje" },
-        { id: 7, name: "Mali bazen", minHourlyPrice: 40, maxHourlyPrice: 60, quantity: 1, sport: "Plivanje" },
-        { id: 8, name: "Sauna", minHourlyPrice: 30, maxHourlyPrice: 50, quantity: 3, sport: "Wellness" },
+        { id: 6, name: "Olimpijski bazen", maxHourlyPrice: 120, quantity: 1, sport: "Plivanje" },
+        { id: 7, name: "Mali bazen", maxHourlyPrice: 60, quantity: 1, sport: "Plivanje" },
+        { id: 8, name: "Sauna", maxHourlyPrice: 50, quantity: 3, sport: "Wellness" },
       ],
     },
   ];

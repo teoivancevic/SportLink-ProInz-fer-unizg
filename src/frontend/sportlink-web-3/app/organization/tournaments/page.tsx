@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CalendarIcon, MapPinIcon, ActivityIcon, EuroIcon, PlusIcon, XIcon, PencilIcon, Trash2Icon } from 'lucide-react'
-import AddTournamentForm from './tournament-form'
+import AddTournamentForm from './add-tournament-form'
 import NavMenu from '@/components/nav-org-profile'
 import { Tournament } from "./tournament"
 
