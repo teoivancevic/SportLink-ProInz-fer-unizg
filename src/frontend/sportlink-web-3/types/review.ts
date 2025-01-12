@@ -1,8 +1,40 @@
 export interface Review{
-    organisationId: number,
-    organisation: string,
-    userId: number,
-    user: string,
     rating: number,
-    descriptio: string,
+    description: string,
+    response: string,
+    userFirstName: string,
+    userLastName: string,
+    organizationName: string
 };
+
+export interface GetReviewsResponse {
+    data: Review[]
+}
+
+export interface ReviewStatsResponse {
+    averageRating: number,
+    reviewCount: number
+}
+
+export interface ReviewDistributionResponse {
+    one: number,
+    two: number,
+    three: number,
+    four: number,
+    five: number,
+}
+
+export interface CreateReviewRequest {
+    orgId: number,
+    rating: number,
+    description: string
+}
+
+export interface CreateReviewResponse {
+    rating: 0,
+    description: string,
+    response: string,
+    userFirstName: string,
+    userLastName: string,
+    organizationName: string
+}

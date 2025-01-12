@@ -22,6 +22,13 @@ import type {
   GetOrganizationResponse
 } from '@/types/org'
 
+import {
+  CreateReviewResponse,
+  GetReviewsResponse,
+  ReviewDistributionResponse,
+  ReviewStatsResponse,
+} from '@/types/review'
+
 type _ApiResponse<T> = {
   data: T;
   message?: string;
@@ -187,3 +194,26 @@ export const orgService = {
     ApiClient.put(`/api/Organization/${id}/decline/`, { reason }),
 }
 
+export const reviewService = {
+  getAllReviews: (organisationId: number, sortOption: number) =>
+    ApiClient.get<GetReviewsResponse>(`/api/Review/organization/${organisationId}`),
+
+  getReviewStats: (organisationId: number) =>
+    ApiClient.get<ReviewStatsResponse>(`/api/Review/organization/${organisationId}/stats`),
+
+  getReviewDistribution: (organisationId: number) =>
+    ApiClient.get<ReviewDistributionResponse>(`/api/Review/organization/${organisationId}/distribution`),
+
+  // TODO check this
+  createReview: (data: CreateOrgRequest) =>
+    ApiClient.post<CreateReviewResponse>(`/api/Review`, data, 'text'),
+
+  //TODO check this
+  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review`),
+
+  //TODO check this
+  respondToReview: (organizationId: number, userId: number, response: string) =>
+    ApiClient.put(`/api/Review/respond`)
+
+
+}
