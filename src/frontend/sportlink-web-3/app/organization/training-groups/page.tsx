@@ -1,168 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Trash, Plus } from 'lucide-react'
-import NavMenu from "@/components/nav-org-profile";
-
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
-
-const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof buttonVariants>>(
-  ({ className, variant, size, ...props }, ref) => {
-    return (
-      <button
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
-Button.displayName = "Button"
-
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-xl border bg-card text-card-foreground shadow",
-      className
-    )}
-    {...props}
-  />
-))
-Card.displayName = "Card"
-
-const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
-    {...props}
-  />
-))
-CardHeader.displayName = "CardHeader"
-
-const CardTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn("font-semibold leading-none tracking-tight", className)}
-    {...props}
-  />
-))
-CardTitle.displayName = "CardTitle"
-
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
-))
-CardContent.displayName = "CardContent"
-
-const Input = React.forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, type, ...props }, ref) => {
-  return (
-    <input
-      type={type}
-      className={cn(
-        "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
-        className
-      )}
-      ref={ref}
-      {...props}
-    />
-  )
-})
-Input.displayName = "Input"
-
-const Label = React.forwardRef<
-  HTMLLabelElement,
-  React.LabelHTMLAttributes<HTMLLabelElement>
->(({ className, ...props }, ref) => (
-  <label
-    ref={ref}
-    className={cn(
-      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-      className
-    )}
-    {...props}
-  />
-))
-Label.displayName = "Label"
-
-const Textarea = React.forwardRef<
-  HTMLTextAreaElement,
-  React.TextareaHTMLAttributes<HTMLTextAreaElement>
->(({ className, ...props }, ref) => {
-  return (
-    <textarea
-      className={cn(
-        "flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
-        className
-      )}
-      ref={ref}
-      {...props}
-    />
-  )
-})
-Textarea.displayName = "Textarea"
-
-interface TrainingGroup {
-  id: number
-  name: string
-  ageFrom: number
-  ageTo: number
-  sex: 'Male' | 'Female' | 'Any'
-  monthlyPrice: number
-  description: string
-  sport: string
-  schedule: {
-    day: string
-    startTime: string
-    endTime: string
-  }[]
-}
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { CalendarDays, Clock, Plus, PencilIcon, Trash2Icon } from 'lucide-react'
+import { AddTrainingGroup } from './add-training-group-form'
+import { TrainingGroup } from './training-group'
+import NavMenu from "@/components/nav-org-profile"
 
 const initialTrainingGroups: TrainingGroup[] = [
   {
@@ -211,247 +55,101 @@ const initialTrainingGroups: TrainingGroup[] = [
 ]
 
 export default function TrainingGroups() {
-  const [trainingGroups, setTrainingGroups] = useState<TrainingGroup[]>(initialTrainingGroups)
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editingTrainingsId, setEditingTrainingsId] = useState<number | null>(null)
-  const [editedGroup, setEditedGroup] = useState<TrainingGroup | null>(null)
+  const [groups, setGroups] = React.useState<TrainingGroup[]>(initialTrainingGroups)
+  const [showForm, setShowForm] = React.useState(false)
+  const [editingGroup, setEditingGroup] = React.useState<TrainingGroup | undefined>(undefined)
 
-  const handleEditClick = (group: TrainingGroup) => {
-    setEditingId(group.id)
-    setEditedGroup({ ...group })
+  const handleSubmit = (group: TrainingGroup) => {
+    if (editingGroup) {
+      setGroups(prev => prev.map(g => g.id === group.id ? group : g))
+    } else {
+      setGroups(prev => [...prev, { ...group, id: prev.length + 1 }])
+    }
+    setShowForm(false)
+    setEditingGroup(undefined)
   }
 
-  const handleEditTrainingsClick = (group: TrainingGroup) => {
-    setEditingTrainingsId(group.id)
-    setEditedGroup({ ...group })
-  }
-
-  const handleCancelEdit = () => {
-    setEditingId(null)
-    setEditingTrainingsId(null)
-    setEditedGroup(null)
-  }
-
-  const handleSaveChanges = () => {
-    if (editedGroup) {
-      setTrainingGroups(groups =>
-        groups.map(group => group.id === editedGroup.id ? editedGroup : group)
-      )
-      setEditingId(null)
-      setEditingTrainingsId(null)
-      setEditedGroup(null)
+  const handleDelete = (id: number) => {
+    if (window.confirm('Jesteli sigurni da želite izbrisati ovu grupu za trening?')) {
+      setGroups(prev => prev.filter(group => group.id !== id))
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    if (editedGroup) {
-      setEditedGroup({
-        ...editedGroup,
-        [e.target.name]: e.target.type === 'number' ? Number(e.target.value) : e.target.value
-      })
-    }
+  const handleEdit = (group: TrainingGroup) => {
+    setEditingGroup(group)
+    setShowForm(true)
   }
 
-  const handleScheduleChange = (index: number, field: string, value: string) => {
-    if (editedGroup) {
-      const newSchedule = [...editedGroup.schedule]
-      newSchedule[index] = { ...newSchedule[index], [field]: value }
-      setEditedGroup({ ...editedGroup, schedule: newSchedule })
-    }
-  }
-
-  const handleDeleteTraining = (index: number) => {
-    if (editedGroup) {
-      const newSchedule = editedGroup.schedule.filter((_, i) => i !== index)
-      setEditedGroup({ ...editedGroup, schedule: newSchedule })
-    }
-  }
-
-  const handleAddTraining = () => {
-    if (editedGroup) {
-      const newSchedule = [...editedGroup.schedule, { day: '', startTime: '', endTime: '' }]
-      setEditedGroup({ ...editedGroup, schedule: newSchedule })
-    }
+  const handleCancel = () => {
+    setShowForm(false)
+    setEditingGroup(undefined)
   }
 
   return (
     <div className="container mx-auto p-4 space-y-4">
       <NavMenu/>
-      <h1 className="text-3xl font-bold">Training Groups</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trainingGroups.map((group) => (
-          <Card key={group.id} className="flex flex-col">
-            <CardHeader>
-              <CardTitle>
-                {editingId === group.id ? (
-                  <Input
-                    name="name"
-                    value={editedGroup?.name}
-                    onChange={handleInputChange}
-                    className="font-semibold text-lg"
-                  />
-                ) : (
-                  group.name
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <div className="space-y-2">
-                <p>
-                  <strong>Age Range:</strong>{' '}
-                  {editingId === group.id ? (
-                    <>
-                      <Input
-                        name="ageFrom"
-                        type="number"
-                        value={editedGroup?.ageFrom}
-                        onChange={handleInputChange}
-                        className="w-16 inline-block mr-2"
-                      />
-                      -
-                      <Input
-                        name="ageTo"
-                        type="number"
-                        value={editedGroup?.ageTo}
-                        onChange={handleInputChange}
-                        className="w-16 inline-block ml-2"
-                      />
-                    </>
-                  ) : (
-                    `${group.ageFrom} - ${group.ageTo} years`
-                  )}
-                </p>
-                <p>
-                  <strong>Sex:</strong>{' '}
-                  {editingId === group.id ? (
-                    <select
-                      name="sex"
-                      value={editedGroup?.sex}
-                      onChange={handleInputChange}
-                      className="rounded-md border border-input text-center"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Any">Any</option>
-                    </select>
-                  ) : (
-                    group.sex
-                  )}
-                </p>
-                <p>
-                  <strong>Monthly Price:</strong>{' '}
-                  {editingId === group.id ? (
-                    <Input
-                      name="monthlyPrice"
-                      type="number"
-                      value={editedGroup?.monthlyPrice}
-                      onChange={handleInputChange}
-                      className="w-24 inline-block"
-                    />
-                  ) : (
-                    `$${group.monthlyPrice}`
-                  )}
-                </p>
-                <p>
-                  <strong>Sport:</strong>{' '}
-                  {editingId === group.id ? (
-                    <Input
-                      name="sport"
-                      value={editedGroup?.sport}
-                      onChange={handleInputChange}
-                    />
-                  ) : (
-                    group.sport
-                  )}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {editingId === group.id ? (
-                    <Textarea
-                      name="description"
-                      value={editedGroup?.description}
-                      onChange={handleInputChange}
-                      rows={3}
-                    />
-                  ) : (
-                    group.description
-                  )}
-                </p>
-                <div>
-                  <strong>Schedule:</strong>
-                  {editingTrainingsId === group.id ? (
-                    <div className="space-y-2 mt-2">
-                      {editedGroup?.schedule.map((session, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <select
-                            value={session.day}
-                            onChange={(e) => handleScheduleChange(index, 'day', e.target.value)}
-                            className="rounded-md border border-input"
-                          >
-                            <option value="">Select day</option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                            <option value="Sunday">Sunday</option>
-                          </select>
-                          <Input
-                            type="time"
-                            value={session.startTime}
-                            onChange={(e) => handleScheduleChange(index, 'startTime', e.target.value)}
-                            className="w-24"
-                          />
-                          <Input
-                            type="time"
-                            value={session.endTime}
-                            onChange={(e) => handleScheduleChange(index, 'endTime', e.target.value)}
-                            className="w-24"
-                          />
-                          <Button
-                            onClick={() => handleDeleteTraining(index)}
-                            variant="destructive"
-                            size="icon"
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                      <Button onClick={handleAddTraining} variant="outline" size="sm" className="mt-2">
-                        <Plus className="h-4 w-4 mr-2" /> Add Training
-                      </Button>
-                    </div>
-                  ) : (
-                    <ul className="list-disc list-inside">
-                      {group.schedule.map((session, index) => (
-                        <li key={index}>
-                          {session.day}: {session.startTime} - {session.endTime}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Grupe za trening</h1>
+        <Button 
+          onClick={() => setShowForm(true)} 
+          disabled={showForm}
+          className="bg-blue-500 hover:bg-blue-600 text-white"
+        >
+          <Plus className="mr-2 h-4 w-4" /> Dodaj grupu za trening
+        </Button>
+      </div>
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow">
+          {groups.map((group) => (
+            <Card key={group.id} className="flex flex-col max-h-[400px] overflow-y-auto">
+              <CardHeader>
+                <CardTitle>{group.name}</CardTitle>
+                <p className="text-sm text-muted-foreground">{group.sport}</p>
+              </CardHeader>
+              <CardContent className="flex-grow overflow-y-auto">
+                <p className="text-sm text-muted-foreground mb-2">{group.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">Age: {group.ageFrom}-{group.ageTo}</span>
+                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">Sex: {group.sex}</span>
+                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">${group.monthlyPrice}/month</span>
                 </div>
-              </div>
-            </CardContent>
-            <div className="p-4 bg-gray-50 rounded-b-lg flex justify-between items-center">
-              <div>
-                {editingId === group.id || editingTrainingsId === group.id ? (
-                  <>
-                    <Button onClick={handleSaveChanges} className="mr-2">Save Changes</Button>
-                    <Button onClick={handleCancelEdit} variant="outline">Cancel</Button>
-                  </>
-                ) : (
-                  <>
-                    <Button onClick={() => handleEditClick(group)} className="mr-2">Edit</Button>
-                    <Button onClick={() => handleEditTrainingsClick(group)} variant="outline">Edit Trainings</Button>
-                  </>
-                )}
-              </div>
-            </div>
-          </Card>
-        ))}
+                <div className="space-y-2">
+                  {group.schedule.map((session, index) => (
+                    <div key={index} className="flex items-center text-sm">
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      <span className="mr-2">{session.day}:</span>
+                      <Clock className="mr-2 h-4 w-4" />
+                      <span>{session.startTime} - {session.endTime}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className="flex justify-end space-x-2 mt-4 w-full">
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(group)} disabled={showForm}>
+                    <PencilIcon className="h-4 w-4 mr-2" />
+                    Uredi
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleDelete(group.id)} disabled={showForm}>
+                    <Trash2Icon className="h-4 w-4 mr-2" />
+                    Izbriši
+                  </Button>
+                </div>
+              </CardFooter>
+              
+            </Card>
+          ))}
+        </div>
+        {showForm && (
+          <div className="w-full lg:w-1/3 lg:min-w-[300px]">
+            <AddTrainingGroup
+              group={editingGroup}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+            />
+          </div>
+        )}
       </div>
     </div>
   )
 }
-

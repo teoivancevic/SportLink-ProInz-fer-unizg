@@ -34,7 +34,7 @@ export default function SportCourtsContent() {
   }
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this sport object?")) {
+    if (confirm("Jeste li sigurni da želite izbrisati taj sportski objekt?")) {
       setSportObjects(sportObjects.filter(obj => obj.id !== id))
     }
   }
@@ -70,12 +70,12 @@ export default function SportCourtsContent() {
           )}
         </Button>
       </div>
-      <p className="text-xl">Pregledajte naše sportske objekte, dostupne terene i njihove rasporede.</p>
+      {/* <p className="text-xl">Pregledajte naše sportske objekte, dostupne terene i njihove rasporede.</p> */}
       
       <div className={`flex ${isAddingOrEditing ? 'space-x-4' : ''}`}>
         <div className={`flex flex-wrap gap-6 ${isAddingOrEditing ? 'w-2/3' : 'w-full'}`}>
           {sportObjects.map((object) => (
-            <Card key={object.id} className="flex flex-col min-w-[550px] ">
+            <Card key={object.id} className="flex flex-col min-w-[550px] max-w-[750px]">
               <CardHeader>
                 <CardTitle>{object.name}</CardTitle>
                 <CardDescription>{object.location}</CardDescription>
@@ -104,11 +104,11 @@ export default function SportCourtsContent() {
                   ))}
                 </ul>
                 <div className="flex justify-end space-x-2 mt-4 w-full">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(object)}>
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(object)} disabled = {isAddingOrEditing}>
                     <PencilIcon className="h-4 w-4 mr-2" />
                     Uredi
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleDelete(object.id)}>
+                  <Button variant="outline" size="sm" onClick={() => handleDelete(object.id)} disabled = {isAddingOrEditing}>
                     <Trash2Icon className="h-4 w-4 mr-2" />
                     Izbriši
                   </Button>
