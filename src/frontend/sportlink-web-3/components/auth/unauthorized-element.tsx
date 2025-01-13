@@ -7,13 +7,12 @@ export default function UnauthorizedElement({
 }: { 
   children: React.ReactNode 
 }) {
-  const { userData } = useAuth()
+  const { userData, isLoading } = useAuth()
 
-  // Server-side rendering safety
-  if (typeof window === 'undefined') {
+  // Don't render anything while authentication is being initialized
+  if (isLoading) {
     return null
   }
 
-  // Show children only when there is no user data (user is unauthorized)
   return !userData ? <>{children}</> : null
 }

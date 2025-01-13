@@ -13,10 +13,10 @@ export default function AuthorizedElement({
   children, 
   roles 
 }: AuthorizedElementProps) {
-  const { userData } = useAuth()
+  const { userData, isLoading } = useAuth()
 
-  // Server-side rendering safety
-  if (typeof window === 'undefined') {
+  // Don't render anything while authentication is being initialized
+  if (isLoading) {
     return null
   }
 

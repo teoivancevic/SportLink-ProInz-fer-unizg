@@ -34,7 +34,7 @@ import UnauthorizedElement from './auth/unauthorized-element'
 import { useEffect, useState } from 'react'
 import { orgService } from '@/lib/services/api'
 import { GetOrganizationResponse, Organization } from '@/types/org'
-import router from 'next/router'
+// import router from 'next/natigation'
 
 const ACTIVE_ORG_KEY = 'activeOrganizationId'
 
@@ -148,29 +148,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [activeOrgId, setActiveOrgId] = useState<string | null>(null)
   
   useEffect(() => {
-    // Initial load of active org ID
-    const savedOrgId = localStorage.getItem(ACTIVE_ORG_KEY)
-    setActiveOrgId(savedOrgId)
+    fetchMyOrganizations()
 
-    // Set up event listeners for both storage and custom event
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === ACTIVE_ORG_KEY) {
-        setActiveOrgId(e.newValue)
+
+    if (typeof window !== 'undefined') {
+      // Initial load of active org ID
+      const savedOrgId = localStorage.getItem(ACTIVE_ORG_KEY)
+      setActiveOrgId(savedOrgId)
+
+      // Set up event listeners for both storage and custom event
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === ACTIVE_ORG_KEY) {
+          setActiveOrgId(e.newValue)
+        }
       }
-    }
 
-    const handleOrgChange = (e: CustomEvent<{ orgId: string }>) => {
-      setActiveOrgId(e.detail.orgId)
-    }
+      const handleOrgChange = (e: CustomEvent<{ orgId: string }>) => {
+        setActiveOrgId(e.detail.orgId)
+      }
 
-    // Add both event listeners
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('organizationChange', handleOrgChange as EventListener)
+      // Add both event listeners
+      window.addEventListener('storage', handleStorageChange)
+      window.addEventListener('organizationChange', handleOrgChange as EventListener)
 
-    // Clean up both listeners
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('organizationChange', handleOrgChange as EventListener)
+      // Clean up both listeners
+      return () => {
+        window.removeEventListener('storage', handleStorageChange)
+        window.removeEventListener('organizationChange', handleOrgChange as EventListener)
+      }
     }
   }, [])
 
@@ -195,22 +200,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
   }
 
-  useEffect(() => {
-    fetchMyOrganizations()
-  }, [])
+  // useEffect(() => {
+  //   fetchMyOrganizations()
+  // }, [])
 
   // Create dynamic nav items based on activeOrgId
   const getOrgOwnerNavItems = () => [
     {
       title: "Profil",
-      url: `/organizations/${activeOrgId || ''}`,
+      url: `/organization/${activeOrgId || ''}`,
       icon: Building,
       isActive: true,
       items: []
     },
     {
       title: "Recenzije",
-      url: `/organizations/${activeOrgId || ''}/reviews`,
+      url: `/organization/${activeOrgId || ''}/reviews`,
       icon: Star,
       isActive: true,
       items: []
@@ -237,69 +242,64 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavMain navTitle="SportLink" items={data.navMain} />
           
           <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
-            {({ userData }) => {
-
-              return(
-                <NavMain 
+            {({ userData }) => (
+              <NavMain 
                 navTitle={`Moja organizacija${activeOrgId ? `: ${activeOrgId}` : ''}`} 
                 items={getOrgOwnerNavItems()} 
               />
-              );
-            }}
+            )}
           </AuthorizedElement>
           
-          <AuthorizedElement roles={[UserRole.AppAdmin]}>
-            {({ userData }) => {
-
-              return(
-                <NavMain navTitle="App Admin" items={data.navAppAdmin} />
-              );
-            }}
+          <AuthorizedElement roles={[UserRole.User]}>
+            {({ userData }) => (
+              <NavSecondary items={data.navSecondary} className='mt-auto'/>
+            )}
           </AuthorizedElement>
         </div>
         
         {/* Secondary navigation at the bottom of content */}
         <AuthorizedElement roles={[UserRole.User]}>
-          {({ userData }) => {
-
-              return(
+          {({ userData }) => (
                 <NavSecondary items={data.navSecondary} className='mt-auto'/>
-              );
-            }}
+              )
+            }
         </AuthorizedElement>
       </SidebarContent>
 
       <SidebarFooter>
         
-        <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
-            {({ userData }) => {
-
-              return(
-                <OrganizationSwitcher organizations={myOrganizations}/>
-              );
-            }}
+      <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
+          {({ userData }) => (
+            <OrganizationSwitcher organizations={myOrganizations}/>
+          )}
         </AuthorizedElement>
+
         <UnauthorizedElement>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Button variant='outline' size='sm' onClick={navigateLogin} style={{ flex: 1 }}>Prijava</Button>
-            <Button color='primary' size='sm' onClick={navigateSignup} style={{ flex: 1 }}>Registracija</Button>
+          <div className="flex gap-2">
+            <Button variant='outline' size='sm' onClick={navigateLogin} className="flex-1">Prijava</Button>
+            <Button color='primary' size='sm' onClick={navigateSignup} className="flex-1">Registracija</Button>
           </div>
         </UnauthorizedElement>
-        <AuthorizedElement>
-            {({ userData }) => {
 
-              return(
-                <NavUser user={{
-                  firstName: userData.firstName,
-                  lastName: userData.lastName,
-                  email: userData.email,
-                  avatar: ""
-                } } onLogout={handleLogout}/>
-              );
-            }}
+        <AuthorizedElement>
+          {({ userData }) => (
+            <NavUser 
+              user={{
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                avatar: ""
+              }} 
+            />
+          )}
         </AuthorizedElement>
         
       </SidebarFooter>
     </Sidebar>
   )
 }
+
+
+// AAAAAAAAAA
+
+
