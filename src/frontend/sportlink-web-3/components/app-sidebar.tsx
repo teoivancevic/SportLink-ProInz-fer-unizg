@@ -141,7 +141,7 @@ const data = {
       ],
     }
   ],
-  navSecondary: [
+  navAddOrg: [
     {
       title: "Dodaj organizaciju",
       url: "/organizations/create",
@@ -280,9 +280,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             )}
           </AuthorizedElement>
           
-          <AuthorizedElement roles={[UserRole.User]}>
+          <AuthorizedElement roles={[UserRole.AppAdmin]}>
             {({ userData }) => (
-              <NavSecondary items={data.navSecondary} className='mt-auto'/>
+              <NavMain navTitle="App Admin" items={data.navAppAdmin} />
             )}
           </AuthorizedElement>
         </div>
@@ -290,7 +290,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* Secondary navigation at the bottom of content */}
         <AuthorizedElement roles={[UserRole.User]}>
           {({ userData }) => (
-                <NavSecondary items={data.navSecondary} className='mt-auto'/>
+                <NavSecondary items={data.navAddOrg} className='mt-auto'/>
               )
             }
         </AuthorizedElement>
@@ -300,7 +300,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
           {({ userData }) => (
 
-            !isLoadingOrgs && <OrganizationSwitcher organizations={myOrganizations} />
+            <OrganizationSwitcher organizations={myOrganizations} isLoading={isLoadingOrgs} />
 
           )}
         </AuthorizedElement>

@@ -13,14 +13,21 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// Constants for organization-related storage keys
+const STORAGE_KEYS = {
+  AUTH_TOKEN: 'authToken',
+  ACTIVE_ORG: 'activeOrganizationId',
+  ORG_CACHE: 'cachedOrganizations',
+  ORG_CACHE_TIMESTAMP: 'organizationsCacheTimestamp'
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Move token retrieval to useEffect to avoid hydration mismatch
     const initializeAuth = () => {
-      const token = localStorage.getItem('authToken')
+      const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
       if (token) {
         try {
           const decodedToken = jwtDecode<JWTPayload>(token)
@@ -34,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUserData(userData)
         } catch (error) {
           console.error('Error decoding token:', error)
-          localStorage.removeItem('authToken')
+          localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
           setUserData(null)
         }
       }
@@ -45,13 +52,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const logout = () => {
-    localStorage.removeItem('authToken')
+    // Clear auth token and user data
+    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
     setUserData(null)
+
+    // Clear all organization-related data
+    localStorage.removeItem(STORAGE_KEYS.ACTIVE_ORG)
+    localStorage.removeItem(STORAGE_KEYS.ORG_CACHE)
+    localStorage.removeItem(STORAGE_KEYS.ORG_CACHE_TIMESTAMP)
   }
 
-  // Don't render children until authentication is initialized
   if (isLoading) {
-    return null // Or a loading spinner
+    return null
   }
 
   return (

@@ -4,7 +4,6 @@ import * as React from "react"
 import { Building, Building2, ChevronsUpDown, Command, Plus, Square } from "lucide-react"
 import { useRouter } from 'next/navigation';
 
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +23,6 @@ import { Organization } from "@/types/org";
 
 const ACTIVE_ORG_KEY = 'activeOrganizationId'
 
-// Create a custom event for organization changes
 const dispatchOrgChange = (orgId: string) => {
   const event = new CustomEvent('organizationChange', { 
     detail: { orgId } 
@@ -37,12 +35,10 @@ interface OrganizationSwitcherProps {
   isLoading?: boolean
 }
 
-
 export function OrganizationSwitcher({ organizations, isLoading }: OrganizationSwitcherProps) {
   if (isLoading) {
     return <div className="h-10 animate-pulse bg-muted rounded-md" />
   }
-
 
   const { isMobile } = useSidebar()
   const [activeOrganization, setActiveOrganization] = React.useState<Organization | null>(null)
@@ -53,21 +49,27 @@ export function OrganizationSwitcher({ organizations, isLoading }: OrganizationS
       // Try to get the saved organization ID from localStorage
       const savedOrgId = localStorage.getItem(ACTIVE_ORG_KEY)
       
+      let organizationToSet: Organization | null = null
+
       if (savedOrgId) {
         // Find the organization with the saved ID
-        const savedOrg = organizations.find(org => org.id.toString() === savedOrgId)
-        if (savedOrg) {
-          setActiveOrganization(savedOrg)
-          return
-        }
+        organizationToSet = organizations.find(org => org.id.toString() === savedOrgId) || null
       }
       
-      // If no saved org or saved org not found in list, use first org
-      setActiveOrganization(organizations[0])
+      // If no saved org was found or no saved org ID exists, use the first org
+      if (!organizationToSet && organizations.length > 0) {
+        organizationToSet = organizations[0]
+      }
+
+      // Set both the active organization and update localStorage
+      if (organizationToSet) {
+        setActiveOrganization(organizationToSet)
+        localStorage.setItem(ACTIVE_ORG_KEY, organizationToSet.id.toString())
+        dispatchOrgChange(organizationToSet.id.toString())
+      }
     }
   }, [organizations, activeOrganization])
 
-  // Update localStorage and dispatch event when active organization changes
   const handleOrganizationChange = (organization: Organization) => {
     setActiveOrganization(organization)
     localStorage.setItem(ACTIVE_ORG_KEY, organization.id.toString())
@@ -75,7 +77,7 @@ export function OrganizationSwitcher({ organizations, isLoading }: OrganizationS
   }
 
   if (!activeOrganization) {
-    return null // or return a loading spinner
+    return null
   }
 
   return (
@@ -89,7 +91,6 @@ export function OrganizationSwitcher({ organizations, isLoading }: OrganizationS
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <Building2 className="size-4" />
-                {/* <span className="text-sm font-medium">{activeOrganization.id}</span> */}
               </div>
               
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -111,14 +112,13 @@ export function OrganizationSwitcher({ organizations, isLoading }: OrganizationS
               <span>Organizacije</span>
               <span>ID</span>
             </DropdownMenuLabel>
-            {organizations.map((organization, index) => (
+            {organizations.map((organization) => (
               <DropdownMenuItem
                 key={organization.id}
                 onClick={() => handleOrganizationChange(organization)}
                 className="gap-2 p-2"
               >
                 <div className="flex aspect-square size-6 shrink-0 items-center justify-center rounded-sm border text-xs font-medium">
-                  {/* {organization.id} */}
                   <Building className="size-4 shrink-0" />
                 </div>
                 <span className="flex-1">{organization.name}</span>
@@ -131,7 +131,6 @@ export function OrganizationSwitcher({ organizations, isLoading }: OrganizationS
                   <Plus className="size-4" />
                 </div>
                 <div className="font-medium text-muted-foreground">Dodaj organizaciju</div>
-              
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

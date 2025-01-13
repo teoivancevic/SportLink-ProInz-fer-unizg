@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MapPin, Mail, Phone } from 'lucide-react'
 import { orgService } from "@/lib/services/api"
+import { useRouter } from 'next/navigation'
 
 interface Organization {
   id: number
@@ -14,17 +15,16 @@ interface Organization {
   contactPhoneNumber: string
 }
 
-interface OrganizationConfirmationCardProps {
+interface OrganizationCardProps {
   organization: Organization
+  isConfirmed: boolean
   onConfirmationComplete?: () => void
 }
 
-// Add this type to handle the loading state
 interface LoadingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean
 }
 
-// Update the Button component to handle loading state
 const LoadingButton = ({ loading, children, disabled, ...props }: LoadingButtonProps) => (
   <Button 
     disabled={loading || disabled} 
@@ -39,14 +39,16 @@ const LoadingButton = ({ loading, children, disabled, ...props }: LoadingButtonP
   </Button>
 )
 
-export function OrganizationConfirmationCard({ 
+export function OrganizationCard({ 
   organization, 
+  isConfirmed,
   onConfirmationComplete 
-}: OrganizationConfirmationCardProps) {
+}: OrganizationCardProps) {
   const [showDenyReason, setShowDenyReason] = useState(false)
   const [denyReason, setDenyReason] = useState("")
   const [isAccepting, setIsAccepting] = useState(false)
   const [isDenying, setIsDenying] = useState(false)
+  const router = useRouter()
 
   const handleAccept = async () => {
     setIsAccepting(true)
@@ -83,8 +85,12 @@ export function OrganizationConfirmationCard({
     }
   }
 
+  const handleViewDetails = () => {
+    router.push(`/organizations/${organization.id}`)
+  }
+
   return (
-    <Card>
+    <Card className={isConfirmed ? "cursor-pointer hover:shadow-md transition-shadow" : ""} onClick={isConfirmed ? handleViewDetails : undefined}>
       <CardHeader>
         <CardTitle>{organization.name}</CardTitle>
       </CardHeader>
@@ -107,34 +113,46 @@ export function OrganizationConfirmationCard({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col items-stretch gap-2">
-        <div className="flex gap-2">
-          <LoadingButton 
-            className="flex-1 border-2 border-destructive bg-transparent hover:bg-destructive text-destructive hover:text-destructive-foreground"
-            onClick={handleDeny}
-            disabled={isAccepting || (showDenyReason && !denyReason.trim())}
-            loading={isDenying}
-          >
-            {showDenyReason ? "Confirm Deny" : "Deny"}
-          </LoadingButton>
-          <LoadingButton 
-            className="flex-1" 
-            onClick={handleAccept}
-            disabled={isDenying || showDenyReason}
-            loading={isAccepting}
-          >
-            Accept
-          </LoadingButton>
-        </div>
-        {showDenyReason && (
-          <Input
-            placeholder="Enter reason for denial"
-            value={denyReason}
-            onChange={(e) => setDenyReason(e.target.value)}
-            disabled={isDenying}
-          />
-        )}
-      </CardFooter>
+      {!isConfirmed && (
+        <CardFooter className="flex flex-col items-stretch gap-2">
+          <div className="flex gap-2">
+            <LoadingButton 
+              className="flex-1 border-2 border-destructive bg-transparent hover:bg-destructive text-destructive hover:text-destructive-foreground"
+              onClick={handleDeny}
+              disabled={isAccepting || (showDenyReason && !denyReason.trim())}
+              loading={isDenying}
+            >
+              {showDenyReason ? "Confirm Deny" : "Deny"}
+            </LoadingButton>
+            <LoadingButton 
+              className="flex-1" 
+              onClick={handleAccept}
+              disabled={isDenying || showDenyReason}
+              loading={isAccepting}
+            >
+              Accept
+            </LoadingButton>
+          </div>
+          {showDenyReason && (
+            <Input
+              placeholder="Enter reason for denial"
+              value={denyReason}
+              onChange={(e) => setDenyReason(e.target.value)}
+              disabled={isDenying}
+            />
+          )}
+        </CardFooter>
+      )}
     </Card>
   )
+}
+
+// for backwards compatibility
+export function OrganizationConfirmationCard(props: Omit<OrganizationCardProps, 'isConfirmed'>) {
+  return <OrganizationCard {...props} isConfirmed={false} />
+}
+
+// a new ConfirmedOrganizationCard component for 
+export function ConfirmedOrganizationCard(props: Omit<OrganizationCardProps, 'isConfirmed'>) {
+  return <OrganizationCard {...props} isConfirmed={true} />
 }
