@@ -18,7 +18,10 @@ public class DataContext : DbContext
     public DbSet<SocialNetwork> SocialNetworks { get; set; }
     public DbSet<Sport> Sports { get; set; }
     public DbSet<TrainingGroup> TrainingGroups { get; set; }
-    public DbSet<CourtBooking> CourtBookings { get; set; }
+    public DbSet<TrainingSchedule> TrainingSchedules { get; set; }
+    public DbSet<SportCourt> SportCourts { get; set; }
+    public DbSet<SportsObject> SportsObjects { get; set; }
+    public DbSet<WorkTime> WorkTimes { get; set; }
     public DbSet<Tournament> Tournaments { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)

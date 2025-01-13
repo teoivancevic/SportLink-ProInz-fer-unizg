@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportLink.API.Data;
 
@@ -11,9 +12,11 @@ using SportLink.API.Data;
 namespace SportLink.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250110115705_Added_SportsObject_Name")]
+    partial class Added_SportsObject_Name
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -414,33 +417,25 @@ namespace SportLink.API.Migrations
 
             modelBuilder.Entity("SportLink.API.Data.Entities.TrainingSchedule", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("TrainingGroupId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("TrainingGroupId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingGroupId");
+                    b.HasKey("TrainingGroupId", "DayOfWeek", "StartTime");
 
                     b.ToTable("TrainingSchedule", (string)null);
                 });

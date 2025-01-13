@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportLink.API.Data;
 
@@ -11,9 +12,11 @@ using SportLink.API.Data;
 namespace SportLink.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250106131300_Added SportsObject and small fixes")]
+    partial class AddedSportsObjectandsmallfixes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -251,6 +254,10 @@ namespace SportLink.API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CurrencyISO")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("SportId")
                         .HasColumnType("int");
 
@@ -294,11 +301,6 @@ namespace SportLink.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
 
@@ -331,10 +333,6 @@ namespace SportLink.API.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -386,10 +384,6 @@ namespace SportLink.API.Migrations
                     b.Property<decimal>("MonthlyPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
 
@@ -414,33 +408,25 @@ namespace SportLink.API.Migrations
 
             modelBuilder.Entity("SportLink.API.Data.Entities.TrainingSchedule", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("TrainingGroupId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("TrainingGroupId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingGroupId");
+                    b.HasKey("TrainingGroupId", "DayOfWeek", "StartTime");
 
                     b.ToTable("TrainingSchedule", (string)null);
                 });

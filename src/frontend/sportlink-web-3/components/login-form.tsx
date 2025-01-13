@@ -16,8 +16,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '@/lib/services/api'
-// import type { LoginRequest } from '@/types/auth'
 import { Eye, EyeOff } from "lucide-react"
+import { useAuth } from '@/components/auth/auth-context'
+import { jwtDecode } from 'jwt-decode'
+import { JWTPayload, UserData } from '@/types/auth'
 
 export function LoginForm({
   className,
@@ -29,6 +31,7 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
+  const { setUserData } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,16 +40,29 @@ export function LoginForm({
 
     try {
       const response = await authService.login({ email, password })
-      // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
+      // @ts-expect-error unsure if response will be changed in api controller
       if (response?.data && typeof response.data === 'string') {
-        // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
+        // @ts-expect-error unsure if response will be changed in api controller
         const token = response.data
-        console.log('Received token type:', typeof token)
-        console.log('Token format:', token.substring(0, 10) + '...')
         
+        // Store token
         localStorage.setItem('authToken', token)
+        
+        // Decode token and update user data in context
+        const decodedToken = jwtDecode<JWTPayload>(token)
+        const userData: UserData = {
+          id: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
+          email: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'],
+          role: decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+          firstName: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'],
+          lastName: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'],
+        }
+        
+        // Update auth context
+        setUserData(userData)
+        
+        // Navigate home
         router.push('/')
-        router.refresh()
       } else {
         throw new Error('Invalid token received')
       }
