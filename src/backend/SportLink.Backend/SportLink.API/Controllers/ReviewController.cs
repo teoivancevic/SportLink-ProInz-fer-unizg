@@ -39,7 +39,7 @@ public class ReviewController : ControllerBase
     }
     
     [HttpDelete, Authorize(Roles = "User,OrganizationOwner", Policy = "jwt_policy")]
-    [Route("DeleteReview")]
+    [Route("")]
     public async Task<ActionResult> DeleteReview(int organizationId)
     {
         var result = await _reviewService.DeleteReview(organizationId);
@@ -53,7 +53,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{organizationId}/GetOrganizationReviews")]
+    [Route("organization/{organizationId}")]
     public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId, [FromQuery] SortOptionEnum sortOption = SortOptionEnum.UpdatedAtDescending)
     {
         var result = await _reviewService.GetOrganizationReviews(organizationId, sortOption);
@@ -65,7 +65,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-    [Route("RespondReview")]
+    [Route("respond")]
     public async Task<ActionResult<GetReviewDto>> RespondReview(int organizationId, int userId, string response)
     { 
         var result = await _reviewService.RespondReview(organizationId, userId, response);
@@ -82,7 +82,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{organizationId}/GetReviewStats")]
+    [Route("organization/{organizationId}/stats")]
 
     public async Task<IActionResult> GetReviewStats(int organizationId)
     {
@@ -99,10 +99,10 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{organizationId}GetRatingCount")]
-    public async Task<IActionResult> GetRatingCount(int organizationId)
+    [Route("organization/{organizationId}/distribution")]
+    public async Task<IActionResult> GetRatingDistribution(int organizationId)
     {
-        var stats = await _reviewService.GetOrganizatoionRatingCounts(organizationId);
+        var stats = await _reviewService.GetOrganizatoionRatingDistribution(organizationId);
         return Ok(stats);
     }
     

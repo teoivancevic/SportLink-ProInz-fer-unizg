@@ -14,5 +14,5 @@ public interface IReviewService
     Task<GetReviewDto> RespondReview(int organizationId, int userId, string response);
     Task<GetReviewDto> DeleteReview(int organizationId);
     Task<(double AverageRating, int ReviewCount)> GetOrganizationReviewStats(int organizationId);
-    Task<Dictionary<int, int>> GetOrganizatoionRatingCounts(int organizationId);
+    Task<Dictionary<int, int>> GetOrganizatoionRatingDistribution(int organizationId);
 }
