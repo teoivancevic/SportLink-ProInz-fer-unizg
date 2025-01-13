@@ -16,18 +16,31 @@ interface OrganizationInfo {
 }
 
 export default function OrgHomePage() {
-  const [orgInfo, setOrgInfo] = useState<OrganizationInfo>({
+
+  const initialData: OrganizationInfo = {
     name: "Sportska Organizacija XYZ",
     description: "Naša organizacija se bavi promocijom i razvojem sporta u lokalnoj zajednici već više od 20 godina.",
     email: "info@sportorg.com",
     phone: "+385 1 234 5678",
     location: "Sportska ulica 123, 10000 Zagreb"
+  }
+
+  const [orgInfo, setOrgInfo] = useState<OrganizationInfo>(initialData)
+
+  const [mapImageUrl, setMapImageUrl] = useState<string | null>(() => {
+    const locationEncoded = encodeURIComponent(initialData.location)
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${locationEncoded}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${locationEncoded}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
   })
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false)
 
   const handleEditSubmit = (newInfo: OrganizationInfo) => {
     setOrgInfo(newInfo)
+
+    const locationEncoded = encodeURIComponent(newInfo.location)
+    const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${locationEncoded}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${locationEncoded}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+
+    setMapImageUrl(mapUrl)
     setIsEditPopupOpen(false)
   }
 
@@ -71,11 +84,11 @@ export default function OrgHomePage() {
           </CardHeader>
           <CardContent>
             <p className="mb-4">{orgInfo.location}</p>
-            <img 
-              src="/placeholder.svg?height=300&width=400" 
-              alt="Karta lokacije" 
-              className="w-full h-auto rounded-lg"
-            />
+            {mapImageUrl && (
+              <div className="mt-4">
+                <img src={mapImageUrl} alt="Map Preview" className="w-300px h-200px"/>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -89,7 +89,7 @@ export function LocationInput({ value, onChange }: LocationInputProps) {
 
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
-      if (place.formatted_address) {
+      if (place.formatted_address && place.geometry?.location) {
         setInternalValue(place.formatted_address);
         onChange(place.formatted_address);
       }

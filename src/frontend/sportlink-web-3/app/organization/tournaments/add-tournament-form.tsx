@@ -64,7 +64,7 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData }: Ad
         </div>
         
         <div>
-        <Label htmlFor="entryFee">Akontacija (€)</Label>
+        <Label htmlFor="entryFee">Kotizacija (€)</Label>
         <Input id="entryFee" name="entryFee" value={formData.entryFee} onChange={handleChange} required />
         </div>
         
