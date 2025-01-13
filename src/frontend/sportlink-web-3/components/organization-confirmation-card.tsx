@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { MapPin, Mail, Phone } from 'lucide-react'
 import { orgService } from "@/lib/services/api"
 import { useRouter } from 'next/navigation'
+import { UserInfo, UserInfoProps } from "@/components/ui-custom/user-info" // Updated import
 
 interface Organization {
   id: number
@@ -42,7 +43,7 @@ const LoadingButton = ({ loading, children, disabled, ...props }: LoadingButtonP
 export function OrganizationCard({ 
   organization, 
   isConfirmed,
-  onConfirmationComplete 
+  onConfirmationComplete
 }: OrganizationCardProps) {
   const [showDenyReason, setShowDenyReason] = useState(false)
   const [denyReason, setDenyReason] = useState("")
@@ -61,6 +62,8 @@ export function OrganizationCard({
       setIsAccepting(false)
     }
   }
+
+
 
   const handleDeny = async () => {
     if (!showDenyReason) {
@@ -90,7 +93,20 @@ export function OrganizationCard({
   }
 
   return (
-    <Card className={isConfirmed ? "cursor-pointer hover:shadow-md transition-shadow" : ""} onClick={isConfirmed ? handleViewDetails : undefined}>
+    <Card className={`${isConfirmed ? "cursor-pointer hover:shadow-md transition-shadow" : ""} relative`} onClick={isConfirmed ? handleViewDetails : undefined}>
+      <div className="absolute top-2 right-2 z-10">
+        <UserInfo 
+          user={{
+            firstName: "ime",
+            lastName: "vlasnika",
+            email: "mail vlasnika org.",
+            avatar: ""
+          }} 
+          className="bg-background/80 backdrop-blur-sm rounded-lg shadow-sm"
+          avatarClassName="h-8 w-8"
+          size="sm"
+        />
+      </div>
       <CardHeader>
         <CardTitle>{organization.name}</CardTitle>
       </CardHeader>
@@ -147,12 +163,11 @@ export function OrganizationCard({
   )
 }
 
-// for backwards compatibility
 export function OrganizationConfirmationCard(props: Omit<OrganizationCardProps, 'isConfirmed'>) {
   return <OrganizationCard {...props} isConfirmed={false} />
 }
 
-// a new ConfirmedOrganizationCard component for 
 export function ConfirmedOrganizationCard(props: Omit<OrganizationCardProps, 'isConfirmed'>) {
   return <OrganizationCard {...props} isConfirmed={true} />
 }
+
