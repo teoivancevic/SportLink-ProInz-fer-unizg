@@ -16,16 +16,6 @@ namespace SportLink.API.Services.Organization
         Task<bool> VerifyOrganization(int id);
         Task<bool> DeclineOrganization(int id, string reason);
         Task<List<OrganizationDto>> GetMyOrganizations();
-
-        // ---------------------- Organization's Profile ---------------------- //
-
-        Task<bool> AddTournament(int id, TournamentDto tournament);
-        Task<bool> AddTrainingGroup(int id, TrainingGroupDto trainingGroup);
-        //Task<ProfileDto> GetProfile(int id);
-        Task<List<SportCourtDto>> GetSportCourts(int id);
-        Task<List<TournamentDto>> GetTournaments(int id);
-        Task<List<TrainingGroupDto>> GetTrainingGroups(int id);
         Task<ActionResult<ProfileDto>> UpdateProfile(int id, ProfileDto profile);
-        Task<bool> AddSportCourt(int id, SportCourtDto sportCourt);
     }
 }

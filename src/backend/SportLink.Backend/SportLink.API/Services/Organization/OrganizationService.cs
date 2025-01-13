@@ -168,72 +168,6 @@ namespace SportLink.API.Services.Organization
 
         // ---------------------- Organization's Profile ---------------------- //
 
-        public async Task<List<TournamentDto>> GetTournaments(int id)
-        {
-            var tournaments = await _context.Tournaments.Include(x => x.Sport).Where(x => x.OrganizationId == id).Select(
-                x => new TournamentDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    TimeFrom = x.TimeFrom,
-                    TimeTo = x.TimeTo,
-                    EntryFee = x.EntryFee,
-                    Description = x.Description,
-                    Location = x.Location,
-                    OrganizationId = x.OrganizationId,
-                    OrganizationName = x.Organization.Name,
-                    SportName = x.Sport.Name
-                }
-            ).ToListAsync();
-            if (tournaments.IsNullOrEmpty())
-            {
-                return null!;
-            }
-            return _mapper.Map<List<TournamentDto>>(tournaments);
-        }
-
-        public async Task<List<TrainingGroupDto>> GetTrainingGroups(int id)
-        {
-            var trainingGroups = await _context.TrainingGroups.Where(x => x.OrganizationId == id).ToListAsync();
-            if (trainingGroups.IsNullOrEmpty())
-            {
-                return null!;
-            }
-            return _mapper.Map<List<TrainingGroupDto>>(trainingGroups);
-        }
-
-        public async Task<List<SportCourtDto>> GetSportCourts(int id)
-        {
-            //var sportCourts = await _context.SportCourts.Include(sc => sc.SportsObject).Where(sc => sc.SportsObject.OrganizationId == id).ToListAsync();
-
-            var sportCourts = await _context.SportCourts
-            .Include(sc => sc.SportsObject)
-            .ThenInclude(so => so.WorkTimes)
-            .Where(sc => sc.SportsObject.OrganizationId == id)
-            .Select(sc => new SportCourtDto
-            {
-                SportId = sc.SportId,
-                AvailableCourts = sc.AvailableCourts,
-                SportsObjectId = sc.SportsObjectId,
-                CurrencyISO = sc.CurrencyISO,
-                MinHourlyPrice = sc.minHourlyPrice,
-                MaxHourlyPrice = sc.maxHourlyPrice,
-                Description = sc.SportsObject.Description,
-                Location = sc.SportsObject.Location,
-                OrganizationId = sc.SportsObject.OrganizationId,
-                WorkTimes = sc.SportsObject.WorkTimes.Select(wt => new WorkTimeDto
-                {
-                    SportsObjectId = sc.SportsObjectId,
-                    DaysOfWeek = WorkTimeDto.ToDaysOfWeekList(wt.DaysOfWeek),
-                    OpenFrom = wt.OpenFrom.ToString(),
-                    OpenTo = wt.OpenTo.ToString()
-                }).ToList()
-            })
-            .ToListAsync();
-            return sportCourts!;
-            //return _mapper.Map<List<SportCourtDto>>(sportCourts);
-        }
-
         public async Task<ActionResult<ProfileDto>> UpdateProfile(int id, ProfileDto profileDto)
         {
             var profile = await _context.Organizations.FindAsync(id);
@@ -266,12 +200,13 @@ namespace SportLink.API.Services.Organization
                     }
                 }
 
-                foreach (var sn in updatedSocialNetworks)
+                for (int i = updatedSocialNetworks.Count - 1; i >= 0; i--)
                 {
+                    var sn = updatedSocialNetworks[i];
                     var matching = profileDto.SocialNetworks?.FirstOrDefault(x => x.Type == sn.Type);
                     if (matching is null)
                     {
-                        updatedSocialNetworks.Remove(sn);
+                        updatedSocialNetworks.RemoveAt(i); // Remove safely
                     }
                 }
 
@@ -281,90 +216,6 @@ namespace SportLink.API.Services.Organization
                 return new OkObjectResult(profileDto);
             }
             return null!;
-        }
-
-        public async Task<bool> AddTournament(int id, TournamentDto tournamentDto)
-        {
-            var org = await _context.Organizations.FindAsync(id);
-            if (org is null)
-            {
-                return false;
-            }
-            tournamentDto.OrganizationId = id;
-            _context.Tournaments.Add(_mapper.Map<Tournament>(tournamentDto));
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> AddTrainingGroup(int id, TrainingGroupDto trainingGroupDto)
-        {
-            var org = await _context.Organizations.FindAsync(id);
-            if (org is null)
-            {
-                return false;
-            }
-            trainingGroupDto.OrganizationId = id;
-            _context.TrainingGroups.Add(_mapper.Map<TrainingGroup>(trainingGroupDto));
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> AddSportCourt(int id, SportCourtDto sportCourtDto)
-        {
-            var org = await _context.Organizations.FindAsync(id);
-            if (org is null)
-            {
-                return false;
-            }
-
-            var sportsObject = new SportsObject
-            {
-                Description = sportCourtDto.Description,
-                Location = sportCourtDto.Location,
-                OrganizationId = sportCourtDto.OrganizationId,
-                WorkTimes = sportCourtDto.WorkTimes.Select(wt => new WorkTime
-                {
-                    DaysOfWeek = WorkTimeDto.ToDaysOfWeekString(wt.DaysOfWeek),
-                    OpenFrom = TimeOnly.Parse(wt.OpenFrom),
-                    OpenTo = TimeOnly.Parse(wt.OpenTo)
-
-                    //OpenFrom = new TimeOnly(wt.OpenFrom.Hour, wt.OpenFrom.Minute),
-                    //OpenTo = new TimeOnly(wt.OpenTo.Hour, wt.OpenTo.Minute)
-                    //OpenFrom = wt.OpenFrom.ToTimeOnly(),
-                    //OpenTo = wt.OpenTo.ToTimeOnly()
-                }).ToList()
-            };
-
-            //_context.CourtBookings.Add(_mapper.Map<SportCourt>(sportCourtDto)); krivo
-            _context.SportsObjects.Add(sportsObject);
-            await _context.SaveChangesAsync();
-
-            var workTime = sportCourtDto.WorkTimes.Select(wt => new WorkTime
-            {
-                DaysOfWeek = WorkTimeDto.ToDaysOfWeekString(wt.DaysOfWeek),
-                OpenFrom = TimeOnly.Parse(wt.OpenFrom),
-                OpenTo = TimeOnly.Parse(wt.OpenTo),
-                // OpenFrom = new TimeOnly(wt.OpenFrom.Hour, wt.OpenFrom.Minute),
-                // OpenTo = new TimeOnly(wt.OpenTo.Hour, wt.OpenTo.Minute),
-                SportsObjectId = sportCourtDto.SportsObjectId
-            }).ToList();
-
-            _context.WorkTimes.AddRange(workTime);
-            await _context.SaveChangesAsync();
-
-            var sportCourt = new SportCourt
-            {
-                SportId = sportCourtDto.SportId,
-                AvailableCourts = sportCourtDto.AvailableCourts,
-                CurrencyISO = sportCourtDto.CurrencyISO,
-                minHourlyPrice = sportCourtDto.MinHourlyPrice,
-                maxHourlyPrice = sportCourtDto.MaxHourlyPrice,
-                SportsObjectId = sportsObject.Id
-            };
-
-            _context.SportCourts.Add(sportCourt);
-            await _context.SaveChangesAsync();
-            return true;
         }
     }
 }
