@@ -31,5 +31,9 @@
     <ItemGroup>
       <ProjectReference Include="..\SportLink.Core\SportLink.Core.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="SportLink.Api.IntegrationTests" />
+    </ItemGroup>
 
 </Project>
