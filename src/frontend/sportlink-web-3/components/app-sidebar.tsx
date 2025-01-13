@@ -17,6 +17,8 @@ import {
   AudioWaveform
 } from "lucide-react"
 
+import Link from 'next/link'
+
 import { NavMain } from "@/components/nav-main"
 // import { NavAppAdmin } from "@/components/nav-app-admin"
 import { NavSecondary } from "@/components/nav-secondary"
@@ -31,12 +33,17 @@ import Image from "next/image"
 import { OrganizationSwitcher } from "./organization-switcher"
 import { Button } from './ui/button'
 import UnauthorizedElement from './auth/unauthorized-element'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { orgService } from '@/lib/services/api'
 import { GetOrganizationResponse, Organization } from '@/types/org'
+import { useRouter } from 'next/navigation'
+import { useAuth } from './auth/auth-context'
 // import router from 'next/natigation'
 
 const ACTIVE_ORG_KEY = 'activeOrganizationId'
+const ORG_CACHE_KEY = 'cachedOrganizations'
+const ORG_CACHE_TIMESTAMP_KEY = 'organizationsCacheTimestamp'
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
 const data = {
   // organizations: [
@@ -146,63 +153,73 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [myOrganizations, setOrganizations] = useState<Organization[]>([])
   const [activeOrgId, setActiveOrgId] = useState<string | null>(null)
-  
-  useEffect(() => {
-    fetchMyOrganizations()
+  const [isLoadingOrgs, setIsLoadingOrgs] = useState(true)
+  const router = useRouter()
+  const { userData } = useAuth()
 
-
-    if (typeof window !== 'undefined') {
-      // Initial load of active org ID
-      const savedOrgId = localStorage.getItem(ACTIVE_ORG_KEY)
-      setActiveOrgId(savedOrgId)
-
-      // Set up event listeners for both storage and custom event
-      const handleStorageChange = (e: StorageEvent) => {
-        if (e.key === ACTIVE_ORG_KEY) {
-          setActiveOrgId(e.newValue)
+  const fetchMyOrganizations = useCallback(async () => {
+    try {
+      // Check cache first
+      const cachedData = localStorage.getItem(ORG_CACHE_KEY)
+      const cacheTimestamp = localStorage.getItem(ORG_CACHE_TIMESTAMP_KEY)
+      
+      if (cachedData && cacheTimestamp) {
+        const timestamp = parseInt(cacheTimestamp)
+        if (Date.now() - timestamp < CACHE_DURATION) {
+          setOrganizations(JSON.parse(cachedData))
+          setIsLoadingOrgs(false)
+          return
         }
       }
 
-      const handleOrgChange = (e: CustomEvent<{ orgId: string }>) => {
-        setActiveOrgId(e.detail.orgId)
-      }
-
-      // Add both event listeners
-      window.addEventListener('storage', handleStorageChange)
-      window.addEventListener('organizationChange', handleOrgChange as EventListener)
-
-      // Clean up both listeners
-      return () => {
-        window.removeEventListener('storage', handleStorageChange)
-        window.removeEventListener('organizationChange', handleOrgChange as EventListener)
-      }
+      const response: GetOrganizationResponse = await orgService.getMyOrganizations()
+      setOrganizations(response.data)
+      
+      // Update cache
+      localStorage.setItem(ORG_CACHE_KEY, JSON.stringify(response.data))
+      localStorage.setItem(ORG_CACHE_TIMESTAMP_KEY, Date.now().toString())
+    } catch (error) {
+      console.error('Error fetching organizations:', error)
+    } finally {
+      setIsLoadingOrgs(false)
     }
   }, [])
 
-  const navigateLogin = () => {
-    window.location.href = '/login'
-  }
-  const navigateSignup = () => {
-    window.location.href = '/signup'
-  }
-
-  const fetchMyOrganizations = async () => {
-    try {
-      const response: GetOrganizationResponse = await orgService.getMyOrganizations()
-      console.log(response);
-      setOrganizations(response.data)
-
-    } catch (error) {
-      console.error('Error fetching organizations:', error)
-      //setError('Došlo je do greške prilikom učitavanja organizacija.')
-    } finally {
-      //setIsLoading(false)
+  useEffect(() => {
+    if (userData?.role === UserRole.OrganizationOwner) {
+      fetchMyOrganizations()
+    } else {
+      setIsLoadingOrgs(false)
     }
-  }
+  }, [userData, fetchMyOrganizations])
 
-  // useEffect(() => {
-  //   fetchMyOrganizations()
-  // }, [])
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const savedOrgId = localStorage.getItem(ACTIVE_ORG_KEY)
+    setActiveOrgId(savedOrgId)
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === ACTIVE_ORG_KEY) {
+        setActiveOrgId(e.newValue)
+      }
+    }
+
+    const handleOrgChange = (e: CustomEvent<{ orgId: string }>) => {
+      setActiveOrgId(e.detail.orgId)
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('organizationChange', handleOrgChange as EventListener)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('organizationChange', handleOrgChange as EventListener)
+    }
+  }, [])
+
+  const navigateLogin = () => router.push('/login')
+  const navigateSignup = () => router.push('/signup')
 
   // Create dynamic nav items based on activeOrgId
   const getOrgOwnerNavItems = () => [
@@ -232,11 +249,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar variant="inset" {...props}>
-      <SidebarHeader>
-        <a href="/">
-          <Image src="/logo-sportlink.png" alt="Logo" width={200} height={50} />
-        </a>
-      </SidebarHeader>
+      <SidebarHeader className="h-[66px] flex items-center justify-center">
+  <div className="relative w-[200px] h-[50px]">
+    <Link href="/" className="block w-full h-full">
+      <Image
+        src="/logo-sportlink.png"
+        alt="Logo"
+        fill
+        priority
+        sizes="200px"
+        className="object-contain"
+        style={{
+          minHeight: '50px',
+          minWidth: '200px'
+        }}
+      />
+    </Link>
+  </div>
+</SidebarHeader>
       <SidebarContent className="flex flex-col flex-grow">
         <div className="flex-grow">
           <NavMain navTitle="SportLink" items={data.navMain} />
@@ -267,10 +297,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
-        
       <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
           {({ userData }) => (
-            <OrganizationSwitcher organizations={myOrganizations}/>
+
+            !isLoadingOrgs && <OrganizationSwitcher organizations={myOrganizations} />
+
           )}
         </AuthorizedElement>
 

@@ -32,12 +32,18 @@ const dispatchOrgChange = (orgId: string) => {
   window.dispatchEvent(event)
 }
 
-
-export function OrganizationSwitcher({
-  organizations,
-}: {
+interface OrganizationSwitcherProps {
   organizations: Organization[]
-}) {
+  isLoading?: boolean
+}
+
+
+export function OrganizationSwitcher({ organizations, isLoading }: OrganizationSwitcherProps) {
+  if (isLoading) {
+    return <div className="h-10 animate-pulse bg-muted rounded-md" />
+  }
+
+
   const { isMobile } = useSidebar()
   const [activeOrganization, setActiveOrganization] = React.useState<Organization | null>(null)
   const router = useRouter()

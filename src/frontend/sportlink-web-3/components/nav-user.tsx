@@ -2,6 +2,7 @@
 
 import {
   ChevronsUpDown,
+  FileUser,
   LogOut,
   UserCircle,
 } from "lucide-react"
@@ -73,24 +74,23 @@ export function NavUser({
                 user={user}
                 className="px-1 py-1.5"
               />
+              
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem >
               <AuthorizedElement>
                 {({ userData }) => (
                   <>
-                  
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground flex">
-                      <UserCircle className="size-3 text-muted-foreground mr-1" />
-                      Role
-                    </span>
-                    <span className="font-medium">{userData.role}</span>
-                  </div>
-                </>
+                    <div className="flex aspect-square size-6 shrink-0 items-center justify-center rounded-sm border text-xs font-medium">
+                      <FileUser className="size-4 shrink-0" />
+                    </div>
+                    <span className="flex-1">{userData.role}</span>
+                  </>
                 )}
               </AuthorizedElement>
+
             </DropdownMenuItem>
+            
             {/* <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
