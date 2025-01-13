@@ -24,9 +24,10 @@ import {
 } from "@/components/ui/sidebar"
 import { UserInfo } from "./ui-custom/user-info";
 import AuthorizedElement from "./auth/authorized-element";
+import { useAuth } from "./auth/auth-context";
 
 export function NavUser({
-  user,
+  user
 }: {
   user: {
     firstName: string
@@ -37,6 +38,12 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const router = useRouter();
+  const { logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    router.push('/')
+  }
 
 
   return (
@@ -107,7 +114,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push('/logout')}>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

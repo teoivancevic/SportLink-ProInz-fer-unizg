@@ -1,3 +1,9 @@
+// types/auth.ts
+import { UserRole } from '@/types/roles'
+
+
+
+
 export interface LoginRequest {
     email: string;
     password: string;
@@ -43,3 +49,27 @@ export interface ResendOTPRequest {
 }
 
 export type ResendOTPResponse = string;
+
+
+
+
+
+
+export interface UserData {
+  id: string
+  email: string
+  role: UserRole
+  firstName: string
+  lastName: string
+}
+
+export interface JWTPayload {
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': string
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': string
+  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': UserRole
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname': string
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname': string
+  exp: number
+  iss: string
+  aud: string
+}

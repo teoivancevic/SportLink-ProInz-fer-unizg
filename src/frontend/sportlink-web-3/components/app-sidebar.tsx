@@ -28,28 +28,34 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 import Image from "next/image"
-import { TeamSwitcher } from "./team-switcher"
+import { OrganizationSwitcher } from "./organization-switcher"
 import { Button } from './ui/button'
 import UnauthorizedElement from './auth/unauthorized-element'
+import { useEffect, useState } from 'react'
+import { orgService } from '@/lib/services/api'
+import { GetOrganizationResponse, Organization } from '@/types/org'
+import router from 'next/router'
+
+const ACTIVE_ORG_KEY = 'activeOrganizationId'
 
 const data = {
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
+  // organizations: [
+  //   {
+  //     name: "Acme Inc",
+  //     logo: GalleryVerticalEnd,
+  //     plan: "Enterprise",
+  //   },
+  //   {
+  //     name: "Acme Corp.",
+  //     logo: AudioWaveform,
+  //     plan: "Startup",
+  //   },
+  //   {
+  //     name: "Evil Corp.",
+  //     logo: Command,
+  //     plan: "Free",
+  //   },
+  // ],
   navMain: [
     {
       title: "Home",
@@ -80,22 +86,22 @@ const data = {
     },
     
   ],
-  navOrgOwner: [
-    {
-      title: "Profil",
-      url: "/organizations/1",
-      icon: Building,
-      isActive: true,
-      items: []
-    },
-    {
-      title: "Recenzije",
-      url: "/organizations/reviews",
-      icon: Star,
-      isActive: true,
-      items: []
-    }
-  ],
+  // navOrgOwner: [
+  //   {
+  //     title: "Profil",
+  //     url: "/organizations/1",
+  //     icon: Building,
+  //     isActive: true,
+  //     items: []
+  //   },
+  //   {
+  //     title: "Recenzije",
+  //     url: "/organizations/1/reviews",
+  //     icon: Star,
+  //     isActive: true,
+  //     items: []
+  //   }
+  // ],
   navAppAdmin: [
     {
       title: "Dashboard",
@@ -138,12 +144,86 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [myOrganizations, setOrganizations] = useState<Organization[]>([])
+  const [activeOrgId, setActiveOrgId] = useState<string | null>(null)
+  
+  useEffect(() => {
+    // Initial load of active org ID
+    const savedOrgId = localStorage.getItem(ACTIVE_ORG_KEY)
+    setActiveOrgId(savedOrgId)
+
+    // Set up event listeners for both storage and custom event
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === ACTIVE_ORG_KEY) {
+        setActiveOrgId(e.newValue)
+      }
+    }
+
+    const handleOrgChange = (e: CustomEvent<{ orgId: string }>) => {
+      setActiveOrgId(e.detail.orgId)
+    }
+
+    // Add both event listeners
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('organizationChange', handleOrgChange as EventListener)
+
+    // Clean up both listeners
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('organizationChange', handleOrgChange as EventListener)
+    }
+  }, [])
+
   const navigateLogin = () => {
     window.location.href = '/login'
   }
   const navigateSignup = () => {
     window.location.href = '/signup'
   }
+
+  const fetchMyOrganizations = async () => {
+    try {
+      const response: GetOrganizationResponse = await orgService.getMyOrganizations()
+      console.log(response);
+      setOrganizations(response.data)
+
+    } catch (error) {
+      console.error('Error fetching organizations:', error)
+      //setError('Došlo je do greške prilikom učitavanja organizacija.')
+    } finally {
+      //setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchMyOrganizations()
+  }, [])
+
+  // Create dynamic nav items based on activeOrgId
+  const getOrgOwnerNavItems = () => [
+    {
+      title: "Profil",
+      url: `/organizations/${activeOrgId || ''}`,
+      icon: Building,
+      isActive: true,
+      items: []
+    },
+    {
+      title: "Recenzije",
+      url: `/organizations/${activeOrgId || ''}/reviews`,
+      icon: Star,
+      isActive: true,
+      items: []
+    }
+  ]
+
+  const handleLogout = () => {
+    // Clear user data from local storage
+    localStorage.removeItem('authToken');
+    // setUserData(null); // Clear user data from state
+    setActiveOrgId(null); // Clear active organization ID
+    //router.push('/logout'); // Redirect to logout page
+  };
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -157,32 +237,47 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavMain navTitle="SportLink" items={data.navMain} />
           
           <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
-            {({ userData }) => (
-              <NavMain navTitle="Moja organizacija" items={data.navOrgOwner} />
-            )}
+            {({ userData }) => {
+
+              return(
+                <NavMain 
+                navTitle={`Moja organizacija${activeOrgId ? `: ${activeOrgId}` : ''}`} 
+                items={getOrgOwnerNavItems()} 
+              />
+              );
+            }}
           </AuthorizedElement>
           
           <AuthorizedElement roles={[UserRole.AppAdmin]}>
-            {({ userData }) => (
-              <NavMain navTitle="App Admin" items={data.navAppAdmin} />
-            )}
+            {({ userData }) => {
+
+              return(
+                <NavMain navTitle="App Admin" items={data.navAppAdmin} />
+              );
+            }}
           </AuthorizedElement>
         </div>
         
         {/* Secondary navigation at the bottom of content */}
         <AuthorizedElement roles={[UserRole.User]}>
-            {({ userData }) => (
-              <NavSecondary items={data.navSecondary} className='mt-auto'/>
-            )}
+          {({ userData }) => {
+
+              return(
+                <NavSecondary items={data.navSecondary} className='mt-auto'/>
+              );
+            }}
         </AuthorizedElement>
       </SidebarContent>
 
       <SidebarFooter>
         
         <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
-          {({ userData }) => (
-            <TeamSwitcher teams={data.teams}/>
-          )}
+            {({ userData }) => {
+
+              return(
+                <OrganizationSwitcher organizations={myOrganizations}/>
+              );
+            }}
         </AuthorizedElement>
         <UnauthorizedElement>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -191,14 +286,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
         </UnauthorizedElement>
         <AuthorizedElement>
-          {({ userData }) => (
-            <NavUser user={{
-              firstName: userData.firstName,
-              lastName: userData.lastName,
-              email: userData.email,
-              avatar: ""
-            }} />
-          )}
+            {({ userData }) => {
+
+              return(
+                <NavUser user={{
+                  firstName: userData.firstName,
+                  lastName: userData.lastName,
+                  email: userData.email,
+                  avatar: ""
+                } } onLogout={handleLogout}/>
+              );
+            }}
         </AuthorizedElement>
         
       </SidebarFooter>
