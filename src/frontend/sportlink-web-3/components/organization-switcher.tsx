@@ -36,10 +36,6 @@ interface OrganizationSwitcherProps {
 }
 
 export function OrganizationSwitcher({ organizations, isLoading }: OrganizationSwitcherProps) {
-  if (isLoading) {
-    return <div className="h-10 animate-pulse bg-muted rounded-md" />
-  }
-
   const { isMobile } = useSidebar()
   const [activeOrganization, setActiveOrganization] = React.useState<Organization | null>(null)
   const router = useRouter()
@@ -74,6 +70,10 @@ export function OrganizationSwitcher({ organizations, isLoading }: OrganizationS
     setActiveOrganization(organization)
     localStorage.setItem(ACTIVE_ORG_KEY, organization.id.toString())
     dispatchOrgChange(organization.id.toString())
+  }
+
+  if (isLoading) {
+    return <div className="h-10 animate-pulse bg-muted rounded-md" />
   }
 
   if (!activeOrganization) {
