@@ -26,8 +26,8 @@ Database: db-sportlink-test-03
 
 #### Connect to the database with DataGrip
    - Set username and password (Given by project lead as stated above)
-   - **Dev database:** jdbc:sqlserver://sql-sportlink-test-03.database.windows.net:1433;database=db-sportlink-test-03;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
-   - **Test database:** jdbc:sqlserver://sqlserver-sportlink-test.database.windows.net:1433;database=db-sportlink-test;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+   - **Dev database:** jdbc:sqlserver://sql-sportlink-test-03.database.windows.net:1433;database=db-sportlink-dev-03;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+   - **Test database:** jdbc:sqlserver://sql-sportlink-test-03.database.windows.net:1433;database=db-sportlink-test-03;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
 
 ### Apply DB migrations from backend code
 ALL migrations are executed autimatically when running code, so manual running of database update is **NOT NECESSARY anymore**.
