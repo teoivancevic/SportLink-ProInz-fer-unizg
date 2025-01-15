@@ -10,12 +10,12 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      REGISTRY: acrsportlink.azurecr.io
-      ACR_NAME: acrsportlink
+      REGISTRY: acrsportlink02.azurecr.io
+      ACR_NAME: acrsportlink02
       IMAGE_NAME: api-prod
-      WEB_APP_NAME: api-sportlink-prod
-      RESOURCE_GROUP: rg-sportlink-prod
-      FRONTEND_REDIRECT_URL: https://webapp-sportlink-prod.azurewebsites.net/auth/callback
+      WEB_APP_NAME: api-sportlink-prod-03
+      RESOURCE_GROUP: rg-sportlink-prod-02
+      FRONTEND_REDIRECT_URL: https://webapp-sportlink-prod-nextjs-03.azurewebsites.net/auth/callback
 
     steps:
     - name: Checkout code

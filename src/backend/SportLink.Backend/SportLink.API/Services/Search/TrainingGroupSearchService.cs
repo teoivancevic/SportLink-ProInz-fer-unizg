@@ -29,8 +29,12 @@ public class TrainingGroupSearchService : ISearchService<TrainingGroupSearchDto,
         {
             var searchTerm = parameters.SearchTerm.ToLower();
             query = query.Where(tg => tg.Name.ToLower().Contains(searchTerm)
-            || tg.Description.ToLower().Contains(searchTerm)
             || tg.Organization.Name.ToLower().Contains(searchTerm));
+        }
+        
+        if (parameters.SportIds != null && parameters.SportIds.Any())
+        {
+            query = query.Where(tg => parameters.SportIds.Contains(tg.SportId));
         }
         
         if (parameters.MinAge.HasValue)
@@ -43,9 +47,9 @@ public class TrainingGroupSearchService : ISearchService<TrainingGroupSearchDto,
             query = query.Where(tg => tg.AgeTo <= parameters.MaxAge);
         }
         
-        if (parameters.Sex.HasValue)
+        if (parameters.Sex != null && parameters.Sex.Any())
         {
-            query = query.Where(tg => tg.Sex == parameters.Sex);
+            query = query.Where(tg => parameters.Sex.Contains(tg.Sex));
         }
 
         if (parameters.MaxPrice.HasValue)
@@ -53,10 +57,7 @@ public class TrainingGroupSearchService : ISearchService<TrainingGroupSearchDto,
             query = query.Where(tg => tg.MonthlyPrice <= parameters.MaxPrice);
         }
         
-        if (parameters.SportIds != null && parameters.SportIds.Any())
-        {
-            query = query.Where(tg => parameters.SportIds.Contains(tg.SportId));
-        }
+        
         
         var trainingGroups = await query
             .Select(tg => new TrainingGroupSearchDto
@@ -67,7 +68,6 @@ public class TrainingGroupSearchService : ISearchService<TrainingGroupSearchDto,
                 AgeTo = tg.AgeTo,
                 Sex = tg.Sex,
                 MonthlyPrice = tg.MonthlyPrice,
-                Description = tg.Description,
                 SportName = tg.Sport.Name,
                 OrganizationName = tg.Organization.Name,
                 TrainingScheduleDtos = tg.TrainingSchedules.Select(ts => new TrainingScheduleDto

@@ -10,7 +10,6 @@ public class TrainingGroupSearchDto
     public int AgeTo { get; set; }
     public SexEnum Sex { get; set; }
     public decimal MonthlyPrice { get; set; }
-    public string Description { get; set; }
     public List<TrainingScheduleDto> TrainingScheduleDtos { get; set; }
     public string OrganizationName { get; set; }
     public string SportName { get; set; }

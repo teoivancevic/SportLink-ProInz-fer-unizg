@@ -16,7 +16,11 @@ public class TrainingGroupController : ControllerBase
     {
         _searchService = searchService;
     }
-
+    /// <summary>
+    /// Searches TrainingGroups filtered by parameters
+    /// </summary>
+    /// <param name="searchParameters"></param>
+    /// <returns>Returns TrainingGroupSearchDTOs with a List of TrainingScheduleDTOs</returns>
     [HttpGet]
     [Route("search")]
     public async Task<ActionResult<List<TrainingGroupSearchDto>>> SearchAsync(

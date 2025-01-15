@@ -24,7 +24,6 @@ public class SportObjectSearchService : ISearchService<SportObjectSearchDto, Sea
         {
             var searchTerm = parameters.SearchTerm.ToLower();
             query = query.Where(so => so.Name.ToLower().Contains(searchTerm)
-            || so.Description.ToLower().Contains(searchTerm)
             || so.Organization.Name.ToLower().Contains(searchTerm)
             || so.Location.ToLower().Contains(searchTerm));
         }
@@ -47,7 +46,6 @@ public class SportObjectSearchService : ISearchService<SportObjectSearchDto, Sea
             {
                 Id = so.Id,
                 Name = so.Name,
-                Description = so.Description,
                 Location = so.Location,
                 OrganizationName = so.Organization.Name,
                 SportCourtDtos = so.SportCourts

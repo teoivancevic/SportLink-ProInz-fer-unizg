@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportLink.API.Data;
 
@@ -11,9 +12,11 @@ using SportLink.API.Data;
 namespace SportLink.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250113170207_Added_TrainingSchedule_Id")]
+    partial class Added_TrainingSchedule_Id
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -515,13 +518,14 @@ namespace SportLink.API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("int");
+                    b.Property<string>("DaysOfWeek")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeOnly?>("OpenFrom")
+                    b.Property<TimeOnly>("OpenFrom")
                         .HasColumnType("time");
 
-                    b.Property<TimeOnly?>("OpenTo")
+                    b.Property<TimeOnly>("OpenTo")
                         .HasColumnType("time");
 
                     b.Property<int>("SportsObjectId")
@@ -529,9 +533,6 @@ namespace SportLink.API.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("isWorking")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

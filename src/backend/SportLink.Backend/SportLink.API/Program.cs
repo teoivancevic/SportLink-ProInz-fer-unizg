@@ -19,6 +19,7 @@ using SportLink.API.Services.Email;
 using SportLink.API.Services.Organization;
 using SportLink.API.Services.OTPCode;
 using SportLink.API.Services.Search;
+using SportLink.API.Services.Review;
 using SportLink.API.Services.User;
 using SportLink.Core.Handlers;
 using SportLink.Core.Helpers;
@@ -137,10 +138,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
-builder.Services.AddScoped<ISearchService<TournamentDto, TournamentSearchParameters>, TournamentSearchService>();
-builder.Services
-    .AddScoped<ISearchService<TrainingGroupSearchDto, TrainingGroupSearchParameters>, TrainingGroupSearchService>();
-builder.Services.AddScoped<ISearchService<SportObjectSearchDto, SearchParameters>, SportObjectSearchService>();
 
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));

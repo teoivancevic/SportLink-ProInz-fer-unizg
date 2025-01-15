@@ -1,8 +1,10 @@
-﻿namespace SportLink.Core.Models;
+﻿using SportLink.Core.Enums;
+
+namespace SportLink.Core.Models;
 
 public class TrainingScheduleDto
 {
-    public DayOfWeek DayOfWeek { get; set; }
+    public DanUTjednuEnum DayOfWeek { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
 }

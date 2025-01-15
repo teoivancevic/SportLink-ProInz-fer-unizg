@@ -10,11 +10,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      REGISTRY: acrsportlink.azurecr.io
+      REGISTRY: acrsportlink02.azurecr.io
       IMAGE_NAME: webapp-prod
-      ACR_NAME: acrsportlink
-      WEB_APP_NAME: webapp-sportlink-prod
-      API_URL: https://api-sportlink-prod.azurewebsites.net/
+      ACR_NAME: acrsportlink02
+      WEB_APP_NAME: webapp-sportlink-prod-nextjs-03
+      API_URL: https://api-sportlink-prod-03.azurewebsites.net/
 
     steps:
       - uses: actions/checkout@v4

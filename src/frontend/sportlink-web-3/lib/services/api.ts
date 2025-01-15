@@ -180,6 +180,9 @@ export const orgService = {
   getOrganizations: (verified: boolean) => 
     ApiClient.get<GetOrganizationResponse>(`/api/Organization/Organizations?isVerified=${verified}`),
 
+  getMyOrganizations: () =>
+    ApiClient.get<GetOrganizationResponse>(`/api/Organization/myOrganizations`),
+
   acceptOrganization: (id: number) => 
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
 

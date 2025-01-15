@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SportLink.Core.Enums;
 
 namespace SportLink.API.Data.Entities;
 
 public class TrainingSchedule : BaseEntity
 {
-    public DayOfWeek DayOfWeek { get; set; }
+    public int Id { get; set; }
+    public DanUTjednuEnum DayOfWeek { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
     public int TrainingGroupId { get; set; }
@@ -18,7 +20,11 @@ public class TrainingScheduleConfigurationBuilder : IEntityTypeConfiguration<Tra
     public void Configure(EntityTypeBuilder<TrainingSchedule> builder)
     {
         builder.ToTable(nameof(TrainingSchedule));
-        builder.HasKey(t => new {t.TrainingGroupId, t.DayOfWeek, t.StartTime});
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.DayOfWeek)
+            .IsRequired();
+        builder.Property(x => x.StartTime)
+            .IsRequired();
         builder.Property(t => t.EndTime)
             .IsRequired();
         
