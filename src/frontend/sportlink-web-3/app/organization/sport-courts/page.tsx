@@ -20,7 +20,7 @@ export default function SportCourtsContent() {
   }
 
   const formatPriceRange = (court: SportCourt) => {
-    return `Max price ${court.maxHourlyPrice} kn/h`
+    return `Maks cijena ${court.maxHourlyPrice} €/h`
   }
 
   const toggleAddOrEdit = () => {

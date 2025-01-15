@@ -26,7 +26,7 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
       monthlyPrice: 0,
       description: '',
       sport: '',
-      schedule: [{ day: '', startTime: '', endTime: '' }]
+      schedule: [{ day: 'Ponedjeljak', startTime: '', endTime: '' }]
     }
   )
 
@@ -96,7 +96,7 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
             </select>
           </div>
           <div>
-            <Label htmlFor="monthlyPrice">Mjesečna cijena</Label>
+            <Label htmlFor="monthlyPrice">Mjesečna cijena (€/mjesec)</Label>
             <Input id="monthlyPrice" name="monthlyPrice" type="number" value={formData.monthlyPrice} onChange={handleInputChange} required />
           </div>
           <div>
@@ -111,24 +111,25 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
                   onChange={(e) => handleScheduleChange(index, 'day', e.target.value)}
                   className="w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="">Odaberi dan</option>
-                  <option value="Monday">Ponedjeljak</option>
-                  <option value="Tuesday">Utorak</option>
-                  <option value="Wednesday">Srijeda</option>
-                  <option value="Thursday">Četvrtak</option>
-                  <option value="Friday">Petak</option>
-                  <option value="Saturday">Subota</option>
-                  <option value="Sunday">Nedjelja</option>
+                  <option value="Ponedjeljak">Ponedjeljak</option>
+                  <option value="Utorak">Utorak</option>
+                  <option value="Srijeda">Srijeda</option>
+                  <option value="Četvrtak">Četvrtak</option>
+                  <option value="Petak">Petak</option>
+                  <option value="Subota">Subota</option>
+                  <option value="Nedjelja">Nedjelja</option>
                 </select>
                 <Input
                   placeholder="Početak"
                   value={session.startTime}
+                  type="time" 
                   onChange={(e) => handleScheduleChange(index, 'startTime', e.target.value)}
                   required
                 />
                 <Input
                   placeholder="Kraj"
                   value={session.endTime}
+                  type="time" 
                   onChange={(e) => handleScheduleChange(index, 'endTime', e.target.value)}
                   required
                 />

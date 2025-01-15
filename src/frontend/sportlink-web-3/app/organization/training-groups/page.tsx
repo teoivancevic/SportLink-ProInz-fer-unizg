@@ -109,9 +109,9 @@ export default function TrainingGroups() {
               <CardContent className="flex-grow overflow-y-auto">
                 <p className="text-sm text-muted-foreground mb-2">{group.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">Age: {group.ageFrom}-{group.ageTo}</span>
-                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">Sex: {group.sex}</span>
-                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">${group.monthlyPrice}/month</span>
+                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">Dob: {group.ageFrom}-{group.ageTo}</span>
+                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">Spol: {group.sex}</span>
+                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">€{group.monthlyPrice}/mjesec</span>
                 </div>
                 <div className="space-y-2">
                   {group.schedule.map((session, index) => (

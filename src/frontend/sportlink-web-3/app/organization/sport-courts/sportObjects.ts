@@ -28,8 +28,8 @@ export interface WorkTime {
       description: "Moderni sportski centar s raznovrsnim terenima i dvoranama.",
       location: "Ulica sportova 123, Zagreb",
       workTimes: [
-        { day: "Ponedjeljak-Petak", from: "07:00", to: "22:00" },
-        { day: "Subota-Nedjelja", from: "08:00", to: "20:00" },
+        { day: "Ponedjeljak", from: "07:00", to: "22:00" },
+        { day: "Subota", from: "08:00", to: "20:00"},
       ],
       sportCourts: [
         { id: 1, name: "Teniski teren", maxHourlyPrice: 80, quantity: 4, sport: "Tenis" },
@@ -43,8 +43,8 @@ export interface WorkTime {
       description: "Suvremeni fitness centar s raznovrsnom opremom i grupnim treninzima.",
       location: "Trg zdravlja 45, Split",
       workTimes: [
-        { day: "Ponedjeljak-Petak", from: "06:00", to: "23:00" },
-        { day: "Subota", from: "08:00", to: "22:00" },
+        { day: "Ponedjeljak", from: "06:00", to: "23:00" },
+        { day: "Subota", from: "08:00", to: "22:00"},
         { day: "Nedjelja", from: "09:00", to: "20:00" },
       ],
       sportCourts: [
@@ -58,7 +58,7 @@ export interface WorkTime {
       description: "Vodeni sportski kompleks s olimpijskim bazenom i wellness sadržajima.",
       location: "Obala mora 78, Rijeka",
       workTimes: [
-        { day: "Ponedjeljak-Nedjelja", from: "07:00", to: "21:00" },
+        { day: "Ponedjeljak", from: "07:00", to: "21:00" },
       ],
       sportCourts: [
         { id: 6, name: "Olimpijski bazen", maxHourlyPrice: 120, quantity: 1, sport: "Plivanje" },
