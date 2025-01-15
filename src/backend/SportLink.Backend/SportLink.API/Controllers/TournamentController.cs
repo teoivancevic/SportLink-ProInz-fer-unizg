@@ -16,7 +16,11 @@ public class TournamentController : ControllerBase
     {
         _searchService = searchService;
     }
-
+    /// <summary>
+    /// Search filtered tournaments
+    /// </summary>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("search")]
     public async Task<ActionResult<List<TournamentDto>>> SearchAsync([FromQuery] TournamentSearchParameters parameters)

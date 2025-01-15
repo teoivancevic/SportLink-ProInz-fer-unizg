@@ -79,7 +79,10 @@ builder.Services.AddSwaggerGen(c =>
             }
           });
       c.IncludeXmlComments(xmlDocsPath);
+      c.EnableAnnotations();
   });
+
+
 
 builder.Services.AddControllers();
 
@@ -188,6 +191,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 logger.LogInformation("Application starting...");
 logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
