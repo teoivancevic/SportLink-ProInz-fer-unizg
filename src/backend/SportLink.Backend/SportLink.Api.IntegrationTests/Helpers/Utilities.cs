@@ -50,6 +50,16 @@ public class Utilities
                 RoleId = 3,
                 IsEmailVerified = true,
                 LastLoginAt = DateTime.UtcNow.AddDays(-2)
+            },
+            new User
+            {
+                Id = 3,
+                FirstName = "App",
+                LastName = "Admin",
+                Email = "app@example.com",
+                RoleId = 1,
+                IsEmailVerified = true,
+                LastLoginAt = DateTime.UtcNow.AddDays(-1)
             }
         };
     }

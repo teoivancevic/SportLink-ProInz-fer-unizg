@@ -1,5 +1,7 @@
 ﻿    using System.Data.Common;
     using System.Net.Mime;
+    using System.Text;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.Testing;
     using Microsoft.AspNetCore.TestHost;
@@ -7,6 +9,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.IdentityModel.Tokens;
     using Microsoft.VisualStudio.TestPlatform.TestHost;
     using SportLink.API.Data;
     using SportLink.Api.IntegrationTests.Helpers;
