@@ -160,7 +160,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         logger.LogInformation("Starting database migration...");
-        db.Database.Migrate();
+        if (db.Database.IsRelational())
+        {
+            db.Database.Migrate();
+        }
         logger.LogInformation("Database migrated successfully");
     }
     catch (Exception ex)
@@ -192,3 +195,5 @@ logger.LogInformation("Application starting...");
 logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
 
 app.Run();
+
+public partial class Program { }
