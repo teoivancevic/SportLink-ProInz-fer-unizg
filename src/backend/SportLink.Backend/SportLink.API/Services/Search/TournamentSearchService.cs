@@ -39,10 +39,8 @@ public class TournamentSearchService : ISearchService<TournamentDto, TournamentS
             query = query.Where(t => t.EntryFee <= parameters.MaxPrice);
         }
         
-        if (parameters.StartDate.HasValue)
-        {
-            query = query.Where(t => t.TimeFrom >= parameters.StartDate.Value);
-        }
+        var effectiveStartDate = parameters.StartDate ?? DateTime.Today;
+        query = query.Where(t => t.TimeFrom >= effectiveStartDate);
 
         if (parameters.EndDate.HasValue)
         {
