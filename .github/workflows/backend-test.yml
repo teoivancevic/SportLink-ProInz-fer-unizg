@@ -40,7 +40,7 @@ jobs:
 
     - name: Test
       env:
-        ASPNETCORE_ENVIRONMENT: Production
+        ASPNETCORE_ENVIRONMENT: Development
         ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING_TEST_DB }}
         EmailSettings__AppPassword: ${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}
         Jwt__Key: ${{ secrets.JWT_KEY_TEST }}
