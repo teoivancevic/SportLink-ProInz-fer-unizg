@@ -73,7 +73,7 @@ const data = {
     },
     {
       title: "Pretraživanje",
-      url: "/search",
+      // url: "/search",
       icon: Search,
       isActive: true,
       items: [
