@@ -13,7 +13,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_API_URL: https://api-sportlink-test-02.azurewebsites.net
+      NEXT_PUBLIC_API_URL: https://api-sportlink-test-03.azurewebsites.net
       NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
     steps:
       - uses: actions/checkout@v4
@@ -38,11 +38,11 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     env:
-      REGISTRY: acrsportlink.azurecr.io
-      IMAGE_NAME: webapp-nextjs
-      ACR_NAME: acrsportlink
-      WEB_APP_NAME: webapp-sportlink-test-nextjs
-      NEXT_PUBLIC_API_URL: https://api-sportlink-test-02.azurewebsites.net
+      REGISTRY: acrsportlink02.azurecr.io
+      IMAGE_NAME: webapp-test-nextjs
+      ACR_NAME: acrsportlink02
+      WEB_APP_NAME: webapp-sportlink-test-nextjs-03
+      NEXT_PUBLIC_API_URL: https://api-sportlink-test-03.azurewebsites.net
       NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
     steps:
       - uses: actions/checkout@v4

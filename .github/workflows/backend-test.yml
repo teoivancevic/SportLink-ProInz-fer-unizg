@@ -13,12 +13,12 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      REGISTRY: acrsportlink.azurecr.io
-      ACR_NAME: acrsportlink
+      REGISTRY: acrsportlink02.azurecr.io
+      ACR_NAME: acrsportlink02
       IMAGE_NAME: api
-      WEB_APP_NAME: api-sportlink-test-02
-      RESOURCE_GROUP: rg-sportlink-test
-      FRONTEND_REDIRECT_URL: https://webapp-sportlink-test.azurewebsites.net/auth/callback
+      WEB_APP_NAME: api-sportlink-test-03
+      RESOURCE_GROUP: rg-sportlink-test-02
+      FRONTEND_REDIRECT_URL: https://webapp-sportlink-test-nextjs-03.azurewebsites.net/auth/callback
 
 
     steps:
@@ -40,7 +40,7 @@ jobs:
 
     - name: Test
       env:
-        ASPNETCORE_ENVIRONMENT: Development
+        ASPNETCORE_ENVIRONMENT: Production
         ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING_TEST_DB }}
         EmailSettings__AppPassword: ${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}
         Jwt__Key: ${{ secrets.JWT_KEY_TEST }}
