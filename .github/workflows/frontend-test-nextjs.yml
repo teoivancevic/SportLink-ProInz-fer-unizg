@@ -34,6 +34,12 @@ jobs:
         run: npm run build
         working-directory: ./src/frontend/sportlink-web-3
 
+      - name: Start Next.js
+        run: |
+          npm run start -- --port 3000 &
+          npx wait-on http://localhost:3000
+        working-directory: ./src/frontend/sportlink-web-3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
