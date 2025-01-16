@@ -67,7 +67,7 @@ namespace SportLink.API.Services.Organization
             }
         }
 
-        public async Task<ProfileDto> GetSingleOrganization(int id)
+        public async Task<OrganizationDetailedDto> GetSingleOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
             if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
@@ -77,7 +77,7 @@ namespace SportLink.API.Services.Organization
                 var profile = await _context.Organizations
                             .Include(x => x.SocialNetworks)
                             .Where(x => x.Id == id)
-                            .Select(x => new ProfileDto
+                            .Select(x => new OrganizationDetailedDto
                             {
                                 Id = x.Id,
                                 Name = x.Name,
@@ -126,7 +126,7 @@ namespace SportLink.API.Services.Organization
         public async Task<bool> VerifyOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
-            var organizationOwner = await _context.Users.FindAsync(organization?.OwnerId);
+            var organizationOwner = await _context.Users.FindAsync(organization?.Owner.Id);
             if (organizationOwner is not null && organization?.VerificationStatus == VerificationStatusEnum.Unverified)
             {
                 organizationOwner.RoleId = (int)RolesEnum.OrganizationOwner;
@@ -168,7 +168,7 @@ namespace SportLink.API.Services.Organization
 
         // ---------------------- Organization's Profile ---------------------- //
 
-        public async Task<ActionResult<ProfileDto>> UpdateProfile(int id, ProfileDto profileDto)
+        public async Task<ActionResult<OrganizationDetailedDto>> UpdateProfile(int id, OrganizationDetailedDto profileDto)
         {
             var profile = await _context.Organizations.FindAsync(id);
             var existingSocialNetworks = await _context.SocialNetworks.Where(x => x.OrganizationId == id).ToListAsync();
