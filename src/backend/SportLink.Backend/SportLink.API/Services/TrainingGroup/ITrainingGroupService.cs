@@ -10,8 +10,8 @@ namespace SportLink.API.Services.TrainingGroup
     {
         Task<bool> AddTrainingGroup(int id, TrainingGroupDto trainingGroup);
         Task<List<TrainingGroupDto>> GetTrainingGroups(int id);
-        Task<bool> UpdateTrainingGroup(int id, TrainingGroupDto trainingGroup, int idTrainingGroup);
-        Task<bool> DeleteTrainingGroup(int id, int idTrainingGroup);
-        Task<bool> UpdateTrainingSchedule(int id, List<TrainingScheduleDto> trainingSchedule, int idTrainingGroup);
+        Task<bool> UpdateTrainingGroup(TrainingGroupDto trainingGroup, int idTrainingGroup);
+        Task<bool> DeleteTrainingGroup(int idTrainingGroup);
+        //Task<bool> UpdateTrainingSchedule(int id, List<TrainingScheduleDto> trainingSchedule, int idTrainingGroup);
     }
 }

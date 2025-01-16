@@ -26,7 +26,7 @@ namespace SportLink.API.Controllers
         }
 
         [HttpGet, Authorize(Policy = "jwt_policy")]
-        [Route("{id}/tournaments")]
+        [Route("organization/{id}")]
         public async Task<ActionResult<List<TournamentDto>>> GetTournaments(int id)
         {
             var org = await _organizationService.GetSingleOrganization(id);
@@ -43,14 +43,14 @@ namespace SportLink.API.Controllers
         }
 
         [HttpPost, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{id}")]
-        public async Task<ActionResult<bool>> AddTournament(int id, [FromBody] TournamentDto tournament)
+        [Route("")]
+        public async Task<ActionResult<bool>> AddTournament([FromBody] TournamentDto tournament, int organizationId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _tournamentService.AddTournament(id, tournament);
+            var result = await _tournamentService.AddTournament(tournament, organizationId);
             if (!result)
             {
                 return BadRequest("Turnir neuspješno dodan.");
@@ -59,14 +59,14 @@ namespace SportLink.API.Controllers
         }
 
         [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{idTournament}")]
-        public async Task<ActionResult<bool>> UpdateTournament(int id, [FromBody] TournamentDto tournament, int idTournament)
+        [Route("")]
+        public async Task<ActionResult<bool>> UpdateTournament([FromBody] TournamentDto tournament, int idTournament)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _tournamentService.UpdateTournament(id, tournament, idTournament);
+            var result = await _tournamentService.UpdateTournament(tournament, idTournament);
             if (!result)
             {
                 return BadRequest("Turnir neuspješno ažuriran.");
@@ -75,10 +75,10 @@ namespace SportLink.API.Controllers
         }
 
         [HttpDelete, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{idTournament}")]
-        public async Task<ActionResult<bool>> DeleteTournament(int id, int idTournament)
+        [Route("")]
+        public async Task<ActionResult<bool>> DeleteTournament(int idTournament)
         {
-            var result = await _tournamentService.DeleteTournament(id, idTournament);
+            var result = await _tournamentService.DeleteTournament(idTournament);
             if (!result)
             {
                 return BadRequest("Turnir neuspješno obrisan.");

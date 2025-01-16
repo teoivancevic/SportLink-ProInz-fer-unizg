@@ -8,9 +8,9 @@ namespace SportLink.API.Services.Tournament
 {
     public interface ITournamentService
     {
-        Task<bool> AddTournament(int id, TournamentDto tournament);
+        Task<bool> AddTournament(TournamentDto tournament, int organizationId);
         Task<List<TournamentDto>> GetTournaments(int id);
-        Task<bool> UpdateTournament(int id, TournamentDto tournament, int tournamentId);
-        Task<bool> DeleteTournament(int id, int idTournament);
+        Task<bool> UpdateTournament(TournamentDto tournament, int idTournament);
+        Task<bool> DeleteTournament(int idTournament);
     }
 }

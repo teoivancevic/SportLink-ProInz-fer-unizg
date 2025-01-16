@@ -25,7 +25,7 @@ namespace SportLink.API.Controllers
         }
 
         [HttpGet, Authorize(Policy = "jwt_policy")]
-        [Route("{id}/training-groups")]
+        [Route("organization/{id}")]
         public async Task<ActionResult<List<TrainingGroupDto>>> GetTrainingGroups(int id)
         {
             var org = await _organizationService.GetSingleOrganization(id);
@@ -42,7 +42,7 @@ namespace SportLink.API.Controllers
         }
 
         [HttpPost, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{id}")]
+        [Route("")]
         public async Task<ActionResult<bool>> AddTrainingGroup(int id, [FromBody] TrainingGroupDto trainingGroup)
         {
             if (!ModelState.IsValid)
@@ -58,14 +58,14 @@ namespace SportLink.API.Controllers
         }
 
         [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{idTrainingGroup}")]
-        public async Task<ActionResult<bool>> UpdateTrainingGroup(int id, [FromBody] TrainingGroupDto trainingGroup, int idTrainingGroup)
+        [Route("")]
+        public async Task<ActionResult<bool>> UpdateTrainingGroup([FromBody] TrainingGroupDto trainingGroup, int idTrainingGroup)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _trainingGroupService.UpdateTrainingGroup(id, trainingGroup, idTrainingGroup);
+            var result = await _trainingGroupService.UpdateTrainingGroup(trainingGroup, idTrainingGroup);
             if (!result)
             {
                 return BadRequest("Grupa za trening neuspješno ažuriran.");
@@ -73,27 +73,27 @@ namespace SportLink.API.Controllers
             return Ok(trainingGroup);
         }
 
-        [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{id}/update-training-schedule/{idTrainingGroup}")]
-        public async Task<ActionResult<bool>> UpdateTrainingSchedule(int id, [FromBody] List<TrainingScheduleDto> trainingSchedule, int idTrainingGroup)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var result = await _trainingGroupService.UpdateTrainingSchedule(id, trainingSchedule, idTrainingGroup);
-            if (!result)
-            {
-                return BadRequest("Grupa za trening neuspješno ažuriran.");
-            }
-            return Ok(trainingSchedule);
-        }
+        // [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+        // [Route("{id}/update-training-schedule/{idTrainingGroup}")]
+        // public async Task<ActionResult<bool>> UpdateTrainingSchedule(int id, [FromBody] List<TrainingScheduleDto> trainingSchedule, int idTrainingGroup)
+        // {
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(ModelState);
+        //     }
+        //     var result = await _trainingGroupService.UpdateTrainingSchedule(id, trainingSchedule, idTrainingGroup);
+        //     if (!result)
+        //     {
+        //         return BadRequest("Grupa za trening neuspješno ažuriran.");
+        //     }
+        //     return Ok(trainingSchedule);
+        // }
 
         [HttpDelete, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{idTrainingGroup}")]
-        public async Task<ActionResult<bool>> DeleteTrainingGroup(int id, int idTrainingGroup)
+        [Route("")]
+        public async Task<ActionResult<bool>> DeleteTrainingGroup(int idTrainingGroup)
         {
-            var result = await _trainingGroupService.DeleteTrainingGroup(id, idTrainingGroup);
+            var result = await _trainingGroupService.DeleteTrainingGroup(idTrainingGroup);
             if (!result)
             {
                 return BadRequest("Grupa za trening neuspješno obrisan.");

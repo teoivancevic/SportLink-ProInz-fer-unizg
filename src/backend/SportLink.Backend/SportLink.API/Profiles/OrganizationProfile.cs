@@ -17,6 +17,8 @@ public class OrganizationProfile : Profile
         CreateMap<TrainingSchedule, TrainingScheduleDto>();
         CreateMap<SportCourtDto, SportCourt>();
         CreateMap<SportCourt, SportCourtDto>();
+        CreateMap<SportObjectDto, SportsObject>();
+        CreateMap<SportsObject, SportObjectDto>();
         CreateMap<ProfileDto, Organization>();
         CreateMap<Organization, ProfileDto>();
     }

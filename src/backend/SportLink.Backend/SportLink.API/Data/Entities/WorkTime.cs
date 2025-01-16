@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SportLink.Core.Enums;
 
 namespace SportLink.API.Data.Entities;
 
@@ -7,9 +8,10 @@ public class WorkTime : BaseEntity
 {
     public int Id { get; set; }
     public int SportsObjectId { get; set; }
-    public string DaysOfWeek { get; set; }
-    public TimeOnly OpenFrom { get; set; }
-    public TimeOnly OpenTo { get; set; }   //npr. 8.30 je (8, 30)
+    public DanUTjednuEnum DayOfWeek { get; set; }
+    public bool isWorking { get; set; }
+    public TimeOnly? OpenFrom { get; set; }
+    public TimeOnly? OpenTo { get; set; }   //npr. 8.30 je (8, 30)
 
     public virtual SportsObject SportsObject { get; set; }
 
@@ -22,14 +24,17 @@ public class WorkTimeConfigurationBuilder : IEntityTypeConfiguration<WorkTime>
         builder.ToTable(nameof(WorkTime));
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.DaysOfWeek)
+        builder.Property(x => x.DayOfWeek)
+            .IsRequired();
+
+        builder.Property(x => x.isWorking)
             .IsRequired();
 
         builder.Property(x => x.OpenFrom)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.OpenTo)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.CreatedAt)
             .IsRequired();

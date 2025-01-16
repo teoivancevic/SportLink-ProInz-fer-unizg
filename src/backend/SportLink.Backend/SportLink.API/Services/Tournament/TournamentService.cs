@@ -48,45 +48,40 @@ namespace SportLink.API.Services.Tournament
             return _mapper.Map<List<TournamentDto>>(tournaments);
         }
 
-        public async Task<bool> AddTournament(int id, TournamentDto tournamentDto)
+        public async Task<bool> AddTournament(TournamentDto tournamentDto, int organizationId)
         {
-            var org = await _context.Organizations.FindAsync(id);
+            var org = await _context.Organizations.FindAsync(organizationId);
             if (org is null)
             {
                 return false;
             }
-            tournamentDto.OrganizationId = id;
-
-            //_context.Tournaments.Add(_mapper.Map<Tournament>(tournamentDto));
+            tournamentDto.SportName = await _context.Sports.Where(x => x.Id == tournamentDto.SportId).Select(x => x.Name).FirstOrDefaultAsync() ?? "";
+            tournamentDto.OrganizationId = organizationId;
+            _context.Tournaments.Add(_mapper.Map<Data.Entities.Tournament>(tournamentDto));
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> UpdateTournament(int id, TournamentDto tournament, int tournamentId)
+        public async Task<bool> UpdateTournament(TournamentDto tournament, int idTournament)
         {
-            var org = await _context.Organizations.FindAsync(id);
-            if (org is null)
-            {
-                return false;
-            }
-            var tournamentToUpdate = await _context.Tournaments.FindAsync(tournamentId);
+            var tournamentToUpdate = await _context.Tournaments.FindAsync(idTournament);
             if (tournamentToUpdate is null)
             {
                 return false;
             }
-            tournament.OrganizationId = id;
-            _mapper.Map(tournament, tournamentToUpdate);
-            await _context.SaveChangesAsync();
-            return true;
+            else
+            {
+                tournament.OrganizationId = tournamentToUpdate.OrganizationId;
+                tournament.SportName = await _context.Sports.Where(x => x.Id == tournament.SportId).Select(x => x.Name).FirstOrDefaultAsync() ?? "";
+
+                _mapper.Map(tournament, tournamentToUpdate);
+                await _context.SaveChangesAsync();
+                return true;
+            }
         }
 
-        public async Task<bool> DeleteTournament(int id, int tournamentId)
+        public async Task<bool> DeleteTournament(int tournamentId)
         {
-            var org = await _context.Organizations.FindAsync(id);
-            if (org is null)
-            {
-                return false;
-            }
             var tournamentToDelete = await _context.Tournaments.FindAsync(tournamentId);
             if (tournamentToDelete is null)
             {

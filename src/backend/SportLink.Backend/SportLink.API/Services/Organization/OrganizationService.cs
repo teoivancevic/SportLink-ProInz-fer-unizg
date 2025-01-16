@@ -206,7 +206,7 @@ namespace SportLink.API.Services.Organization
                     var matching = profileDto.SocialNetworks?.FirstOrDefault(x => x.Type == sn.Type);
                     if (matching is null)
                     {
-                        updatedSocialNetworks.RemoveAt(i); // Remove safely
+                        updatedSocialNetworks.RemoveAt(i);
                     }
                 }
 

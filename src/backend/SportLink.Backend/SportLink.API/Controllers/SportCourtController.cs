@@ -25,7 +25,7 @@ namespace SportLink.API.Controllers
         }
 
         [HttpGet, Authorize(Policy = "jwt_policy")]
-        [Route("{id}/sport-courts")]
+        [Route("organization/{id}")]
         public async Task<ActionResult<List<SportCourtDto>>> GetSportCourts(int id)
         {
             var org = await _organizationService.GetSingleOrganization(id);
@@ -33,7 +33,7 @@ namespace SportLink.API.Controllers
             {
                 return NotFound("Organizacija ne postoji.");
             }
-            var sportCourts = await _sportCourtService.GetSportCourts(id);
+            var sportCourts = await _sportCourtService.GetSportObjects(id);
             if (sportCourts.IsNullOrEmpty() && org is not null)
             {
                 return NotFound("Organizacija nema raspoloživih terena.");
@@ -42,42 +42,42 @@ namespace SportLink.API.Controllers
         }
 
         [HttpPost, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{id}")]
-        public async Task<ActionResult<bool>> AddSportCourt(int id, [FromBody] SportCourtDto sportCourt)
+        [Route("")]
+        public async Task<ActionResult<bool>> AddSportCourt(int id, [FromBody] SportObjectDto sportObject)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _sportCourtService.AddSportCourt(id, sportCourt);
+            var result = await _sportCourtService.AddSportObject(id, sportObject);
             if (!result)
             {
                 return BadRequest("Teren neuspješno dodan.");
             }
-            return Ok(sportCourt);
+            return Ok(sportObject);
         }
 
         [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{idSportCourt}")]
-        public async Task<ActionResult<bool>> UpdateSportCourt(int id, [FromBody] SportCourtDto sportCourt, int idSportCourt)
+        [Route("")]
+        public async Task<ActionResult<bool>> UpdateSportCourt([FromBody] SportObjectDto sportObject, int idSportObject)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _sportCourtService.UpdateSportCourt(id, sportCourt, idSportCourt);
+            var result = await _sportCourtService.UpdateSportObject(sportObject, idSportObject);
             if (!result)
             {
                 return BadRequest("Teren neuspješno ažuriran.");
             }
-            return Ok(sportCourt);
+            return Ok(result);
         }
 
         [HttpDelete, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{idSportCourt}")]
-        public async Task<ActionResult<bool>> DeleteSportCourt(int id, int idSportCourt)
+        [Route("")]
+        public async Task<ActionResult<bool>> DeleteSportCourt(int idSportObject)
         {
-            var result = await _sportCourtService.DeleteSportCourt(id, idSportCourt);
+            var result = await _sportCourtService.DeleteSportObject(idSportObject);
             if (!result)
             {
                 return BadRequest("Teren neuspješno obrisan.");
