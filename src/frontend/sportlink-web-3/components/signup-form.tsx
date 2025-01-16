@@ -48,7 +48,7 @@ export default function SignupForm() {
       }
 
       const response = await authService.register(registrationData)
-      
+      console.log(response)
       // Type guard to ensure response has the expected shape
       if (!response || typeof response.id !== 'number') {
         throw new Error('Invalid registration response')
@@ -100,28 +100,30 @@ export default function SignupForm() {
   return (
     <Card className="w-[400px]">
       <CardHeader>
-        <CardTitle className="text-2xl">Sign Up</CardTitle>
-        <CardDescription>Create a new account</CardDescription>
+        <CardTitle className="text-2xl">Registriraj se</CardTitle>
+        <CardDescription>Napravi novi SportLink račun</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="grid w-full items-center gap-4">
             <div className="flex space-x-4">
               <div className="flex flex-col space-y-1.5 flex-1">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">Ime</Label>
                 <Input 
                   id="firstName" 
                   value={firstName}
+                  placeholder='Ime'
                   onChange={(e) => setFirstName(e.target.value)}
                   required
                   disabled={isLoading}
                 />
               </div>
               <div className="flex flex-col space-y-1.5 flex-1">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">Prezime</Label>
                 <Input 
                   id="lastName" 
                   value={lastName}
+                  placeholder='Prezime'
                   onChange={(e) => setLastName(e.target.value)}
                   required
                   disabled={isLoading}
@@ -133,7 +135,7 @@ export default function SignupForm() {
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="name@example.com"
+                placeholder="npr. marko@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -141,15 +143,17 @@ export default function SignupForm() {
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Lozinka</Label>
               <div className="relative">
                 <Input 
                   id="password" 
                   type={showPassword ? "text" : "password"}
+                  placeholder='Lozinka'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isLoading}
+                  className='pr-8'
                 />
                 <Button
                   type="button"
@@ -173,7 +177,7 @@ export default function SignupForm() {
             type="submit"
             disabled={isLoading}
           >
-            {isLoading ? "Signing up..." : "Sign Up"}
+            {isLoading ? "Registracija..." : "Registriraj se"}
           </Button>
         </form>
       </CardContent>
@@ -185,12 +189,12 @@ export default function SignupForm() {
           disabled={isLoading}
         >
           <FcGoogle className="mr-2" />
-          <span>Sign Up with Google</span>
+          <span>Registracija Google računom</span>
         </Button>
         <p className="mt-4 text-sm text-center">
-          Already have an account?{" "}
+          Već imaš račun?{" "}
           <Link href="/login" className="text-primary hover:underline">
-            Log in
+            Prijavi se
           </Link>
         </p>
       </CardFooter>
