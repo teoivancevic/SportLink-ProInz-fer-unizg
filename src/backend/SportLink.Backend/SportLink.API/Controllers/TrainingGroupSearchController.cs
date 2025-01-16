@@ -8,11 +8,11 @@ namespace SportLink.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 
-public class TrainingGroupController : ControllerBase
+public class TrainingGroupSearchController : ControllerBase
 {
     private readonly ISearchService<TrainingGroupSearchDto, TrainingGroupSearchParameters> _searchService;
 
-    public TrainingGroupController(ISearchService<TrainingGroupSearchDto, TrainingGroupSearchParameters> searchService)
+    public TrainingGroupSearchController(ISearchService<TrainingGroupSearchDto, TrainingGroupSearchParameters> searchService)
     {
         _searchService = searchService;
     }

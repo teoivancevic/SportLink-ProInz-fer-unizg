@@ -2,7 +2,7 @@
 
 namespace SportLink.Core.Models;
 
-public class TrainingScheduleDto
+public class TrainingScheduleSearchDto
 {
     public DanUTjednuEnum DayOfWeek { get; set; }
     public TimeOnly StartTime { get; set; }

@@ -8,9 +8,9 @@ public class TournamentProfile : Profile
 {
     public TournamentProfile()
     {
-        CreateMap<Tournament, TournamentDto>()
+        CreateMap<Tournament, TournamentSearchDto>()
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.Name))
             .ForMember(dest => dest.SportName, opt => opt.MapFrom(src => src.Sport.Name));
-        CreateMap<TournamentDto, Tournament>();
+        CreateMap<TournamentSearchDto, Tournament>();
     }   
 }

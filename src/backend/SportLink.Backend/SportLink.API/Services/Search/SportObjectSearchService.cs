@@ -53,7 +53,7 @@ public class SportObjectSearchService : ISearchService<SportObjectSearchDto, Sea
                         (!parameters.MaxPrice.HasValue || sc.minHourlyPrice <= parameters.MaxPrice.Value) &&
                         (parameters.SportIds == null ||  !parameters.SportIds.Any() || parameters.SportIds.Contains(sc.SportId))
                     )
-                    .Select(sc => new SportCourtDto
+                    .Select(sc => new SportCourtDtoSearch
                     {
                         Id = sc.Id,
                         SportName = sc.Sport.Name,

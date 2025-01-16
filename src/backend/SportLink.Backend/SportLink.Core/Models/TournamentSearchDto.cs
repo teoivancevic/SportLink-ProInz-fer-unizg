@@ -1,6 +1,6 @@
 ﻿namespace SportLink.Core.Models;
 
-public class TournamentDto
+public class TournamentSearchDto
 {
     public int Id { get; set; }
     public string Name { get; set; }

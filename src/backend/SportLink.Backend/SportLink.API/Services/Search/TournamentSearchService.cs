@@ -6,7 +6,7 @@ using SportLink.Core.Models;
 
 namespace SportLink.API.Services.Search;
 
-public class TournamentSearchService : ISearchService<TournamentDto, TournamentSearchParameters>
+public class TournamentSearchService : ISearchService<TournamentSearchDto, TournamentSearchParameters>
 {
     private readonly DataContext _context;
     private readonly IMapper _mapper;
@@ -16,7 +16,7 @@ public class TournamentSearchService : ISearchService<TournamentDto, TournamentS
         _context = context;
         _mapper = mapper;
     }
-    public async Task<List<TournamentDto>> SearchAsync(TournamentSearchParameters parameters)
+    public async Task<List<TournamentSearchDto>> SearchAsync(TournamentSearchParameters parameters)
     {
         var query = _context.Tournaments
             .Include(t => t.Organization)
@@ -48,6 +48,6 @@ public class TournamentSearchService : ISearchService<TournamentDto, TournamentS
         }
         
         var tournaments = await query.ToListAsync();
-        return _mapper.Map<List<TournamentDto>>(tournaments);
+        return _mapper.Map<List<TournamentSearchDto>>(tournaments);
     }
 }

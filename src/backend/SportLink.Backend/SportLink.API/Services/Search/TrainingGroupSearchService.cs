@@ -70,7 +70,7 @@ public class TrainingGroupSearchService : ISearchService<TrainingGroupSearchDto,
                 MonthlyPrice = tg.MonthlyPrice,
                 SportName = tg.Sport.Name,
                 OrganizationName = tg.Organization.Name,
-                TrainingScheduleDtos = tg.TrainingSchedules.Select(ts => new TrainingScheduleDto
+                TrainingScheduleDtos = tg.TrainingSchedules.Select(ts => new TrainingScheduleSearchDto
                 {
                     DayOfWeek = ts.DayOfWeek,
                     StartTime = ts.StartTime,

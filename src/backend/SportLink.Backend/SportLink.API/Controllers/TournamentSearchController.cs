@@ -8,11 +8,11 @@ namespace SportLink.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 
-public class TournamentController : ControllerBase
+public class TournamentSearchController : ControllerBase
 {
-    private readonly ISearchService<TournamentDto, TournamentSearchParameters> _searchService;
+    private readonly ISearchService<TournamentSearchDto, TournamentSearchParameters> _searchService;
 
-    public TournamentController(ISearchService<TournamentDto, TournamentSearchParameters> searchService)
+    public TournamentSearchController(ISearchService<TournamentSearchDto, TournamentSearchParameters> searchService)
     {
         _searchService = searchService;
     }
@@ -23,7 +23,7 @@ public class TournamentController : ControllerBase
     /// <returns></returns>
     [HttpGet]
     [Route("search")]
-    public async Task<ActionResult<List<TournamentDto>>> SearchAsync([FromQuery] TournamentSearchParameters parameters)
+    public async Task<ActionResult<List<TournamentSearchDto>>> SearchAsync([FromQuery] TournamentSearchParameters parameters)
     {
         try
         {
