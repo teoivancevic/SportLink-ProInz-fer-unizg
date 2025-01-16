@@ -14,7 +14,7 @@ def driver():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    driver = uc.Chrome(options=options)
+    driver = uc.Chrome(version_main=131, options=options)
     driver.implicitly_wait(5)
     yield driver
     driver.quit()
