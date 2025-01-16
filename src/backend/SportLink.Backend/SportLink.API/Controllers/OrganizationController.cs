@@ -62,7 +62,7 @@ namespace SportLink.API.Controllers
 
         [HttpGet, Authorize(Policy = "jwt_policy")]
         [Route("{id}")]
-        public async Task<ActionResult<OrganizationDto>> GetSingleOrganization(int id)
+        public async Task<ActionResult<OrganizationDetailedDto>> GetSingleOrganization(int id)
         {
             var organization = await _organizationService.GetSingleOrganization(id);
             if (organization is null)
