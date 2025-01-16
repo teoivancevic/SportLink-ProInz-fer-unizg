@@ -23,14 +23,14 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set Image Version
-      id: vars
-      run: |
-        if [ "${{ github.ref_type }}" == "tag" ]; then
-          echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-        else
-          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
-        fi
+        #- name: Set Image Version
+        #id: vars
+        #run: |
+        #if [ "${{ github.ref_type }}" == "tag" ]; then
+        #echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+        #else
+        #echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+        #fi
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -59,7 +59,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
       working-directory: ./src/backend/SportLink.Backend
 
     - name: Login to Azure
@@ -99,5 +99,5 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.WEB_APP_NAME }}
-        images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}'
+        images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest'
 

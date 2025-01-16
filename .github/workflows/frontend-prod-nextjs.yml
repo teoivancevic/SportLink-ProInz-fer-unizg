@@ -31,7 +31,6 @@ jobs:
           
   deploy:
     needs: build-and-test
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     env:
       REGISTRY: acrsportlink02.azurecr.io
