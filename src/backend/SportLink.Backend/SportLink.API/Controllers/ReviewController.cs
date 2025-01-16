@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Services.Review;
 using SportLink.Core.Enums;
 using SportLink.Core.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SportLink.API.Controllers;
 [ApiController]
@@ -64,7 +65,9 @@ public class ReviewController : ControllerBase
     /// <returns></returns>
     [HttpGet]
     [Route("organization/{organizationId}")]
-    public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId, [FromQuery] SortOptionEnum sortOption = SortOptionEnum.UpdatedAtDescending)
+    public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId, 
+        [SwaggerParameter(Description = "0 - UpdatedAtDesc, 1 - UpdatedAtAsc, 2 - RatingDesc, 3 - RatingAsc")]
+        [FromQuery] SortOptionEnum sortOption = SortOptionEnum.UpdatedAtDescending)
     {
         var result = await _reviewService.GetOrganizationReviews(organizationId, sortOption);
         if (result == null)
@@ -98,7 +101,11 @@ public class ReviewController : ControllerBase
 
         return Ok(result);
     }
-
+    /// <summary>
+    /// Gets organization's average rating and number of reviews
+    /// </summary>
+    /// <param name="organizationId"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("organization/{organizationId}/stats")]
 
@@ -115,7 +122,11 @@ public class ReviewController : ControllerBase
 
         return Ok(response);
     }
-
+    /// <summary>
+    /// Gets review rating distribution
+    /// </summary>
+    /// <param name="organizationId"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("organization/{organizationId}/distribution")]
     public async Task<IActionResult> GetRatingDistribution(int organizationId)

@@ -1,8 +1,17 @@
-﻿namespace SportLink.Core.Enums;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 
+namespace SportLink.Core.Enums;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SexEnum
 {
-    Male,
-    Female,
-    Unisex
+    [Description("Male")]
+    Male = 0,
+    
+    [Description("Female")]
+    Female = 1,
+    
+    [Description("Unisex")]
+    Unisex = 2
 }

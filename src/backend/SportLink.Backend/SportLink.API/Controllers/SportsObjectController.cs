@@ -17,7 +17,12 @@ public class SportsObjectController : ControllerBase
     {
         _searchService = searchService;
     }
-
+    
+    /// <summary>
+    /// Searches for SportObjects with parameters as filters
+    /// </summary>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("search")]
     public async Task<ActionResult<List<SportObjectSearchDto>>> SearchAsync([FromQuery] SearchParameters parameters)
