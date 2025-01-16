@@ -85,6 +85,14 @@ namespace SportLink.API.Services.Organization
                                 ContactEmail = x.ContactEmail,
                                 ContactPhoneNumber = x.ContactPhoneNumber,
                                 Location = x.Location,
+                                Owner = new UserDto
+                                {
+                                    Id = x.Owner.Id,
+                                    FirstName = x.Owner.FirstName,
+                                    LastName = x.Owner.LastName
+,
+                                    Email = x.Owner.Email
+                                },
                                 Rating = rating,
                                 SocialNetworks = x.SocialNetworks.Select(s => new SocialNetworkDto
                                 {

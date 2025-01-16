@@ -40,7 +40,6 @@ namespace SportLink.API.Services.SportCourt
                     SportId = sc.SportId,
                     AvailableCourts = sc.AvailableCourts,
                     SportsObjectId = sc.SportsObjectId,
-                    MinHourlyPrice = sc.minHourlyPrice,
                     MaxHourlyPrice = sc.maxHourlyPrice,
                 }).ToList(),
 
@@ -132,7 +131,6 @@ namespace SportLink.API.Services.SportCourt
                 {
                     SportId = sportCourtDto.SportId,
                     AvailableCourts = sportCourtDto.AvailableCourts,
-                    minHourlyPrice = sportCourtDto.MinHourlyPrice,
                     maxHourlyPrice = sportCourtDto.MaxHourlyPrice,
                     SportsObjectId = sportsObject.Id
                 };
@@ -176,7 +174,6 @@ namespace SportLink.API.Services.SportCourt
                         {
                             SportId = sc.SportId,
                             AvailableCourts = sc.AvailableCourts,
-                            minHourlyPrice = sc.MinHourlyPrice,
                             maxHourlyPrice = sc.MaxHourlyPrice,
                             SportsObjectId = sc.SportsObjectId
                         };
@@ -185,12 +182,10 @@ namespace SportLink.API.Services.SportCourt
                         sc.Id = sportCourt.Id;
                     }
                     else if (match is not null && sc.AvailableCourts != match.AvailableCourts
-                            || sc.MinHourlyPrice != match.minHourlyPrice
                             || sc.MaxHourlyPrice != match.maxHourlyPrice
                             || sc.SportId != match.SportId)
                     {
                         match.AvailableCourts = sc.AvailableCourts;
-                        match.minHourlyPrice = sc.MinHourlyPrice;
                         match.maxHourlyPrice = sc.MaxHourlyPrice;
                         match.SportId = sc.SportId;
                     }

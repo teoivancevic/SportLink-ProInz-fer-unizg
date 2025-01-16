@@ -7,7 +7,7 @@ namespace SportLink.Core.Models
 {
     public class TournamentDto
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime TimeFrom { get; set; }
