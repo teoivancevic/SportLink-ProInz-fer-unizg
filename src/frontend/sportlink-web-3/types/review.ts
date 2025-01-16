@@ -11,9 +11,13 @@ export interface GetReviewsResponse {
     data: Review[]
 }
 
-export interface ReviewStatsResponse {
+export interface Stats {
     averageRating: number,
     reviewCount: number
+}
+
+export interface ReviewStatsResponse {
+    data: Stats
 }
 
 export interface ReviewDistributionResponse {
