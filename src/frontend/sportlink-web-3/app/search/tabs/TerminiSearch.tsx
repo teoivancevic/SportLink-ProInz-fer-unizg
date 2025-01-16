@@ -8,38 +8,46 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "@/components/ui/select"
 import { format } from "date-fns"
 import { CalendarIcon, SearchIcon, XIcon } from 'lucide-react'
 import Link from 'next/link'
 
-type Booking = {
-  id: string;
-  title: string;
-  price: number;
-  date: string;
-  sex: string;
-  age: number;
+type Sport = {
+    //...
 }
+
+type Booking = {
+  id: number;
+  name: string;
+  price: number;
+  location: string;
+  organisationName: string;
+  //sports: Sport[]
+}
+
+const sportsList = [
+    "Football", "Basketball", "Tennis", "Swimming", "Athletics", "Volleyball", "Handball"
+  ]  
+
 
 export default function BookingsSearch() {
   const [searchTerm, setSearchTerm] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
-  const [sex, setSex] = useState('')
-  const [minAge, setMinAge] = useState('')
-  const [maxAge, setMaxAge] = useState('')
+  const [selectedSports, setSelectedSports] = useState<string[]>([])
+
   const [useMaxPrice, setUseMaxPrice] = useState(false)
   const [useDateRange, setUseDateRange] = useState(false)
-  const [useSex, setUseSex] = useState(false)
-  const [useAgeRange, setUseAgeRange] = useState(false)
+
   const [searchResults, setSearchResults] = useState<Booking[]>([])
 
   const handleSearch = () => {
     setSearchResults([
-      { id: '1', title: 'Booking 1', price: 100, date: '2023-06-15', sex: 'Male', age: 25 },
-      { id: '2', title: 'Booking 2', price: 150, date: '2023-06-16', sex: 'Female', age: 30 },
-      { id: '3', title: 'Booking 3', price: 200, date: '2023-06-17', sex: 'Male', age: 35 },
+      { id: 1, name: 'Padel termin', price: 100, location: "Zagreb", organisationName: "Klub padelista" },
+      { id: 2, name: 'Nogomet termin', price: 159, location: "Split", organisationName: "Klub T" },
+      { id: 3, name: 'Badminton termin', price: 79, location: "Zagreb", organisationName: "Baaaad" },
     ])
   }
 
@@ -47,13 +55,10 @@ export default function BookingsSearch() {
     setMaxPrice('')
     setStartDate(undefined)
     setEndDate(undefined)
-    setSex('')
-    setMinAge('')
-    setMaxAge('')
+
     setUseMaxPrice(false)
     setUseDateRange(false)
-    setUseSex(false)
-    setUseAgeRange(false)
+
   }
 
   return (
@@ -100,7 +105,7 @@ export default function BookingsSearch() {
                     <PopoverTrigger asChild>
                         <Button variant="outline" className={`w-[140px] justify-start text-left font-normal ${!useDateRange && 'opacity-50'}`} disabled={!useDateRange}>
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, "PPP") : <span>Početak</span>}
+                        {startDate ? format(startDate, "yyyy-MM-dd") : <span>Početak</span>}
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -116,7 +121,7 @@ export default function BookingsSearch() {
                     <PopoverTrigger asChild>
                         <Button variant="outline" className={`w-[140px] justify-start text-left font-normal ${!useDateRange && 'opacity-50'}`} disabled={!useDateRange}>
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, "PPP") : <span>Kraj</span>}
+                        {endDate ? format(endDate, "yyyy-MM-dd") : <span>Kraj</span>}
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -131,45 +136,33 @@ export default function BookingsSearch() {
                 </div>
                 </div>
 
-                {/* <div>
-                <Label className="flex items-center space-x-2">
-                    <Checkbox checked={useSex} onCheckedChange={(checked) => setUseSex(checked as boolean)} />
-                    <span>Sex</span>
-                </Label>
-                <select
-                    value={sex}
-                    onChange={(e) => setSex(e.target.value)}
-                    className="w-full p-2 border rounded"
-                    disabled={!useSex}
-                >
-                    <option value="">Spol</option>
-                    <option value="male">Muško</option>
-                    <option value="female">Žensko</option>
-                </select>
-                </div>
-
                 <div>
-                <Label className="flex items-center space-x-2">
-                    <Checkbox checked={useAgeRange} onCheckedChange={(checked) => setUseAgeRange(checked as boolean)} />
-                    <span>Uzrast</span>
-                </Label>
-                <div className="flex space-x-2">
-                    <Input
-                    type="number"
-                    placeholder="Min age"
-                    value={minAge}
-                    onChange={(e) => setMinAge(e.target.value)}
-                    disabled={!useAgeRange}
-                    />
-                    <Input
-                    type="number"
-                    placeholder="Max age"
-                    value={maxAge}
-                    onChange={(e) => setMaxAge(e.target.value)}
-                    disabled={!useAgeRange}
-                    />
-                </div>
-                </div> */}
+            <Label>Sportovi</Label>
+            <Select
+              onValueChange={(value) => setSelectedSports(prev => 
+                prev.includes(value) ? prev.filter(sport => sport !== value) : [...prev, value]
+              )}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Odaberi sportove" />
+              </SelectTrigger>
+              <SelectContent>
+                {sportsList.map((sport) => (
+                  <SelectItem key={sport} value={sport}>
+                    {sport}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {selectedSports.map((sport) => (
+                <span key={sport} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                  {sport}
+                </span>
+              ))}
+            </div>
+          </div>
+            
             </div>
 
             <div className="flex justify-between mb-4">
@@ -184,13 +177,12 @@ export default function BookingsSearch() {
         <div className="space-y-4">
             {searchResults.map((booking) => (
             <Link href={`/booking/${booking.id}`} key={booking.id}>
-                <Card className="cursor-pointer hover:shadow-md transition-shadow my-4">
+                <Card className="cursor-pointer bg-blue-100 hover:bg-blue-200 border border-blue-300 hover:shadow-md transition-shadow my-4">
                 <CardContent className="p-4">
-                    <h3 className="text-lg font-semibold">{booking.title}</h3>
-                    <p>Price: ${booking.price}</p>
-                    <p>Date: {booking.date}</p>
-                    <p>Sex: {booking.sex}</p>
-                    <p>Age: {booking.age}</p>
+                    <h3 className="text-lg font-semibold">{booking.name}</h3>
+                    <p>Cijena: ${booking.price}</p>
+                    <p>Ime organizacije: {booking.organisationName}</p>
+                    <p>Lokacija: {booking.location}</p>
                 </CardContent>
                 </Card>
             </Link>
