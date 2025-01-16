@@ -3,14 +3,15 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const menuItems = [
-  { href: '/organization', label: 'Profil organizacije' },
-  { href: '/organization/training-groups', label: 'Grupni treninzi' },
-  { href: '/organization/sport-courts', label: 'Sportski tereni' },
-  { href: '/organization/tournaments', label: 'Natjecanja' },
-]
+export default function NavMenu({ orgId }: { orgId: number }){
 
-export default function NavMenu() {
+  const menuItems = [
+    { href: `/organization/${orgId}`, label: 'Profil organizacije' },
+    { href: `/organization/${orgId}/training-groups`, label: 'Grupni treninzi' },
+    { href: `/organization/${orgId}/sport-courts`, label: 'Sportski tereni' },
+    { href: `/organization/${orgId}/tournaments`, label: 'Natjecanja' },
+  ]
+
   const pathname = usePathname()
 
   return (

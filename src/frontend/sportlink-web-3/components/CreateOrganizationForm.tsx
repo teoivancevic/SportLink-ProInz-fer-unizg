@@ -1,6 +1,5 @@
 'use client'
-import { Libraries } from '@react-google-maps/api';
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -21,58 +20,9 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-import { useLoadScript } from '@react-google-maps/api'
 import { orgService } from '@/lib/services/api';
+import { LocationInput } from './location-input';
 
-
-// Style definitions remain the same
-const autocompleteStyle = `
-  .pac-container {
-    border-radius: 0.5rem;
-    margin-top: 4px;
-    padding: 0;
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--background));
-    color: hsl(var(--foreground));
-    box-shadow: none !important;
-    font-family: var(--font-sans);
-    z-index: 100;
-  }
-
-  .pac-item {
-    padding: 8px 12px;
-    border-top: 1px solid hsl(var(--border));
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 20px;
-  }
-
-  .pac-item:first-child {
-    border-top: none;
-  }
-
-  .pac-item:hover {
-    background-color: hsl(var(--accent));
-  }
-
-  .pac-item-selected {
-    background-color: hsl(var(--accent));
-  }
-
-  .pac-item-query {
-    color: hsl(var(--foreground));
-    font-size: 14px;
-    padding-right: 4px;
-  }
-
-  .pac-matched {
-    font-weight: 600;
-  }
-
-  .pac-icon {
-    display: none;
-  }
-`;
 
 interface OrgError {
   message: string;
@@ -98,82 +48,10 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface AutocompleteFieldProps {
-  field: {
-    value: string;
-    onChange: (value: string) => void;
-  };
-}
-
-const libraries: Libraries = ['places'];
-
 export function CreateOrganizationForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
-
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
-    libraries,
-    language: 'hr',
-  });
-
-  const AutocompleteComponent = useMemo(() => {
-    const Component = ({ field }: AutocompleteFieldProps) => {
-      const autocompleteRef = useRef<HTMLInputElement>(null);
-
-      useEffect(() => {
-        if (!autocompleteRef.current || !window.google) return;
-      
-        const inputElement = autocompleteRef.current; // Capture the current value
-      
-        const autocomplete = new google.maps.places.Autocomplete(inputElement, {
-          componentRestrictions: { country: 'HR' },
-          fields: ['formatted_address', 'geometry'],
-          types: ['geocode']
-        });
-      
-        const styleElement = document.createElement('style');
-        styleElement.textContent = autocompleteStyle;
-        document.head.appendChild(styleElement);
-      
-        const listener = autocomplete.addListener('place_changed', () => {
-          const place = autocomplete.getPlace();
-          if (place.formatted_address) {
-            field.onChange(place.formatted_address);
-          }
-        });
-      
-        const preventSubmit = (e: KeyboardEvent) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-          }
-        };
-      
-        inputElement.addEventListener('keydown', preventSubmit);
-      
-        return () => {
-          google.maps.event.removeListener(listener);
-          inputElement.removeEventListener('keydown', preventSubmit);
-          styleElement.remove();
-        };
-      }, [field]);
-
-      return (
-        <Input
-          ref={autocompleteRef}
-          placeholder="Enter address..."
-          type="text"
-          value={field.value}
-          onChange={(e) => field.onChange(e.target.value)}
-          autoComplete="off"
-        />
-      );
-    };
-
-    Component.displayName = 'AutocompleteComponent';
-    return Component;
-  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -223,11 +101,6 @@ export function CreateOrganizationForm() {
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  if (loadError) {
-    console.error('Google Maps failed to load:', loadError);
-    return <div>Error loading Google Maps</div>;
   }
 
   return (
@@ -314,16 +187,8 @@ export function CreateOrganizationForm() {
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    Location
-                  </FormLabel>
                   <FormControl>
-                    {isLoaded ? (
-                      <AutocompleteComponent field={field} />
-                    ) : (
-                      <Input placeholder="Loading..." disabled />
-                    )}
+                    <LocationInput value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import NavMenu from "@/components/nav-org-profile"
-import { sportObjects as initialSportObjects, SportObject, SportCourt } from "./sportObjects"
+import { sportObjects as initialSportObjects, SportObject, SportCourt } from "../../../../types/sport-courtes"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PlusIcon, XIcon, PencilIcon, Trash2Icon } from 'lucide-react'
 import AddSportObjectForm from './add-sport-object-form'
 
-export default function SportCourtsContent() {
+export default function SportCourtsContent({ params }: { params: { id: number } }) {
   const [isAddingOrEditing, setIsAddingOrEditing] = useState(false)
   const [sportObjects, setSportObjects] = useState<SportObject[]>(initialSportObjects)
   const [editingSportObject, setEditingSportObject] = useState<SportObject | null>(null)
@@ -53,7 +53,7 @@ export default function SportCourtsContent() {
 
   return (
     <div className="container mx-auto p-4 space-y-4">
-      <NavMenu />
+      <NavMenu orgId={params.id}/>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Sportski Objekti i Tereni</h1>
         <Button onClick={toggleAddOrEdit}>

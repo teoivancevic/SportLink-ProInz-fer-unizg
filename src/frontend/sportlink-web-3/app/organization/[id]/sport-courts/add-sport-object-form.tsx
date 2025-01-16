@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SportObject, WorkTime, SportCourt } from "./sportObjects"
+import { SportObject, WorkTime, SportCourt } from "../../../../types/sport-courtes"
 import { Trash2Icon, PencilIcon } from 'lucide-react'
 import { LocationInput } from '@/components/location-input' 
 

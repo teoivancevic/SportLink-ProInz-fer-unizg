@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import { CalendarDays, Clock, Plus, PencilIcon, Trash2Icon } from 'lucide-react'
 import { AddTrainingGroup } from './add-training-group-form'
-import { TrainingGroup } from './training-group'
+import { TrainingGroup } from "../../../../types/training-groups"
 import NavMenu from "@/components/nav-org-profile"
 
 const initialTrainingGroups: TrainingGroup[] = [
@@ -54,7 +54,7 @@ const initialTrainingGroups: TrainingGroup[] = [
   },
 ]
 
-export default function TrainingGroups() {
+export default function TrainingGroups({ params }: { params: { id: number } }) {
   const [groups, setGroups] = React.useState<TrainingGroup[]>(initialTrainingGroups)
   const [showForm, setShowForm] = React.useState(false)
   const [editingGroup, setEditingGroup] = React.useState<TrainingGroup | undefined>(undefined)
@@ -87,7 +87,7 @@ export default function TrainingGroups() {
 
   return (
     <div className="container mx-auto p-4 space-y-4">
-      <NavMenu/>
+      <NavMenu orgId={params.id}/>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Grupe za trening</h1>
         <Button 

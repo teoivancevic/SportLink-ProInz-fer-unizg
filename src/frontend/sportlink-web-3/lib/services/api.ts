@@ -19,7 +19,8 @@ import type {
 import type {
   CreateOrgRequest,
   CreateOrgResponse,
-  GetOrganizationResponse
+  GetOrganizationResponse,
+  GetOrganisationInfoResponse
 } from '@/types/org'
 
 import {
@@ -190,6 +191,9 @@ export const orgService = {
   getMyOrganizations: () =>
     ApiClient.get<GetOrganizationResponse>(`/api/Organization/myOrganizations`),
 
+  getOrganisation: (id: number) => 
+    ApiClient.get<GetOrganisationInfoResponse>(`/api/Organization/${id}`),
+
   acceptOrganization: (id: number) => 
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
 
@@ -217,6 +221,4 @@ export const reviewService = {
   //TODO check this
   respondToReview: (organizationId: number, userId: number, response: string) =>
     ApiClient.put(`/api/Review/respond`)
-
-
 }

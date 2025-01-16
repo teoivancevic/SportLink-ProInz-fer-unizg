@@ -3,18 +3,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LocationInput } from "@/components/location-input"
+import { Organization } from '@/types/org'
 
 interface EditProfilePopupProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (data: any) => void
-  initialData: {
-    name: string
-    description: string
-    email: string
-    phone: string
-    location: string
-  }
+  initialData: Organization
 }
 
 export default function EditProfilePopup({ isOpen, onClose, onSubmit, initialData }: EditProfilePopupProps) {
@@ -77,7 +72,7 @@ export default function EditProfilePopup({ isOpen, onClose, onSubmit, initialDat
             <Input
               id="email"
               name="email"
-              value={formData.email}
+              value={formData.contactEmail}
               onChange={handleChange}
             />
           </div>
@@ -86,7 +81,7 @@ export default function EditProfilePopup({ isOpen, onClose, onSubmit, initialDat
             <Input
               id="phone"
               name="phone"
-              value={formData.phone}
+              value={formData.contactPhoneNumber}
               onChange={handleChange}
             />
           </div>

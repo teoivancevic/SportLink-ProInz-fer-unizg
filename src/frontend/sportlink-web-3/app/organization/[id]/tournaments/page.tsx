@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { CalendarIcon, MapPinIcon, ActivityIcon, EuroIcon, PlusIcon, XIcon, PencilIcon, Trash2Icon } from 'lucide-react'
 import AddTournamentForm from './add-tournament-form'
 import NavMenu from '@/components/nav-org-profile'
-import { Tournament } from "./tournament"
+import { Tournament } from "../../../../types/tournaments"
 
 // Mock data for competitions
 const initialCompetitions = [
@@ -99,7 +99,7 @@ function CompetitionCard({ competition, onEdit, onDelete, popupOpened }: { compe
   )
 }
 
-export default function NatjecanjaContent() {
+export default function NatjecanjaContent({ params }: { params: { id: number } }) {
   const [isAddingTournament, setIsAddingTournament] = useState(false)
   const [competitions, setCompetitions] = useState<Tournament[]>(initialCompetitions)
   const [editingTournament, setEditingTournament] = useState<Tournament | null>(null)
@@ -132,7 +132,7 @@ export default function NatjecanjaContent() {
 
   return (
     <div className="container mx-auto p-4 space-y-4">
-      <NavMenu/>
+      <NavMenu orgId={params.id}/>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Natjecanja</h1>
         <Button onClick={toggleAddTournament}>

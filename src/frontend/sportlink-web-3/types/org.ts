@@ -28,3 +28,7 @@ export interface Organization{
 export interface GetOrganizationResponse {
     data: Organization[]  // If the API returns { data: [...organizations] }
 }
+
+export interface GetOrganisationInfoResponse {
+    data: Organization
+}
