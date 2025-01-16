@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Services.Organization;
+using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
 namespace SportLink.API.Controllers
@@ -108,6 +110,22 @@ namespace SportLink.API.Controllers
                 return BadRequest("Odbijanje nije uspjelo.");
             }
             return Ok("Organizacija uspješno odbijena.");
+        }
+
+        [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+        [Route("{id}/update")]
+        public async Task<ActionResult<bool>> UpdateProfile(int id, [FromBody] OrganizationDetailedDto profile)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _organizationService.UpdateProfile(id, profile);
+                if (result is null)
+                {
+                    return BadRequest("Profil neuspješno ažuriran.");
+                }
+                return Ok(profile);
+            }
+            return BadRequest(ModelState);
         }
     }
 }

@@ -26,30 +26,30 @@ public class UserService : IUserService
         _logger = logger;
     }
 
-    public async Task<UserDto> GetUserById(int id)
+    public async Task<UserDetailedDto> GetUserById(int id)
     {
         var user = await _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
-        var userDto = _mapper.Map<UserDto>(user);
+        var userDto = _mapper.Map<UserDetailedDto>(user);
 
         return userDto;
     }
 
-    public async Task<UserDto> GetUserByEmail(string email)
+    public async Task<UserDetailedDto> GetUserByEmail(string email)
     {
         var user = await _context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
-        var userDto = _mapper.Map<UserDto>(user);
+        var userDto = _mapper.Map<UserDetailedDto>(user);
 
         return userDto;
     }
 
-    public async Task<List<UserDto>> GetAllUsers()
+    public async Task<List<UserDetailedDto>> GetAllUsers()
     {
         var users = await _context.Users.ToListAsync();
-        var usersDto = _mapper.Map<List<UserDto>>(users);
+        var usersDto = _mapper.Map<List<UserDetailedDto>>(users);
         return usersDto;
     }
 
-    public async Task<UserDto> CreateUnverifiedUser(RegisterUserDto createUserDto, RolesEnum role)
+    public async Task<UserDetailedDto> CreateUnverifiedUser(RegisterUserDto createUserDto, RolesEnum role)
     {
         var userEntity = _mapper.Map<Data.Entities.User>(createUserDto);
         userEntity.Id = 0;
@@ -62,11 +62,11 @@ public class UserService : IUserService
         _context.Users.Add(userEntity);
         await _context.SaveChangesAsync();
 
-        var userDto = _mapper.Map<UserDto>(userEntity);
+        var userDto = _mapper.Map<UserDetailedDto>(userEntity);
         return userDto;
     }
 
-    public async Task<UserDto> CreateExternalUser(string email, string externalId, string firstName, string lastName, string roleName)
+    public async Task<UserDetailedDto> CreateExternalUser(string email, string externalId, string firstName, string lastName, string roleName)
     {
         int roleId = 0;
         if (Enum.TryParse(roleName, out RolesEnum role))
@@ -90,7 +90,7 @@ public class UserService : IUserService
         _context.Users.Add(userEntity);
         await _context.SaveChangesAsync();
 
-        var userDto = _mapper.Map<UserDto>(userEntity);
+        var userDto = _mapper.Map<UserDetailedDto>(userEntity);
         return userDto;
     }
 }

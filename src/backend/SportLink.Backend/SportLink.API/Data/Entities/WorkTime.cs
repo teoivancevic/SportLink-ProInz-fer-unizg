@@ -5,7 +5,7 @@ using SportLink.Core.Enums;
 namespace SportLink.API.Data.Entities;
 
 public class WorkTime : BaseEntity
-{ 
+{
     public int Id { get; set; }
     public int SportsObjectId { get; set; }
     public DanUTjednuEnum DayOfWeek { get; set; }
@@ -26,7 +26,7 @@ public class WorkTimeConfigurationBuilder : IEntityTypeConfiguration<WorkTime>
 
         builder.Property(x => x.DayOfWeek)
             .IsRequired();
-        
+
         builder.Property(x => x.isWorking)
             .IsRequired();
 
