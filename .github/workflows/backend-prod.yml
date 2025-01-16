@@ -2,7 +2,7 @@ name: Backend Production CI/CD
 
 on:
   push:
-    branches: [ "github_actions_prod" ]
+    branches: [ "main" ]
     tags: [ '*' ]
   workflow_dispatch:
 
