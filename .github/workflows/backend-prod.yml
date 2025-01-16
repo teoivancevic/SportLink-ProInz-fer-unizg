@@ -81,7 +81,7 @@ jobs:
 
     - name: Push Docker image to ACR
       run: |
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
     - name: Configure App Settings
       run: |
