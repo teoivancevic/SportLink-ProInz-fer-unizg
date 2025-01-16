@@ -68,11 +68,6 @@ export function CreateOrganizationForm() {
     setIsSubmitting(true);
     try {
       await orgService.createOrganization(
-        values.name,
-        values.description,
-        values.contactEmail,
-        values.contactPhone,
-        values.location,
         {
           name: values.name,
           description: values.description,

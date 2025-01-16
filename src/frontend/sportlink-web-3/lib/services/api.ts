@@ -20,7 +20,8 @@ import type {
   CreateOrgRequest,
   CreateOrgResponse,
   GetOrganizationResponse,
-  GetOrganisationInfoResponse
+  GetOrganisationInfoResponse,
+  Organization
 } from '@/types/org'
 
 import {
@@ -29,6 +30,12 @@ import {
   ReviewDistributionResponse,
   ReviewStatsResponse,
 } from '@/types/review'
+
+import {
+  getTournamentsResponse,
+  Tournament,
+  TournamentCreate,
+} from '@/types/tournaments'
 
 type _ApiResponse<T> = {
   data: T;
@@ -171,19 +178,9 @@ export const authService = {
   },
 }
 
-// Organization service
 export const orgService = {
-  createOrganization: (
-    name: string, 
-    description: string, 
-    contactEmail: string, 
-    contactPhoneNumber: string, 
-    location: string, 
-    data: CreateOrgRequest
-  ) => ApiClient.post<CreateOrgResponse>(
-    '/api/Organization/CreateOrganization',
-    data
-  ),
+  createOrganization: (data: CreateOrgRequest) => 
+    ApiClient.post<CreateOrgResponse>('/api/Organization/CreateOrganization', data),
 
   getOrganizations: (verified: boolean) => 
     ApiClient.get<GetOrganizationResponse>(`/api/Organization/Organizations?isVerified=${verified}`),
@@ -191,8 +188,11 @@ export const orgService = {
   getMyOrganizations: () =>
     ApiClient.get<GetOrganizationResponse>(`/api/Organization/myOrganizations`),
 
-  getOrganisation: (id: number) => 
+  getOrganization: (id: number) => 
     ApiClient.get<GetOrganisationInfoResponse>(`/api/Organization/${id}`),
+
+  updateOrganization: (data: Organization) =>
+    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization/${data.id}/update`, data),
 
   acceptOrganization: (id: number) => 
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
@@ -222,3 +222,20 @@ export const reviewService = {
   respondToReview: (organizationId: number, userId: number, response: string) =>
     ApiClient.put(`/api/Review/respond`)
 }
+
+export const tournamentService = {
+  getTournaments: (organisationId: number) =>
+    ApiClient.get<getTournamentsResponse>(`/api/Tournament/organization/${organisationId}`),
+
+  createTournament: (tournament: TournamentCreate) =>
+    ApiClient.post<boolean>(`/api/Tournament`, tournament),
+
+  updateTournament: (tournament: Tournament) =>
+    ApiClient.put<boolean>(`/api/Tournament`, tournament),
+
+  deleteTournament: (tournamentId: number) =>
+    ApiClient.delete<boolean>(`/api/Tournament`),
+}
+
+
+

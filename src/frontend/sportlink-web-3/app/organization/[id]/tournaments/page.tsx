@@ -1,56 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CalendarIcon, MapPinIcon, ActivityIcon, EuroIcon, PlusIcon, XIcon, PencilIcon, Trash2Icon } from 'lucide-react'
 import AddTournamentForm from './add-tournament-form'
 import NavMenu from '@/components/nav-org-profile'
-import { Tournament } from "../../../../types/tournaments"
+import { getTournamentsResponse, Tournament } from "@/types/tournaments"
+import { tournamentService } from '@/lib/services/api'
 
 // Mock data for competitions
-const initialCompetitions = [
-  {
-    id: 1,
-    name: "Ljetni Plivački Maraton",
-    description: "Godišnje natjecanje u plivanju na duge staze",
-    timeFrom: "2023-07-15T09:00:00",
-    timeTo: "2023-07-15T17:00:00",
-    entryFee: "150",
-    location: "Splitska riva",
-    sport: "Plivanje"
-  },
-  {
-    id: 2,
-    name: "Planinski Biciklistički Izazov",
-    description: "Ekstremna biciklistička utrka kroz planinske staze",
-    timeFrom: "2023-08-20T07:00:00",
-    timeTo: "2023-08-20T19:00:00",
-    entryFee: "200",
-    location: "Planina Velebit",
-    sport: "Biciklizam"
-  },
-  {
-    id: 3,
-    name: "Gradski Maraton",
-    description: "Tradicionalni godišnji maraton kroz grad",
-    timeFrom: "2023-09-10T08:00:00",
-    timeTo: "2023-09-10T14:00:00",
-    entryFee: "100",
-    location: "Centar grada",
-    sport: "Trčanje"
-  },
-  {
-    id: 4,
-    name: "Odbojka na Pijesku",
-    description: "Ljetni turnir u odbojci na pijesku",
-    timeFrom: "2023-07-30T10:00:00",
-    timeTo: "2023-07-31T18:00:00",
-    entryFee: "250",
-    location: "Gradska plaža",
-    sport: "Odbojka"
-  },
-]
+const initialCompetitions: Tournament[] = [];
 
 function CompetitionCard({ competition, onEdit, onDelete, popupOpened }: { competition: Tournament; onEdit: (tournament: Tournament) => void; onDelete: (id: number) => void, popupOpened : boolean }) {
   return (
@@ -77,7 +37,7 @@ function CompetitionCard({ competition, onEdit, onDelete, popupOpened }: { compe
           </div>
           <div className="flex items-center">
             <ActivityIcon className="mr-2 h-4 w-4" />
-            <span className="text-sm">{competition.sport}</span>
+            <span className="text-sm">{competition.sportName}</span>
           </div>
         </div>
         <div className="flex justify-end space-x-2 mt-4">
@@ -102,7 +62,25 @@ function CompetitionCard({ competition, onEdit, onDelete, popupOpened }: { compe
 export default function NatjecanjaContent({ params }: { params: { id: number } }) {
   const [isAddingTournament, setIsAddingTournament] = useState(false)
   const [competitions, setCompetitions] = useState<Tournament[]>(initialCompetitions)
-  const [editingTournament, setEditingTournament] = useState<Tournament | null>(null)
+  const [editingTournament, setEditingTournament] = useState<Tournament | null>(null)  
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchTournaments = async () => {
+        try {
+          setIsLoading(true)
+          setError(null)
+          const response: getTournamentsResponse = await tournamentService.getTournaments(params.id)
+          console.log(response);
+          setCompetitions(response.data)
+        } catch (error) {
+          console.error('Error fetching tournaments:', error)
+          setError('Došlo je do greške prilikom učitavanja tournamenta.')
+        } finally {
+          setIsLoading(false)
+        }
+    }
+    useEffect(() => { fetchTournaments() }, [])
 
   const toggleAddTournament = () => {
     setIsAddingTournament(!isAddingTournament)
