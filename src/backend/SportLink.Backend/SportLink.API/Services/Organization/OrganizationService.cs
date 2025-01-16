@@ -168,19 +168,19 @@ namespace SportLink.API.Services.Organization
 
         // ---------------------- Organization's Profile ---------------------- //
 
-        public async Task<ActionResult<OrganizationDetailedDto>> UpdateProfile(int id, OrganizationDetailedDto profileDto)
+        public async Task<ActionResult<OrganizationDetailedDto>> UpdateProfile(int id, OrganizationDetailedDto organizationDetailedDto)
         {
-            var profile = await _context.Organizations.FindAsync(id);
+            var organization = await _context.Organizations.FindAsync(id);
             var existingSocialNetworks = await _context.SocialNetworks.Where(x => x.OrganizationId == id).ToListAsync();
-            if (profile is not null && profile.VerificationStatus == VerificationStatusEnum.Accepted)
+            if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
             {
-                profile.Name = profileDto.Name ?? profile.Name;
-                profile.Description = profileDto.Description ?? profile.Description;
-                profile.ContactEmail = profileDto.ContactEmail ?? profile.ContactEmail;
-                profile.ContactPhoneNumber = profileDto.ContactPhoneNumber ?? profile.ContactPhoneNumber;
-                profile.Location = profileDto.Location ?? profile.Location;
+                organization.Name = organizationDetailedDto.Name ?? organization.Name;
+                organization.Description = organizationDetailedDto.Description ?? organization.Description;
+                organization.ContactEmail = organizationDetailedDto.ContactEmail ?? organization.ContactEmail;
+                organization.ContactPhoneNumber = organizationDetailedDto.ContactPhoneNumber ?? organization.ContactPhoneNumber;
+                organization.Location = organizationDetailedDto.Location ?? organization.Location;
                 List<SocialNetwork> updatedSocialNetworks = existingSocialNetworks;
-                foreach (var sn in profileDto.SocialNetworks)
+                foreach (var sn in organizationDetailedDto.SocialNetworks)
                 {
                     var existing = updatedSocialNetworks.FirstOrDefault(x => x.Type == sn.Type);
                     if (existing is null)
@@ -203,17 +203,17 @@ namespace SportLink.API.Services.Organization
                 for (int i = updatedSocialNetworks.Count - 1; i >= 0; i--)
                 {
                     var sn = updatedSocialNetworks[i];
-                    var matching = profileDto.SocialNetworks?.FirstOrDefault(x => x.Type == sn.Type);
+                    var matching = organizationDetailedDto.SocialNetworks?.FirstOrDefault(x => x.Type == sn.Type);
                     if (matching is null)
                     {
                         updatedSocialNetworks.RemoveAt(i);
                     }
                 }
 
-                profile.SocialNetworks = updatedSocialNetworks;
+                organization.SocialNetworks = updatedSocialNetworks;
                 await _context.SaveChangesAsync();
 
-                return new OkObjectResult(profileDto);
+                return new OkObjectResult(organizationDetailedDto);
             }
             return null!;
         }

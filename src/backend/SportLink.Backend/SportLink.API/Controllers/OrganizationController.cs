@@ -114,7 +114,7 @@ namespace SportLink.API.Controllers
 
         [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("{id}/update")]
-        public async Task<ActionResult<bool>> UpdateProfile(int id, [FromBody] ProfileDto profile)
+        public async Task<ActionResult<bool>> UpdateProfile(int id, [FromBody] OrganizationDetailedDto profile)
         {
             if (ModelState.IsValid)
             {

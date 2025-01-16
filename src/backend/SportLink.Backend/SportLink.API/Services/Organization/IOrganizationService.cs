@@ -16,6 +16,6 @@ namespace SportLink.API.Services.Organization
         Task<bool> VerifyOrganization(int id);
         Task<bool> DeclineOrganization(int id, string reason);
         Task<List<OrganizationDto>> GetMyOrganizations();
-        Task<ActionResult<OrganizationDetailedDto>> UpdateProfile(int id, OrganizationDetailedDto profile);
+        Task<ActionResult<OrganizationDetailedDto>> UpdateProfile(int id, OrganizationDetailedDto organizationDetailedDto);
     }
 }
