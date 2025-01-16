@@ -36,6 +36,6 @@ public class TrainingScheduleConfigurationBuilder : IEntityTypeConfiguration<Tra
         builder.HasOne(t => t.TrainingGroup)
             .WithMany(x => x.TrainingSchedules)
             .HasForeignKey(t => t.TrainingGroupId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
