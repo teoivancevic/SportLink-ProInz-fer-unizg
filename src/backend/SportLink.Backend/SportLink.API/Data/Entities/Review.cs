@@ -40,11 +40,11 @@ public class ReviewConfigurationBuilder : IEntityTypeConfiguration<Review>
         builder.HasOne(r => r.User)
             .WithMany(u => u.Reviews) 
             .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Cascade); 
 
         builder.HasOne(r => r.Organization)
             .WithMany(o => o.Reviews) 
             .HasForeignKey(r => r.OrganizationId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

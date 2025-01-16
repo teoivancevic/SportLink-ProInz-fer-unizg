@@ -10,25 +10,24 @@ namespace SportLink.API.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    
+
     public UserController(IUserService userService)
     {
         _userService = userService;
     }
-    
-    [HttpGet]
+
+    [HttpGet, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
     [Route("{id}")]
     public async Task<ActionResult<UserDto>> GetUser(int id)
     {
         var user = await _userService.GetUserById(id);
         if (user is null)
             return NotFound("User not found");
-        
+
         return Ok(user);
     }
 
-    [HttpGet]
-    // [Authorize]
+    [HttpGet, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
         var users = await _userService.GetAllUsers();

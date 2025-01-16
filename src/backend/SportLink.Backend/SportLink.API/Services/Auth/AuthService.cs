@@ -14,12 +14,12 @@ public class AuthService : IAuthService
     private readonly DataContext _context;
     private readonly IMapper _mapper;
     private readonly ILogger<UserService> _logger;
-    
+
     private readonly IOTPCodeService _otpCodeService;
     private readonly IEmailService _emailService;
     private readonly IUserService _userService;
-    
-    public AuthService(DataContext context, IMapper mapper, ILogger<UserService> logger, 
+
+    public AuthService(DataContext context, IMapper mapper, ILogger<UserService> logger,
         IOTPCodeService otpCodeService, IEmailService emailService, IUserService userService)
     {
         _context = context;
@@ -30,11 +30,11 @@ public class AuthService : IAuthService
         _emailService = emailService;
         _userService = userService;
     }
-    
-    public async Task<UserDto> RegisterUser(RegisterUserDto registerUserDto, RolesEnum role)
+
+    public async Task<UserDetailedDto> RegisterUser(RegisterUserDto registerUserDto, RolesEnum role)
     {
         var userDto = await _userService.CreateUnverifiedUser(registerUserDto, role);
-        
+
         string otp6DigitCode = await _otpCodeService.GenerateOTP(userDto.Id, OTPCodeTypeEnum.EmailVerification, 6);
         if (otp6DigitCode is null || otp6DigitCode == "")
         {
@@ -42,9 +42,9 @@ public class AuthService : IAuthService
         }
 
         await _emailService.SendVerificationEmailAsync(userDto.Email, otp6DigitCode);
-        
+
         // _logger.LogInformation($"User {userDto.Id} OTP Code is: {otp6DigitCode}");
-        
+
         return userDto;
     }
     public async Task<bool> VerifyUserEmail(int userId, string code)
@@ -52,15 +52,15 @@ public class AuthService : IAuthService
         var result = await _otpCodeService.ValidateOTP(userId, OTPCodeTypeEnum.EmailVerification, code);
         if (!result)
             return false;
-            
+
         var user = await _context.Users.FindAsync(userId);
         if (user is null) return false;
         user.IsEmailVerified = true;
         await _context.SaveChangesAsync();
-        
+
         return result;
     }
-    public async Task<bool> LoginCheckCredentials(UserDto userDto, string password)
+    public async Task<bool> LoginCheckCredentials(UserDetailedDto userDto, string password)
     {
         var userEntity = await _context.Users.FindAsync(userDto.Id);
         if (userEntity is not null && PasswordHelper.VerifyPasswordHash(password, userEntity.PasswordHash, userEntity.PasswordSalt))
@@ -68,7 +68,7 @@ public class AuthService : IAuthService
             userEntity.LastLoginAt = DateTime.UtcNow;
             _context.Users.Update(userEntity);
             await _context.SaveChangesAsync();
-            
+
             return true;
         }
 
@@ -87,7 +87,7 @@ public class AuthService : IAuthService
             }
 
             await _emailService.SendVerificationEmailAsync(userEntity.Email, otp6DigitCode);
-            
+
             return true;
         }
 
@@ -98,6 +98,6 @@ public class AuthService : IAuthService
     {
         throw new NotImplementedException();
     }
-    
-    
+
+
 }
