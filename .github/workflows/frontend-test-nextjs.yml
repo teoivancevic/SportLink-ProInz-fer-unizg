@@ -3,7 +3,7 @@ name: Frontend CI/CD (Next.js)
 on:
   push:
     branches: [ "dev", "feature/Frontendtesting" ]
-    paths: ["src/frontend/sportlink-web-3/**"]
+    #paths: ["src/frontend/sportlink-web-3/**"]
   pull_request:
     types: [ "opened", "reopened", "closed", "synchronize" ]
     branches: [ "dev" ]
