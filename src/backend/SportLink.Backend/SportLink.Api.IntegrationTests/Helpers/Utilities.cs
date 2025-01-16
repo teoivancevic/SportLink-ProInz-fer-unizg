@@ -2,6 +2,7 @@
 using SportLink.API.Data;
 using SportLink.API.Data.Entities;
 using SportLink.Core.Enums;
+using SportLink.Core.Helpers;
 
 namespace SportLink.Api.IntegrationTests.Helpers;
 
@@ -29,6 +30,7 @@ public class Utilities
 
     public static List<User> GetSeedingUsers()
     {
+        PasswordHelper.CreatePasswordHash("Test1234!", out byte[] passwordHash, out byte[] passwordSalt);
         return new List<User>()
         {
             new User
@@ -60,6 +62,17 @@ public class Utilities
                 RoleId = 1,
                 IsEmailVerified = true,
                 LastLoginAt = DateTime.UtcNow.AddDays(-1)
+            },
+            new User
+            {
+                Id = 4,
+                FirstName = "Test",
+                LastName = "Test",
+                Email = "test@example.com",
+                RoleId = 3,
+                IsEmailVerified = true,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt
             }
         };
     }

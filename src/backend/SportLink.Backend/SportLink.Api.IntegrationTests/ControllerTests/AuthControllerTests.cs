@@ -114,6 +114,35 @@ public class AuthControllerTests : IClassFixture<SportLinkWebApplicationFactory>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+
+    [Fact]
+    public async Task LoginUser_ValidCredentials_ReturnsOk()
+    {
+        var loginRequest = new LoginDto
+        {
+            Email = "test@example.com",
+            Password = "Test1234!"
+        };
+        
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginRequest);
+        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Theory]
+    [InlineData("gfj@gmdfs.com", "")]
+    [InlineData("test@example.com", "fdjsfg!")]
+    public async Task LoginUser_WithInvalidCredentials_ReturnsBadRequest(string email, string password)
+    {
+        var loginRequest = new LoginDto
+        {
+            Email = email,
+            Password = password
+        };
+        
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
     
     
 }
