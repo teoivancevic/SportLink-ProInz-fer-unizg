@@ -26,7 +26,7 @@ namespace SportLink.API.Controllers
 
         [HttpGet]
         [Route("organization/{id}")]
-        public async Task<ActionResult<List<SportCourtDto>>> GetSportCourts(int id)
+        public async Task<ActionResult<List<SportObjectDto>>> GetSportCourts(int id)
         {
             var org = await _organizationService.GetSingleOrganization(id);
             if (org is null)

@@ -23,20 +23,20 @@ namespace SportLink.API.Services.SportCourt
 
         public async Task<List<SportObjectDto>> GetSportObjects(int id)
         {
-            //var sportCourts = await _context.SportCourts.Include(sc => sc.SportsObject).Where(sc => sc.SportsObject.OrganizationId == id).ToListAsync();
-
             var sportObjects = await _context.SportsObjects
             .Include(so => so.SportCourts)
             .Include(so => so.WorkTimes)
             .Where(so => so.OrganizationId == id)
             .Select(so => new SportObjectDto
             {
+                Id = so.Id,
                 Name = so.Name,
                 Description = so.Description,
                 Location = so.Location,
                 OrganizationId = so.OrganizationId,
                 SportCourts = so.SportCourts.Select(sc => new SportCourtDto
                 {
+                    Id = sc.Id,
                     SportId = sc.SportId,
                     AvailableCourts = sc.AvailableCourts,
                     SportsObjectId = sc.SportsObjectId,
@@ -45,6 +45,7 @@ namespace SportLink.API.Services.SportCourt
 
                 WorkTimes = so.WorkTimes.Select(wt => new WorkTimeDto
                 {
+                    Id = wt.Id,
                     SportsObjectId = so.Id,
                     DayOfWeek = wt.DayOfWeek,
                     IsWorking = wt.isWorking,
@@ -54,7 +55,6 @@ namespace SportLink.API.Services.SportCourt
             })
             .ToListAsync();
             return sportObjects!;
-            //return _mapper.Map<List<SportCourtDto>>(sportCourts);
         }
 
         public async Task<bool> AddSportObject(int id, SportObjectDto sportObjectDto)
@@ -71,12 +71,6 @@ namespace SportLink.API.Services.SportCourt
                 Description = sportObjectDto.Description,
                 Location = sportObjectDto.Location,
                 OrganizationId = id,
-                // WorkTimes = sportObjectDto.WorkTimes.Select(wt => new WorkTime      // sprema li se worktime u bazu automatski
-                // {
-                //     DaysOfWeek = WorkTimeDto.ToDaysOfWeekString(wt.DaysOfWeek),
-                //     OpenFrom = TimeOnly.Parse(wt.OpenFrom),
-                //     OpenTo = TimeOnly.Parse(wt.OpenTo)
-                // }).ToList()
             };
 
             _context.SportsObjects.Add(sportsObject);
@@ -155,21 +149,12 @@ namespace SportLink.API.Services.SportCourt
                 sportObjectToUpdate.Description = sportObject.Description;
                 sportObjectToUpdate.Location = sportObject.Location;
 
-                //_context.SportsObjects.Update(sportObjectToUpdate); //
                 var sportCourts = await _context.SportCourts.Where(x => x.SportsObjectId == sportObjectId).ToListAsync();
                 foreach (var sc in sportObject.SportCourts)
                 {
                     var match = sportCourts.FirstOrDefault(x => x.Id == sc.Id);
                     if (match is null)
                     {
-                        // sportObjectToUpdate.SportCourts.Add(new Data.Entities.SportCourt
-                        // {
-                        //     SportId = sc.SportId,
-                        //     AvailableCourts = sc.AvailableCourts,
-                        //     minHourlyPrice = sc.MinHourlyPrice,
-                        //     maxHourlyPrice = sc.MaxHourlyPrice,
-                        //     SportsObjectId = sc.SportsObjectId
-                        // });
                         var sportCourt = new Data.Entities.SportCourt
                         {
                             SportId = sc.SportId,
@@ -200,38 +185,41 @@ namespace SportLink.API.Services.SportCourt
                         _context.SportCourts.Remove(sc);
                     }
                 }
-                var workTimes = sportObjectToUpdate.WorkTimes;
+                var workTimes = await _context.WorkTimes.Where(x => x.SportsObjectId == sportObjectId).ToListAsync();
                 foreach (var wt in sportObject.WorkTimes)
                 {
-                    var match = workTimes.FirstOrDefault(x => x.Id == wt.SportsObjectId);
+                    var match = workTimes.FirstOrDefault(x => x.Id == wt.Id);
                     if (match is null)
                     {
-                        // sportObjectToUpdate.WorkTimes.Add(new WorkTime
-                        // {
-                        //     DayOfWeek = wt.DayOfWeek,
-                        //     OpenFrom = TimeOnly.Parse(wt.OpenFrom),
-                        //     OpenTo = TimeOnly.Parse(wt.OpenTo),
-                        //     SportsObjectId = wt.SportsObjectId
-                        // });
                         var workTime = new WorkTime
                         {
                             isWorking = wt.IsWorking,
                             DayOfWeek = wt.DayOfWeek,
-                            OpenFrom = TimeOnly.Parse(wt.OpenFrom!),
-                            OpenTo = TimeOnly.Parse(wt.OpenTo!),
+                            OpenFrom = wt.IsWorking ? TimeOnly.Parse(wt.OpenFrom) : null,
+                            OpenTo = wt.IsWorking ? TimeOnly.Parse(wt.OpenTo) : null,
                             SportsObjectId = wt.SportsObjectId
                         };
                         _context.WorkTimes.Add(workTime);
                         await _context.SaveChangesAsync();
                         wt.Id = workTime.Id;
                     }
-                    else if (match is not null && wt.DayOfWeek != match.DayOfWeek
-                            || TimeOnly.Parse(wt.OpenFrom) != match.OpenFrom
-                            || TimeOnly.Parse(wt.OpenTo) != match.OpenTo)
+                    else if (match is not null &&
+                            (wt.DayOfWeek != match.DayOfWeek ||
+                            (wt.IsWorking && (TimeOnly.Parse(wt.OpenFrom) != match.OpenFrom ||
+                                            TimeOnly.Parse(wt.OpenTo) != match.OpenTo))))
                     {
                         match.DayOfWeek = wt.DayOfWeek;
-                        match.OpenFrom = TimeOnly.Parse(wt.OpenFrom);
-                        match.OpenTo = TimeOnly.Parse(wt.OpenTo);
+
+                        if (wt.IsWorking)
+                        {
+                            match.OpenFrom = TimeOnly.Parse(wt.OpenFrom);
+                            match.OpenTo = TimeOnly.Parse(wt.OpenTo);
+                        }
+                        else
+                        {
+                            match.OpenFrom = null;
+                            match.OpenTo = null;
+                        }
                     }
                 }
 
@@ -245,7 +233,6 @@ namespace SportLink.API.Services.SportCourt
                     }
                 }
 
-                // sportCourt.OrganizationId = id;
                 _mapper.Map(sportObject, sportObjectToUpdate);
                 await _context.SaveChangesAsync();
                 return true;

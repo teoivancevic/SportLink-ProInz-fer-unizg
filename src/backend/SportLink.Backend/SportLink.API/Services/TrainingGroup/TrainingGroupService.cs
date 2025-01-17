@@ -129,20 +129,12 @@ namespace SportLink.API.Services.TrainingGroup
                     trainingGroupToUpdate.SportId = trainingGroup.SportId;
                 }
 
-                // 
                 List<TrainingSchedule> existingTrainingSchedules = await _context.TrainingSchedules.Where(x => x.TrainingGroupId == trainingGroupId).ToListAsync();
                 foreach (var ts in trainingGroup.TrainingSchedules)
                 {
                     var matchingTrainingSchedule = existingTrainingSchedules.FirstOrDefault(x => x.Id == ts.Id);
                     if (matchingTrainingSchedule is null)
                     {
-                        // existingTrainingSchedules.Add(new TrainingSchedule
-                        // {
-                        //     DayOfWeek = ts.DayOfWeek,
-                        //     StartTime = TimeOnly.Parse(ts.StartTime),
-                        //     EndTime = TimeOnly.Parse(ts.EndTime),
-                        //     TrainingGroupId = trainingGroupId
-                        // });
                         var trainingSchedule = new TrainingSchedule
                         {
                             DayOfWeek = ts.DayOfWeek,
@@ -164,7 +156,6 @@ namespace SportLink.API.Services.TrainingGroup
 
                     }
                 }
-                //_context.TrainingSchedules.AddRange(existingTrainingSchedules);
                 await _context.SaveChangesAsync();
 
                 var schedulesToRemove = _context.TrainingSchedules.Where(x => x.TrainingGroupId == trainingGroupId).ToList();
@@ -178,31 +169,10 @@ namespace SportLink.API.Services.TrainingGroup
                 }
                 //
                 trainingGroup.OrganizationId = trainingGroupId;
-                //_mapper.Map(trainingGroup, trainingGroupToUpdate);
                 await _context.SaveChangesAsync();
                 return true;
             }
         }
-
-        // public async Task<bool> UpdateTrainingSchedule(int id, List<TrainingScheduleDto> trainingSchedule, int trainingGroupId)
-        // {
-        //     var org = await _context.Organizations.FindAsync(id);
-        //     if (org is null)
-        //     {
-        //         return false;
-        //     }
-        //     var trainingScheduleToUpdate = await _context.TrainingSchedules.Where(x => x.TrainingGroupId == trainingGroupId).ToListAsync();
-        //     List<TrainingSchedule> trainingSchedulesToMap = trainingScheduleToUpdate;
-
-        //     foreach (var ts in trainingSchedule)
-        //     {
-
-        //     }
-        //     //trainingSchedule.TrainingGroupId = trainingGroupId;
-        //     _mapper.Map(trainingSchedule, trainingScheduleToUpdate);
-        //     await _context.SaveChangesAsync();
-        //     return true;
-        // }
 
         public async Task<bool> DeleteTrainingGroup(int trainingGroupId)
         {
