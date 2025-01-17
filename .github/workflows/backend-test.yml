@@ -2,8 +2,8 @@ name: Backend CI/CD
 
 on:
   push:
-    branches: [ "dev", "fix/backendCICD" ]
-    #paths: [ "src/backend/SportLink.Backend/**" ]
+    branches: [ "dev" ]
+    paths: [ "src/backend/SportLink.Backend/**" ]
   pull_request:
     types: [ "opened", "reopened", "closed" ]
     branches: [ "dev" ]
