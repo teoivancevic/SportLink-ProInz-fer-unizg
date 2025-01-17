@@ -8,9 +8,10 @@ import { Star, ArrowLeft } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { UserRole } from '@/types/roles'
-import { Review, GetReviewsResponse, ReviewStatsResponse } from '@/types/review'
+import { Review, GetReviewsResponse, ReviewStatsResponse, CreateReviewRequest } from '@/types/review'
 import { orgService, reviewService } from '@/lib/services/api'
 import { GetOrganisationInfoResponse, Organization } from '@/types/org'
+import { RespondReviewRequest } from '@/types/review'
 
 export default function OrganizationReviewsPage({ params }: { params: { id: number } }) {
   const router = useRouter()
@@ -24,25 +25,22 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
   const [averageRating, setAverageRating] = useState<number | 0>(0)
   const [organisationName, setOrganisationName] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
+  const [isOrgOwner, setIsOrgOwner] = useState<boolean>() 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch all data concurrently
         const [reviewsResponse, averageRatingResponse, orgNameResponse] = await Promise.all([
           reviewService.getAllReviews(params.id, 0),
           reviewService.getReviewStats(params.id),
-          orgService.getOrganisation(params.id),
+          orgService.getOrganization(params.id)
         ]);
-  
-        // Handle reviews
+
         setReviews(reviewsResponse.data);
   
-        // Handle average rating
         const avgRating = averageRatingResponse.data.averageRating;
         setAverageRating(avgRating !== undefined ? avgRating : 0);
   
-        // Handle organization name
         const orgName = orgNameResponse.data.name;
         setOrganisationName(orgName !== undefined ? orgName : "...");
       } catch (error) {
@@ -54,7 +52,24 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
     fetchData();
   }, [params.id]);
 
-  //new review data
+  //to do this probably shouldnt be called every time, maybe to check in advance if user is with role orgOwner 
+  useEffect(() => {
+    const fetchMyOrganisations = async () => {
+      try{
+        const myOrgResponse = await orgService.getMyOrganizations()
+        const userOrgs = myOrgResponse.data;
+        setIsOrgOwner(userOrgs.some(org => org.id == params.id));
+        console.log(userOrgs)
+        console.log("This is org:", params.id)
+        console.log(isOrgOwner)
+      } catch(error){
+        console.error(error)
+      }
+
+    };
+    fetchMyOrganisations();
+  }, [params.id]);
+
   const handleStarClick = (rating: number) => {
     setNewReview((prev) => ({ ...prev, rating }))
   }
@@ -63,25 +78,48 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
     setNewReview((prev) => ({ ...prev, comment: event.target.value }))
   }
 
-  const handleSubmitReview = () => {
-    
-    console.log('Submitting review:', newReview)
-    setNewReview({ rating: 0, comment: '' })
-  }
+  const handleSubmitReview = async () => {
+    try {
+      const data: CreateReviewRequest = {
+        organizationId: params.id,
+        rating: newReview.rating,
+        description: newReview.comment
+      }
+      const response = await reviewService.createReview(data);
+
+      console.log('Review submitted successfully:', response)
+      setNewReview({ rating: 0, comment: '' })
+      // you can refresh the reviews list here
+      //await fetchData();
+    } catch (error) {
+      console.error('Error submitting review:', error)
+    }
+  };
 
   const handleResponseChange = (id: number, response: string) => {
     setTempResponses((prev) => ({ ...prev, [id]: response }))
   }
 
-  const handleSubmitResponse = (id: number) => {
-    // TODO: send response to backend
-    console.log('Submitting response for review', id, ':', tempResponses[id])
-    setResponses((prev) => ({ ...prev, [id]: tempResponses[id] }))
-    setTempResponses((prev) => ({ ...prev, [id]: '' }))
-    setShowResponseInput((prev) => ({ ...prev, [id]: false }))
-  }
-
+  const handleSubmitResponse = async (orgId: number, userId: number, reviewResponse: string, reviewId: number) => {
+    if (reviewResponse === "") return;
+    
+    try {
+      const data: RespondReviewRequest = {
+        organizationId: orgId,
+        userId: userId,
+        response: reviewResponse,
+      };
+      const response = await reviewService.respondReview(data);
+      console.log("Response submitted successfully:", response);
   
+      // Update state after a successful response
+      setResponses((prev) => ({ ...prev, [reviewId]: reviewResponse }));
+      setTempResponses((prev) => ({ ...prev, [reviewId]: '' }));
+      setShowResponseInput((prev) => ({ ...prev, [reviewId]: false }));
+    } catch (error) {
+      console.error("Error submitting response:", error);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -127,7 +165,10 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
               value={newReview.comment}
               onChange={handleCommentChange}
             />
-            <Button onClick={handleSubmitReview} disabled={newReview.rating === 0 || newReview.comment.trim() === ''}>
+            <Button 
+              onClick={() => handleSubmitReview()} 
+              disabled={newReview.rating === 0 || newReview.comment.trim() === ''}
+            >
               Pošalji Recenziju
             </Button>
           </CardContent>
@@ -163,9 +204,9 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
                   <p>{responses[reviews.indexOf(review)]}</p>
                 </div>
               )}
-              
+              {isOrgOwner && (
               <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
-                {() => (
+                {({ userData }) => (
                   <div className="mt-4">
                     {!responses[reviews.indexOf(review)] && (
                       showResponseInput[reviews.indexOf(review)] ? (
@@ -185,7 +226,7 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
                               Odustani
                             </Button>
                             <Button 
-                              onClick={() => handleSubmitResponse(reviews.indexOf(review))}
+                              onClick={() => handleSubmitResponse(params.id, Number(userData.id), tempResponses[reviews.indexOf(review)], reviews.indexOf(review))}
                               disabled={!tempResponses[reviews.indexOf(review)]?.trim()}
                               size="sm"
                             >
@@ -206,6 +247,7 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
                   </div>
                 )}
               </AuthorizedElement>
+              )}
             </CardContent>
           </Card>
         ))}

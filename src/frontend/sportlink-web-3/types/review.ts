@@ -28,12 +28,6 @@ export interface ReviewDistributionResponse {
     five: number,
 }
 
-export interface CreateReviewRequest {
-    orgId: number,
-    rating: number,
-    description: string
-}
-
 export interface CreateReviewResponse {
     rating: 0,
     description: string,
@@ -41,4 +35,16 @@ export interface CreateReviewResponse {
     userFirstName: string,
     userLastName: string,
     organizationName: string
+}
+
+export interface RespondReviewRequest {
+    organizationId: number, 
+    userId: number, 
+    response: string
+}
+
+export interface CreateReviewRequest {
+    organizationId: number,
+    rating: number,
+    description: string
 }

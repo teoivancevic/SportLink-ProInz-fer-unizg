@@ -27,8 +27,11 @@ import type {
 import {
   CreateReviewResponse,
   GetReviewsResponse,
+  RespondReviewRequest,
   ReviewDistributionResponse,
   ReviewStatsResponse,
+  CreateReviewRequest,
+  Review
 } from '@/types/review'
 
 import {
@@ -211,16 +214,14 @@ export const reviewService = {
   getReviewDistribution: (organisationId: number) =>
     ApiClient.get<ReviewDistributionResponse>(`/api/Review/organization/${organisationId}/distribution`),
 
-  // TODO check this
-  createReview: (data: CreateOrgRequest) =>
-    ApiClient.post<CreateReviewResponse>(`/api/Review`, data, 'text'),
+  createReview: (data: CreateReviewRequest) =>
+    ApiClient.post<CreateReviewResponse>(`/api/Review`, data),
 
-  //TODO check this
+  //TODO connect this
   deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review`),
 
-  //TODO check this
-  respondToReview: (organizationId: number, userId: number, response: string) =>
-    ApiClient.put(`/api/Review/respond`)
+  respondReview: (data: RespondReviewRequest) =>
+    ApiClient.put<Review>(`/api/Review/respond`, data)
 }
 
 export const tournamentService = {
