@@ -28,7 +28,7 @@ namespace SportLink.API.Services.Tournament
             var tournaments = await _context.Tournaments.Include(x => x.Sport).Where(x => x.OrganizationId == id).Select(
                 x => new TournamentDto
                 {
-                    //Id = x.Id,
+                    Id = x.Id,
                     Name = x.Name,
                     TimeFrom = x.TimeFrom,
                     TimeTo = x.TimeTo,
