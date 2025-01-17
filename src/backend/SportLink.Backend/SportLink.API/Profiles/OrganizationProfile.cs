@@ -21,6 +21,16 @@ public class OrganizationProfile : Profile
         CreateMap<SportCourt, SportCourtDto>();
         CreateMap<SportObjectDto, SportsObject>();
         CreateMap<SportsObject, SportObjectDto>();
+        CreateMap<WorkTimeDto, WorkTime>()
+            .ForMember(dest => dest.OpenFrom, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.OpenFrom) ? (TimeOnly?)null : TimeOnly.Parse(src.OpenFrom)))
+            .ForMember(dest => dest.OpenTo, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.OpenTo) ? (TimeOnly?)null : TimeOnly.Parse(src.OpenTo)));
+        CreateMap<WorkTime, WorkTimeDto>()
+            .ForMember(dest => dest.OpenFrom, opt => opt.MapFrom(src =>
+                src.OpenFrom.HasValue ? src.OpenFrom.Value.ToString("HH:mm") : null))
+            .ForMember(dest => dest.OpenTo, opt => opt.MapFrom(src =>
+                src.OpenTo.HasValue ? src.OpenTo.Value.ToString("HH:mm") : null));
         CreateMap<OrganizationDetailedDto, Organization>();
         CreateMap<Organization, OrganizationDetailedDto>();
     }

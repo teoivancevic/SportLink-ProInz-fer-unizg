@@ -36,7 +36,6 @@ namespace SportLink.API.Services.Tournament
                     Description = x.Description,
                     Location = x.Location,
                     OrganizationId = x.OrganizationId,
-                    //OrganizationName = x.Organization.Name,
                     SportName = x.Sport.Name,
                     SportId = x.SportId
                 }
