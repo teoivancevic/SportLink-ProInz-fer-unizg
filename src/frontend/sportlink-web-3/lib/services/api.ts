@@ -19,8 +19,24 @@ import type {
 import type {
   CreateOrgRequest,
   CreateOrgResponse,
-  GetOrganizationResponse
+  GetOrganizationResponse,
+  GetOrganisationInfoResponse,
+  Organization
 } from '@/types/org'
+
+import {
+  CreateReviewRequest,
+  CreateReviewResponse,
+  GetReviewsResponse,
+  ReviewDistributionResponse,
+  ReviewStatsResponse,
+} from '@/types/review'
+
+import {
+  getTournamentsResponse,
+  Tournament,
+  TournamentCreate,
+} from '@/types/tournaments'
 
 type _ApiResponse<T> = {
   data: T;
@@ -162,19 +178,9 @@ export const authService = {
   },
 }
 
-// Organization service
 export const orgService = {
-  createOrganization: (
-    name: string, 
-    description: string, 
-    contactEmail: string, 
-    contactPhoneNumber: string, 
-    location: string, 
-    data: CreateOrgRequest
-  ) => ApiClient.post<CreateOrgResponse>(
-    '/api/Organization/CreateOrganization',
-    data
-  ),
+  createOrganization: (data: CreateOrgRequest) => 
+    ApiClient.post<CreateOrgResponse>('/api/Organization/CreateOrganization', data),
 
   getOrganizations: (verified: boolean) => 
     ApiClient.get<GetOrganizationResponse>(`/api/Organization/Organizations?isVerified=${verified}`),
@@ -182,10 +188,54 @@ export const orgService = {
   getMyOrganizations: () =>
     ApiClient.get<GetOrganizationResponse>(`/api/Organization/myOrganizations`),
 
+  getOrganization: (id: number) => 
+    ApiClient.get<GetOrganisationInfoResponse>(`/api/Organization/${id}`),
+
+  updateOrganization: (data: Organization) =>
+    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization/${data.id}/update`, data),
+
   acceptOrganization: (id: number) => 
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
 
   rejectOrganization: (id: number, reason: string) => 
     ApiClient.put(`/api/Organization/${id}/decline/`, { reason }),
 }
+
+export const reviewService = {
+  getAllReviews: (organisationId: number, sortOption: number) =>
+    ApiClient.get<GetReviewsResponse>(`/api/Review/organization/${organisationId}`),
+
+  getReviewStats: (organisationId: number) =>
+    ApiClient.get<ReviewStatsResponse>(`/api/Review/organization/${organisationId}/stats`),
+
+  getReviewDistribution: (organisationId: number) =>
+    ApiClient.get<ReviewDistributionResponse>(`/api/Review/organization/${organisationId}/distribution`),
+
+  // TODO check this
+  createReview: (data: CreateReviewRequest) =>
+    ApiClient.post<CreateReviewResponse>(`/api/Review`, data, 'text'),
+
+  //TODO check this
+  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review`),
+
+  //TODO check this
+  respondToReview: (organizationId: number, userId: number, response: string) =>
+    ApiClient.put(`/api/Review/respond`)
+}
+
+export const tournamentService = {
+  getTournaments: (organisationId: number) =>
+    ApiClient.get<getTournamentsResponse>(`/api/Tournament/organization/${organisationId}`),
+
+  createTournament: (tournament: TournamentCreate) =>
+    ApiClient.post<boolean>(`/api/Tournament`, tournament),
+
+  updateTournament: (tournament: Tournament) =>
+    ApiClient.put<boolean>(`/api/Tournament`, tournament),
+
+  deleteTournament: (tournamentId: number) =>
+    ApiClient.delete<boolean>(`/api/Tournament`),
+}
+
+
 
