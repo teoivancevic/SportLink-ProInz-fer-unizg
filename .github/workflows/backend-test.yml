@@ -61,6 +61,8 @@ jobs:
       FRONTEND_REDIRECT_URL: https://webapp-sportlink-test-nextjs-03.azurewebsites.net/auth/callback
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
     - name: Build Docker image
       run: |
         docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
