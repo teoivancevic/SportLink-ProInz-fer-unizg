@@ -32,7 +32,7 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
         const [reviewsResponse, averageRatingResponse, orgNameResponse] = await Promise.all([
           reviewService.getAllReviews(params.id, 0),
           reviewService.getReviewStats(params.id),
-          orgService.getOrganisation(params.id),
+          orgService.getOrganization(params.id),
         ]);
   
         // Handle reviews
@@ -153,7 +153,7 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
             </CardHeader>
             <CardContent>
               <blockquote className="italic border-l-4 border-gray-300 pl-4 py-2 mb-4">
-                "{review.description}"
+                &ldquo;{review.description}&rdquo;
               </blockquote>
               <p className="text-sm text-gray-600 mb-4">- {review.userFirstName}, član </p>
               

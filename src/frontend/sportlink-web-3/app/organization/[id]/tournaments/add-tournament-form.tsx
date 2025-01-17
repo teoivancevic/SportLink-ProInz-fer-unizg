@@ -13,17 +13,18 @@ interface AddTournamentFormProps {
   }
 
 export default function AddTournamentForm({ onClose, onSubmit, initialData }: AddTournamentFormProps) {
-    const [formData, setFormData] = useState<Omit<Tournament, 'id'>>(
-    initialData || {
+    const [formData, setFormData] = useState<Omit<Tournament, 'id' | 'organizationId'>>({
         name: '',
         description: '',
         timeFrom: '',
         timeTo: '',
-        entryFee: '',
+        entryFee: 22,
         location: '',
-        sport: '',
-    }
-    )
+        sportName: '',
+        sportId: 0
+      })
+
+    
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -36,7 +37,8 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData }: Ad
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        onSubmit(formData)
+        // TODO CVITA:
+        //onSubmit(formData)
     }
 
     return (
@@ -77,7 +79,8 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData }: Ad
         
         <div>
         <Label htmlFor="sport">Sport</Label>
-        <Input id="sport" name="sport" value={formData.sport} onChange={handleChange} required />
+        {/* // TODO CVITA
+        <Input id="sport" name="sport" value={formData.sport} onChange={handleChange} required /> */}
         </div>
         
         <div className="flex justify-end space-x-2">

@@ -25,6 +25,7 @@ import type {
 } from '@/types/org'
 
 import {
+  CreateReviewRequest,
   CreateReviewResponse,
   GetReviewsResponse,
   ReviewDistributionResponse,
@@ -212,7 +213,7 @@ export const reviewService = {
     ApiClient.get<ReviewDistributionResponse>(`/api/Review/organization/${organisationId}/distribution`),
 
   // TODO check this
-  createReview: (data: CreateOrgRequest) =>
+  createReview: (data: CreateReviewRequest) =>
     ApiClient.post<CreateReviewResponse>(`/api/Review`, data, 'text'),
 
   //TODO check this

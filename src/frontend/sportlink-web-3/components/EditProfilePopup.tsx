@@ -13,7 +13,7 @@ import AuthorizedElement from './auth/authorized-element'
 interface EditProfilePopupProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (data: any) => void
+  onSubmit: (data: Organization) => void
   initialData: Organization
 }
 
