@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
+using SportLink.API.Data;
 using SportLink.Api.IntegrationTests.Helpers;
 using SportLink.Core.Models;
 

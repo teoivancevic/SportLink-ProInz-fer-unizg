@@ -18,6 +18,7 @@
 
     public class SportLinkWebApplicationFactory : WebApplicationFactory<Program>
     {
+        private string _dbName = $"SportLinkTestDb_{Guid.NewGuid()}";
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureTestServices(services =>
@@ -26,7 +27,7 @@
                 
                 services.AddDbContext<DataContext>(options =>
                 {
-                    options.UseInMemoryDatabase("SportLinkTestDb").EnableSensitiveDataLogging();
+                    options.UseInMemoryDatabase(_dbName).EnableSensitiveDataLogging();
                 });
                 
                 var serviceProvider = services.BuildServiceProvider();
