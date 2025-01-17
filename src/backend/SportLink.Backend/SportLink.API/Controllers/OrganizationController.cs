@@ -113,7 +113,7 @@ namespace SportLink.API.Controllers
         }
 
         [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        [Route("{id}/update")]
+        [Route("")]
         public async Task<ActionResult<bool>> UpdateProfile(int id, [FromBody] OrganizationDetailedDto profile)
         {
             if (ModelState.IsValid)
@@ -126,6 +126,18 @@ namespace SportLink.API.Controllers
                 return Ok(profile);
             }
             return BadRequest(ModelState);
+        }
+
+        [HttpDelete, Authorize(Roles = "AppAdmin, OrganizationOwner", Policy = "jwt_policy")]
+        [Route("")]
+        public async Task<ActionResult<bool>> DeleteOrganization(int id)
+        {
+            var result = await _organizationService.DeleteOrganization(id);
+            if (!result)
+            {
+                return BadRequest("Brisanje nije uspjelo.");
+            }
+            return Ok("Organizacija uspješno obrisana.");
         }
     }
 }
