@@ -14,7 +14,6 @@ namespace SportLink.Core.Models
         public DateTime TimeTo { get; set; }
         public decimal EntryFee { get; set; }
         public string Location { get; set; }
-        //public string OrganizationName { get; set; }
         public int OrganizationId { get; set; }
         public string SportName { get; set; }
         public int SportId { get; set; }
