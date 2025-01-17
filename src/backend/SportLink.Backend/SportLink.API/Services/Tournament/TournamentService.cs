@@ -54,9 +54,21 @@ namespace SportLink.API.Services.Tournament
             {
                 return false;
             }
-            tournamentDto.SportName = await _context.Sports.Where(x => x.Id == tournamentDto.SportId).Select(x => x.Name).FirstOrDefaultAsync() ?? "";
-            tournamentDto.OrganizationId = organizationId;
-            _context.Tournaments.Add(_mapper.Map<Data.Entities.Tournament>(tournamentDto));
+            var tournament = new Data.Entities.Tournament
+            {
+                Name = tournamentDto.Name,
+                TimeFrom = tournamentDto.TimeFrom,
+                TimeTo = tournamentDto.TimeTo,
+                EntryFee = tournamentDto.EntryFee,
+                Description = tournamentDto.Description,
+                Location = tournamentDto.Location,
+                SportId = tournamentDto.SportId,
+                OrganizationId = organizationId
+            };
+
+            // tournamentDto.SportName = await _context.Sports.Where(x => x.Id == tournamentDto.SportId).Select(x => x.Name).FirstOrDefaultAsync() ?? "";
+            // tournamentDto.OrganizationId = organizationId;
+            _context.Tournaments.Add(tournament);
             await _context.SaveChangesAsync();
             return true;
         }
