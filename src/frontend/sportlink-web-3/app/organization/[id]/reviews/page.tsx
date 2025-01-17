@@ -81,34 +81,56 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
   const handleSubmitReview = async () => {
     try {
       const data: CreateReviewRequest = {
-        organizationId: params.id,
+        organizationId: Number(params.id),
         rating: newReview.rating,
         description: newReview.comment
       }
+      console.log("Ovo saljem:", data)
       const response = await reviewService.createReview(data);
 
       console.log('Review submitted successfully:', response)
       setNewReview({ rating: 0, comment: '' })
-      // you can refresh the reviews list here
-      //await fetchData();
+      // Refresh the reviews list
+      const reviewsResponse = await reviewService.getAllReviews(Number(params.id), 0);
+      setReviews(reviewsResponse.data);
     } catch (error) {
       console.error('Error submitting review:', error)
+      setError('There was an error submitting your review. Please try again.')
     }
   };
+
+  // const handleSubmitReview = async () => {
+  //   try {
+  //     const data: CreateReviewRequest = {
+  //       organizationId: params.id,
+  //       rating: newReview.rating,
+  //       description: newReview.comment
+  //     }
+  //     const response = await reviewService.createReview(data);
+
+  //     console.log('Review submitted successfully:', response)
+  //     setNewReview({ rating: 0, comment: '' })
+  //     // you can refresh the reviews list here
+  //     //await fetchData();
+  //   } catch (error) {
+  //     console.error('Error submitting review:', error)
+  //   }
+  // };
 
   const handleResponseChange = (id: number, response: string) => {
     setTempResponses((prev) => ({ ...prev, [id]: response }))
   }
 
-  const handleSubmitResponse = async (orgId: number, userId: number, reviewResponse: string, reviewId: number) => {
+  const handleSubmitResponse = async (orgId: number, uId: number, reviewResponse: string, reviewId: number) => {
     if (reviewResponse === "") return;
     
     try {
       const data: RespondReviewRequest = {
         organizationId: orgId,
-        userId: userId,
+        userId: uId,
         response: reviewResponse,
       };
+      console.log("Ovo saljem:", data)
       const response = await reviewService.respondReview(data);
       console.log("Response submitted successfully:", response);
   

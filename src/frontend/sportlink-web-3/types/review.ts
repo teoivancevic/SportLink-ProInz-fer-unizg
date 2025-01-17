@@ -29,7 +29,7 @@ export interface ReviewDistributionResponse {
 }
 
 export interface CreateReviewResponse {
-    rating: 0,
+    rating: number,
     description: string,
     response: string,
     userFirstName: string,

@@ -215,14 +215,17 @@ export const reviewService = {
   getReviewDistribution: (organisationId: number) =>
     ApiClient.get<ReviewDistributionResponse>(`/api/Review/organization/${organisationId}/distribution`),
 
+
+  //bad api request
   createReview: (data: CreateReviewRequest) =>
-    ApiClient.post<CreateReviewResponse>(`/api/Review`, data),
+    ApiClient.post<CreateReviewResponse>(`/api/Review/`, data),
 
   //TODO connect this
-  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review`),
+  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review/`),
 
+  //bad api request
   respondReview: (data: RespondReviewRequest) =>
-    ApiClient.put<Review>(`/api/Review/respond`, data)
+    ApiClient.put<Review>(`/api/Review/respond?organizationId=${data.organizationId}&userId=${data.userId}&response=${data.response}`, data)
 }
 
 export const tournamentService = {
