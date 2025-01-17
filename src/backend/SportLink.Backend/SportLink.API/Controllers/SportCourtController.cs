@@ -24,7 +24,7 @@ namespace SportLink.API.Controllers
             _organizationService = organizationService;
         }
 
-        [HttpGet, Authorize(Policy = "jwt_policy")]
+        [HttpGet]
         [Route("organization/{id}")]
         public async Task<ActionResult<List<SportObjectDto>>> GetSportCourts(int id)
         {

@@ -18,6 +18,7 @@ using SportLink.API.Services.Auth;
 using SportLink.API.Services.Email;
 using SportLink.API.Services.Organization;
 using SportLink.API.Services.OTPCode;
+using SportLink.API.Services.Search;
 using SportLink.API.Services.Review;
 
 using SportLink.API.Services.Sports;
@@ -28,6 +29,7 @@ using SportLink.API.Services.TrainingGroup;
 
 using SportLink.API.Services.User;
 using SportLink.Core.Handlers;
+using SportLink.Core.Helpers;
 using SportLink.Core.Models;
 
 var logger = LoggerFactory.Create(config =>
@@ -84,7 +86,11 @@ builder.Services.AddSwaggerGen(c =>
             }
           });
       c.IncludeXmlComments(xmlDocsPath);
+      c.EnableAnnotations();
+      
   });
+
+
 
 builder.Services.AddControllers();
 
@@ -144,6 +150,9 @@ builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOTPCodeService, OTPCodeService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<ISearchService<TournamentSearchDto, TournamentSearchParameters>, TournamentSearchService>();
+builder.Services.AddScoped<ISearchService<TrainingGroupSearchDto, TrainingGroupSearchParameters>, TrainingGroupSearchService>();
+builder.Services.AddScoped<ISearchService<SportObjectSearchDto, SearchParameters>, SportObjectSearchService>();
 
 builder.Services.AddScoped<ISportService, SportService>();
 
@@ -174,7 +183,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         logger.LogInformation("Starting database migration...");
-        db.Database.Migrate();
+        if (db.Database.IsRelational())
+        {
+            db.Database.Migrate();
+        }
         logger.LogInformation("Database migrated successfully");
     }
     catch (Exception ex)
@@ -202,7 +214,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 logger.LogInformation("Application starting...");
 logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
 
 app.Run();
+
+public partial class Program { }

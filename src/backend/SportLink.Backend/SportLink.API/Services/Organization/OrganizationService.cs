@@ -13,6 +13,9 @@ using SportLink.API.Data;
 using SportLink.API.Data.Entities;
 using SportLink.API.Services.Email;
 using SportLink.API.Services.Review;
+using SportLink.API.Services.SportCourt;
+using SportLink.API.Services.Tournament;
+using SportLink.API.Services.TrainingGroup;
 using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
@@ -25,13 +28,21 @@ namespace SportLink.API.Services.Organization
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailService _emailService;
         private readonly IReviewService _reviewService;
-        public OrganizationService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IEmailService emailService, IReviewService reviewService)
+        private readonly ISportCourtService _sportCourtService;
+        private readonly ITrainingGroupService _trainingGroupService;
+        private readonly ITournamentService _tournamentService;
+        public OrganizationService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor,
+                    IEmailService emailService, IReviewService reviewService, ISportCourtService sportCourtService,
+                    ITrainingGroupService trainingGroupService, ITournamentService tournamentService)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _emailService = emailService;
             _reviewService = reviewService;
+            _sportCourtService = sportCourtService;
+            _trainingGroupService = trainingGroupService;
+            _tournamentService = tournamentService;
         }
 
         public async Task<ActionResult<OrganizationDto>> CreateOrganization(OrganizationDto organizationDto)
@@ -224,6 +235,23 @@ namespace SportLink.API.Services.Organization
                 return new OkObjectResult(organizationDetailedDto);
             }
             return null!;
+        }
+
+        public async Task<bool> DeleteOrganization(int id)
+        {
+            var organization = await _context.Organizations.FindAsync(id);
+            if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
+            {
+                _context.Organizations.Remove(organization);
+                _context.SocialNetworks.RemoveRange(_context.SocialNetworks.Where(x => x.OrganizationId == id));
+                await _reviewService.DeleteReview(id);
+                await _tournamentService.DeleteTournament(id);
+                await _trainingGroupService.DeleteTrainingGroup(id);
+                await _sportCourtService.DeleteSportObject(id);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }
