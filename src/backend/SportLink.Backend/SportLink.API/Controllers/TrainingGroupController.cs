@@ -28,7 +28,7 @@ namespace SportLink.API.Controllers
             _organizationService = organizationService;
             _searchService = searchService;
         }
-        
+
         /// <summary>
         /// Searches TrainingGroups filtered by parameters
         /// </summary>
@@ -58,7 +58,7 @@ namespace SportLink.API.Controllers
             }
         }
 
-        [HttpGet, Authorize(Policy = "jwt_policy")]
+        [HttpGet]
         [Route("organization/{id}")]
         public async Task<ActionResult<List<TrainingGroupDto>>> GetTrainingGroups(int id)
         {
@@ -106,22 +106,6 @@ namespace SportLink.API.Controllers
             }
             return Ok(trainingGroup);
         }
-
-        // [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
-        // [Route("{id}/update-training-schedule/{idTrainingGroup}")]
-        // public async Task<ActionResult<bool>> UpdateTrainingSchedule(int id, [FromBody] List<TrainingScheduleDto> trainingSchedule, int idTrainingGroup)
-        // {
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return BadRequest(ModelState);
-        //     }
-        //     var result = await _trainingGroupService.UpdateTrainingSchedule(id, trainingSchedule, idTrainingGroup);
-        //     if (!result)
-        //     {
-        //         return BadRequest("Grupa za trening neuspješno ažuriran.");
-        //     }
-        //     return Ok(trainingSchedule);
-        // }
 
         [HttpDelete, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]

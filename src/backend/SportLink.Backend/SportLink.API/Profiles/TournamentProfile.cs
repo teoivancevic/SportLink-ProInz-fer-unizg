@@ -12,5 +12,7 @@ public class TournamentProfile : Profile
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.Name))
             .ForMember(dest => dest.SportName, opt => opt.MapFrom(src => src.Sport.Name));
         CreateMap<TournamentSearchDto, Tournament>();
-    }   
+        CreateMap<TournamentDto, Tournament>();
+        CreateMap<Tournament, TournamentDto>();
+    }
 }

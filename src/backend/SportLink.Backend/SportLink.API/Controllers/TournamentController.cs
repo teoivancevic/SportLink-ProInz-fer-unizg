@@ -29,7 +29,7 @@ namespace SportLink.API.Controllers
             _organizationService = organizationService;
             _searchService = searchService;
         }
-        
+
         /// <summary>
         /// Search filtered tournaments
         /// </summary>
@@ -55,7 +55,7 @@ namespace SportLink.API.Controllers
             }
         }
 
-        [HttpGet, Authorize(Policy = "jwt_policy")]
+        [HttpGet]
         [Route("organization/{id}")]
         public async Task<ActionResult<List<TournamentDto>>> GetTournaments(int id)
         {
