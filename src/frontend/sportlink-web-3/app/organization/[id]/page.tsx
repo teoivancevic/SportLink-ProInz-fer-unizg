@@ -44,6 +44,9 @@ export default function OrganizationPage({ params }: { params: { id: number } })
         const response: GetOrganisationInfoResponse = await orgService.getOrganization(params.id)
         console.log(response);
         setOrgInfo(response.data)
+        const locationEncoded = encodeURIComponent(response.data.location)
+        const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${locationEncoded}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${locationEncoded}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+        setMapImageUrl(mapUrl)
       } catch (error) {
         console.error('Error fetching organization:', error)
         setError('Došlo je do greške prilikom učitavanja organizacije.')
@@ -66,7 +69,7 @@ export default function OrganizationPage({ params }: { params: { id: number } })
       console.log(response)
       const org: GetOrganisationInfoResponse = await orgService.getOrganization(params.id);
       setOrgInfo(org.data)
-      const locationEncoded = encodeURIComponent(newInfo.location)
+      const locationEncoded = encodeURIComponent(org.data.location)
       const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${locationEncoded}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${locationEncoded}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
       setMapImageUrl(mapUrl)
     } catch (error){
