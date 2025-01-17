@@ -2,8 +2,8 @@ name: Backend CI/CD
 
 on:
   push:
-    branches: [ "dev" ]
-    paths: [ "src/backend/SportLink.Backend/**" ]
+    branches: [ "dev", "fix/backendCICD" ]
+    #paths: [ "src/backend/SportLink.Backend/**" ]
   pull_request:
     types: [ "opened", "reopened", "closed" ]
     branches: [ "dev" ]
@@ -47,16 +47,6 @@ jobs:
       run: dotnet test --no-build --verbosity normal
       working-directory: ./src/backend/SportLink.Backend
 
-    - name: Build Docker image
-      run: |
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
-      working-directory: ./src/backend/SportLink.Backend
-
-    - name: Upload Docker image as artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: docker-image
-        path: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -71,10 +61,10 @@ jobs:
       FRONTEND_REDIRECT_URL: https://webapp-sportlink-test-nextjs-03.azurewebsites.net/auth/callback
 
     steps:
-    - name: Download Docker image artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: docker-image
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
+      working-directory: ./src/backend/SportLink.Backend
 
     - name: Login to Azure
       uses: azure/login@v1
