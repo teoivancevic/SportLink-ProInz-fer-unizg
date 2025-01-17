@@ -1,9 +1,14 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LocationInput } from "@/components/location-input"
 import { Organization } from '@/types/org'
+import { useAuth } from './auth/auth-context'
+import { UserRole } from '@/types/roles'
+import AuthorizedElement from './auth/authorized-element'
 
 interface EditProfilePopupProps {
   isOpen: boolean
@@ -12,8 +17,14 @@ interface EditProfilePopupProps {
   initialData: Organization
 }
 
-export default function EditProfilePopup({ isOpen, onClose, onSubmit, initialData }: EditProfilePopupProps) {
+export default function EditProfilePopup({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  initialData 
+}: EditProfilePopupProps) {
   const [formData, setFormData] = useState(initialData)
+  const { userData } = useAuth()
 
   useEffect(() => {
     if (isOpen) {
@@ -43,65 +54,72 @@ export default function EditProfilePopup({ isOpen, onClose, onSubmit, initialDat
   if (!isOpen) return null
 
   return (
-    <div className="fixed top-[-50px] left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-4">Uredi profil organizacije</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Ime</Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-            />
+    <AuthorizedElement
+      roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+      requireOrganizationEdit={true}
+      orgOwnerUserId={initialData.owner.id.toString()}
+    >
+      {({ userData }) => (
+        <div className="fixed top-[-50px] left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-4">Uredi profil organizacije</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="name">Ime</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Opis</Label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
+                  rows={4}
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="contactEmail"
+                  value={formData.contactEmail}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Telefon</Label>
+                <Input
+                  id="phone"
+                  name="contactPhoneNumber"
+                  value={formData.contactPhoneNumber}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <LocationInput
+                  value={formData.location}
+                  onChange={handleLocationChange}
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Odustani
+                </Button>
+                <Button type="submit">
+                  Spremi promjene
+                </Button>
+              </div>
+            </form>
           </div>
-          <div>
-            <Label htmlFor="description">Opis</Label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-              rows={4}
-            />
-          </div>
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              value={formData.contactEmail}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <Label htmlFor="phone">Telefon</Label>
-            <Input
-              id="phone"
-              name="phone"
-              value={formData.contactPhoneNumber}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <LocationInput
-              value={formData.location}
-              onChange={handleLocationChange}
-            />
-          </div>
-          <div className="flex justify-end space-x-4">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Odustani
-            </Button>
-            <Button type="submit">
-              Spremi promjene
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      )}
+    </AuthorizedElement>
   )
 }
-

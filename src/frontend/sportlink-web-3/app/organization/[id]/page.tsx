@@ -11,6 +11,8 @@ import { GetOrganisationInfoResponse, Organization } from '@/types/org'
 import { orgService } from "@/lib/services/api"
 import { useEffect, useState } from 'react'
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import AuthorizedElement from '@/components/auth/authorized-element'
+import { UserRole } from '@/types/roles'
 
 export default function OrganizationPage({ params }: { params: { id: number } }) {
 
@@ -106,10 +108,20 @@ export default function OrganizationPage({ params }: { params: { id: number } })
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>O nama</CardTitle>
-              <Button variant="outline" size="sm" onClick={() => setIsEditPopupOpen(true)}>
-                <Edit className="w-4 h-4 mr-2" />
-                Uredi
-              </Button>
+              <AuthorizedElement 
+                roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+                requireOrganizationEdit = {false}
+                orgOwnerUserId={params.id.toString()}
+              >
+                {(userData) => (
+                  <Button variant="outline" size="sm" onClick={() => setIsEditPopupOpen(true)}>
+                    <Edit className="w-4 h-4 mr-2" />
+                    Uredi
+                  </Button>
+                )}
+                
+              </AuthorizedElement>
+              
             </CardHeader>
             <CardContent className="space-y-4">
               <h2 className="text-xl font-semibold">{orgInfo.name}</h2>
@@ -162,7 +174,7 @@ export default function OrganizationPage({ params }: { params: { id: number } })
             </CardContent>
           </Card>
         </div>
-  
+                  
         <EditProfilePopup
           isOpen={isEditPopupOpen}
           onClose={() => setIsEditPopupOpen(false)}
