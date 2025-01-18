@@ -26,37 +26,19 @@ public class AuthControllerTests : IClassFixture<SportLinkWebApplicationFactory>
         _output = output;
     }
 
-    // [Fact]
-    // public async Task GetUser_ValidId_ReturnsOk()
-    // {
-    //     var response = await _client.GetAsync("/api/user/1");
-    //     var responseUser = await response.Content.ReadFromJsonAsync<UserDto>();
-    //     response.EnsureSuccessStatusCode();
-    //     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    //     Assert.Equal("John", responseUser?.FirstName);
-    //     
-    // }
-    
     [Fact]
     public async Task GetUser_ValidId_ReturnsOk()
     {
-        // Log database state
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-            var user = await context.Users.FindAsync(1);
-            _output.WriteLine($"Test database - User 1 exists: {user != null}, Name: {user?.FirstName}");
-        }
-
         var response = await _client.GetAsync("/api/user/1");
-        var rawContent = await response.Content.ReadAsStringAsync();
-        _output.WriteLine($"Response Status: {response.StatusCode}");
-        _output.WriteLine($"Raw response: {rawContent}");
-
-        response.EnsureSuccessStatusCode();
-        var responseUser = await response.Content.ReadFromJsonAsync<UserDto>();
+        
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    
+        var content = await response.Content.ReadAsStringAsync();
+        Assert.False(string.IsNullOrEmpty(content), "Response content is empty");
+    
+        var responseUser = await response.Content.ReadFromJsonAsync<UserDto>();
         Assert.Equal("John", responseUser?.FirstName);
+        
     }
 
     [Fact]
