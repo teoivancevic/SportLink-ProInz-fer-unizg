@@ -4,14 +4,26 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import AuthorizedElement from '@/components/auth/authorized-element'
-import { Star, ArrowLeft } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { UserRole } from '@/types/roles'
-import { Review, GetReviewsResponse, ReviewStatsResponse, CreateReviewRequest } from '@/types/review'
+import { Review, CreateReviewRequest } from '@/types/review'
 import { orgService, reviewService } from '@/lib/services/api'
-import { GetOrganisationInfoResponse, Organization } from '@/types/org'
+import {  Organization } from '@/types/org'
 import { RespondReviewRequest } from '@/types/review'
+import { ReviewsDistribution } from '@/components/reviewDistribution';
+import { Distribution, ApiDistribution } from '@/types/review'
+
+function transformDistribution(apiDistribution: ApiDistribution): Distribution {
+    return {
+      oneStar: apiDistribution[1] || 0,
+      twoStars: apiDistribution[2] || 0,
+      threeStars: apiDistribution[3] || 0,
+      fourStars: apiDistribution[4] || 0,
+      fiveStars: apiDistribution[5] || 0,
+    };
+}
 
 export default function OrganizationReviewsPage({ params }: { params: { id: number } }) {
   const router = useRouter()
@@ -23,17 +35,18 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
   const [tempResponses, setTempResponses] = useState<{ [key: number]: string }>({})
   const [showResponseInput, setShowResponseInput] = useState<{ [key: number]: boolean }>({})
   const [averageRating, setAverageRating] = useState<number | 0>(0)
-  const [organisationName, setOrganisationName] = useState<string>("")
+  const [organisationInfo, setOrganisationInfo] = useState<Organization | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isOrgOwner, setIsOrgOwner] = useState<boolean>() 
+  const [reviewDistribution, setReviewDistribution] = useState<Distribution | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [reviewsResponse, averageRatingResponse, orgNameResponse] = await Promise.all([
+        const [reviewsResponse, averageRatingResponse, orgInfoResponse, distributionResponse] = await Promise.all([
           reviewService.getAllReviews(params.id, 0),
           reviewService.getReviewStats(params.id),
-          orgService.getOrganization(params.id)
+          orgService.getOrganization(params.id),
+          reviewService.getReviewDistribution(params.id)
         ]);
 
         setReviews(reviewsResponse.data);
@@ -41,8 +54,14 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
         const avgRating = averageRatingResponse.data.averageRating;
         setAverageRating(avgRating !== undefined ? avgRating : 0);
   
-        const orgName = orgNameResponse.data.name;
-        setOrganisationName(orgName !== undefined ? orgName : "...");
+        const orgInfo = orgInfoResponse.data;
+        setOrganisationInfo(orgInfo);
+
+        const transformedDistribution = transformDistribution(distributionResponse.data);
+        console.log("Transformed Distribution:", transformedDistribution);
+        setReviewDistribution(transformedDistribution);
+        console.log(distributionResponse.data)
+        console.log(reviewDistribution)
       } catch (error) {
         console.error('Error fetching data:', error);
         setError('Došlo je do greške prilikom učitavanja podataka.');
@@ -50,24 +69,6 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
     };
   
     fetchData();
-  }, [params.id]);
-
-  //to do this probably shouldnt be called every time, maybe to check in advance if user is with role orgOwner 
-  useEffect(() => {
-    const fetchMyOrganisations = async () => {
-      try{
-        const myOrgResponse = await orgService.getMyOrganizations()
-        const userOrgs = myOrgResponse.data;
-        setIsOrgOwner(userOrgs.some(org => org.id == params.id));
-        console.log(userOrgs)
-        console.log("This is org:", params.id)
-        console.log(isOrgOwner)
-      } catch(error){
-        console.error(error)
-      }
-
-    };
-    fetchMyOrganisations();
   }, [params.id]);
 
   const handleStarClick = (rating: number) => {
@@ -90,8 +91,7 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
 
       console.log('Review submitted successfully:', response)
       setNewReview({ rating: 0, comment: '' })
-      // Refresh the reviews list
-      const reviewsResponse = await reviewService.getAllReviews(Number(params.id), 0);
+      const reviewsResponse = await reviewService.getAllReviews(Number(params.id), 0); //refresh all reviews
       setReviews(reviewsResponse.data);
     } catch (error) {
       console.error('Error submitting review:', error)
@@ -99,49 +99,44 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
     }
   };
 
-  // const handleSubmitReview = async () => {
-  //   try {
-  //     const data: CreateReviewRequest = {
-  //       organizationId: params.id,
-  //       rating: newReview.rating,
-  //       description: newReview.comment
-  //     }
-  //     const response = await reviewService.createReview(data);
-
-  //     console.log('Review submitted successfully:', response)
-  //     setNewReview({ rating: 0, comment: '' })
-  //     // you can refresh the reviews list here
-  //     //await fetchData();
-  //   } catch (error) {
-  //     console.error('Error submitting review:', error)
-  //   }
-  // };
-
   const handleResponseChange = (id: number, response: string) => {
     setTempResponses((prev) => ({ ...prev, [id]: response }))
   }
 
   const handleSubmitResponse = async (orgId: number, uId: number, reviewResponse: string, reviewId: number) => {
     if (reviewResponse === "") return;
-    
+
     try {
       const data: RespondReviewRequest = {
         organizationId: orgId,
         userId: uId,
-        response: reviewResponse,
+        response: encodeURIComponent(reviewResponse),
       };
-      console.log("Ovo saljem:", data)
+      console.log("Sending data:", data);
       const response = await reviewService.respondReview(data);
       console.log("Response submitted successfully:", response);
-  
-      // Update state after a successful response
+
       setResponses((prev) => ({ ...prev, [reviewId]: reviewResponse }));
       setTempResponses((prev) => ({ ...prev, [reviewId]: '' }));
       setShowResponseInput((prev) => ({ ...prev, [reviewId]: false }));
+
+      const reviewsResponse = await reviewService.getAllReviews(orgId, 0);
+      setReviews(reviewsResponse.data);
     } catch (error) {
       console.error("Error submitting response:", error);
+      setError('There was an error submitting your response. Please try again.');
     }
   };
+
+  // const handleDeleteReview = async (reviewId: number) => {
+  //   try {
+  //     await reviewService.deleteReview(reviewId);
+  //     setReviews(reviews.filter(review => review.id !== reviewId));
+  //   } catch (error) {
+  //     console.error('Error deleting review:', error);
+  //     setError('There was an error deleting the review. Please try again.');
+  //   }
+  // };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -152,16 +147,27 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Natrag
       </Button> */}
-      <h1 className="text-3xl font-bold mb-6">Recenzije za {organisationName}</h1>
-      <div className="bg-primary/10 p-4 rounded-lg mb-6">
-        <p className="text-lg font-semibold">Prosječna ocjena: {averageRating !== null ? averageRating.toFixed(1) : Number(0.0)} / 5.0</p>
-        <div className="flex items-center mt-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star 
-              key={star} 
-              className={`w-6 h-6 ${star <= Math.round(averageRating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-            />
-          ))}
+      <h1 className="text-3xl font-bold mb-6">Recenzije za {(organisationInfo === null) ? "..." : organisationInfo.name}</h1>
+      <div className="flex flex-col gap-6 mb-6 md:flex-row">
+        <div className="flex-1 p-4 bg-primary/10 rounded-lg">
+          <p className="text-lg font-semibold">
+            Prosječna ocjena: {averageRating !== null ? averageRating.toFixed(1) : Number(0.0)} / 5.0
+          </p>
+          <div className="flex items-center mt-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`w-6 h-6 ${
+                  star <= Math.round(averageRating || 0)
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+          <div className="flex-1 mt-2">
+          {reviewDistribution && <ReviewsDistribution distribution={reviewDistribution} />}
+        </div>
         </div>
       </div>
       <AuthorizedElement roles={[UserRole.User]}>
@@ -226,8 +232,10 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
                   <p>{responses[reviews.indexOf(review)]}</p>
                 </div>
               )}
-              {isOrgOwner && (
-              <AuthorizedElement roles={[UserRole.OrganizationOwner]}>
+              <AuthorizedElement 
+                roles={[UserRole.OrganizationOwner]} 
+                requireOrganizationEdit={true} 
+                orgOwnerUserId={(organisationInfo === null) ? "0" : organisationInfo.owner.id.toString()}>
                 {({ userData }) => (
                   <div className="mt-4">
                     {!responses[reviews.indexOf(review)] && (
@@ -269,7 +277,19 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
                   </div>
                 )}
               </AuthorizedElement>
-              )}
+              
+              {/* <AuthorizedElement roles={[UserRole.User, UserRole.OrganizationOwner]}>
+                {({ userData }) => (
+                  <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    className="mt-4"
+                    onClick={() => handleDeleteReview(review.id)}
+                  >
+                    Izbriši<br/>recenziju
+                  </Button>
+                )}
+              </AuthorizedElement> */}
             </CardContent>
           </Card>
         ))}

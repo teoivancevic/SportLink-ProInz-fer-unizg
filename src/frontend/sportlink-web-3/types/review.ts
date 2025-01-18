@@ -20,12 +20,20 @@ export interface ReviewStatsResponse {
     data: Stats
 }
 
+export interface Distribution {
+    oneStar: number,
+    twoStars: number,
+    threeStars: number,
+    fourStars: number,
+    fiveStars: number,
+}
+
+export interface ApiDistribution {
+    [key: number]: number;
+}
+
 export interface ReviewDistributionResponse {
-    one: number,
-    two: number,
-    three: number,
-    four: number,
-    five: number,
+    data: ApiDistribution
 }
 
 export interface CreateReviewResponse {
