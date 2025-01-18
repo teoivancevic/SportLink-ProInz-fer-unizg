@@ -1,15 +1,19 @@
 export interface WorkTime {
-    day: string;
-    from: string;
-    to: string;
+    id?: number; // teo: optional temporarily
+    dayOfWeek: number;
+    isWorking?: boolean; // teo: optional temporarily
+    openFrom: string;
+    openTo: string;
   }
   
   export interface SportCourt {
     id: number;
-    name: string;
+    name?: string;
+    availableCourts: number;
     maxHourlyPrice: number;
-    quantity: number;
-    sport: string;
+    
+    sport?: string;
+    sportId?: number;
   }
   
   export interface SportObject {
@@ -17,25 +21,26 @@ export interface WorkTime {
     name: string;
     description: string;
     location: string;
+    organizationId?: number;
     workTimes: WorkTime[];
     sportCourts: SportCourt[];
   }
   
   //mock
-  export const sportObjects: SportObject[] = [
+  export const sportObjectsMOCK: SportObject[] = [
     {
       id: 1,
       name: "Sportski Centar Olimp",
       description: "Moderni sportski centar s raznovrsnim terenima i dvoranama.",
       location: "Ulica sportova 123, Zagreb",
       workTimes: [
-        { day: "Ponedjeljak", from: "07:00", to: "22:00" },
-        { day: "Subota", from: "08:00", to: "20:00"},
+        { dayOfWeek: 1, openFrom: "07:00", openTo: "22:00" },
+        { dayOfWeek: 6, openFrom: "08:00", openTo: "20:00"},
       ],
       sportCourts: [
-        { id: 1, name: "Teniski teren", maxHourlyPrice: 80, quantity: 4, sport: "Tenis" },
-        { id: 2, name: "Košarkaško igralište", maxHourlyPrice: 60, quantity: 2, sport: "Košarka" },
-        { id: 3, name: "Nogometni teren", maxHourlyPrice: 150, quantity: 1, sport: "Nogomet" },
+        { id: 1, name: "Teniski teren", maxHourlyPrice: 80, availableCourts: 4, sport: "Tenis" },
+        { id: 2, name: "Košarkaško igralište", maxHourlyPrice: 60, availableCourts: 2, sport: "Košarka" },
+        { id: 3, name: "Nogometni teren", maxHourlyPrice: 150, availableCourts: 1, sport: "Nogomet" },
       ],
     },
     {
@@ -44,13 +49,13 @@ export interface WorkTime {
       description: "Suvremeni fitness centar s raznovrsnom opremom i grupnim treninzima.",
       location: "Trg zdravlja 45, Split",
       workTimes: [
-        { day: "Ponedjeljak", from: "06:00", to: "23:00" },
-        { day: "Subota", from: "08:00", to: "22:00"},
-        { day: "Nedjelja", from: "09:00", to: "20:00" },
+        { dayOfWeek: 1, openFrom: "06:00", openTo: "23:00" },
+        { dayOfWeek: 6, openFrom: "08:00", openTo: "22:00"},
+        { dayOfWeek: 7, openFrom: "09:00", openTo: "20:00" },
       ],
       sportCourts: [
-        { id: 4, name: "Teretana", maxHourlyPrice: 50, quantity: 1, sport: "Fitness" },
-        { id: 5, name: "Dvorana za grupne treninge", maxHourlyPrice: 100, quantity: 2, sport: "Grupni treninzi" },
+        { id: 4, name: "Teretana", maxHourlyPrice: 50, availableCourts: 1, sport: "Fitness" },
+        { id: 5, name: "Dvorana za grupne treninge", maxHourlyPrice: 100, availableCourts: 2, sport: "Grupni treninzi" },
       ],
     },
     {
@@ -59,12 +64,12 @@ export interface WorkTime {
       description: "Vodeni sportski kompleks s olimpijskim bazenom i wellness sadržajima.",
       location: "Obala mora 78, Rijeka",
       workTimes: [
-        { day: "Ponedjeljak", from: "07:00", to: "21:00" },
+        { dayOfWeek: 1, openFrom: "07:00", openTo: "21:00" },
       ],
       sportCourts: [
-        { id: 6, name: "Olimpijski bazen", maxHourlyPrice: 120, quantity: 1, sport: "Plivanje" },
-        { id: 7, name: "Mali bazen", maxHourlyPrice: 60, quantity: 1, sport: "Plivanje" },
-        { id: 8, name: "Sauna", maxHourlyPrice: 50, quantity: 3, sport: "Wellness" },
+        { id: 6, name: "Olimpijski bazen", maxHourlyPrice: 120, availableCourts: 1, sport: "Plivanje" },
+        { id: 7, name: "Mali bazen", maxHourlyPrice: 60, availableCourts: 1, sport: "Plivanje" },
+        { id: 8, name: "Sauna", maxHourlyPrice: 50, availableCourts: 3, sport: "Wellness" },
       ],
     },
   ];
