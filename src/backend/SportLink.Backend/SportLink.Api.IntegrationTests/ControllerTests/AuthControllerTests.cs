@@ -23,15 +23,37 @@ public class AuthControllerTests : IClassFixture<SportLinkWebApplicationFactory>
         _client = _factory.CreateClient();
     }
 
+    // [Fact]
+    // public async Task GetUser_ValidId_ReturnsOk()
+    // {
+    //     var response = await _client.GetAsync("/api/user/1");
+    //     var responseUser = await response.Content.ReadFromJsonAsync<UserDto>();
+    //     response.EnsureSuccessStatusCode();
+    //     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    //     Assert.Equal("John", responseUser?.FirstName);
+    //     
+    // }
+    
     [Fact]
     public async Task GetUser_ValidId_ReturnsOk()
     {
+        // Log database state
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+            var user = await context.Users.FindAsync(1);
+            Console.WriteLine($"Test database - User 1 exists: {user != null}, Name: {user?.FirstName}");
+        }
+
         var response = await _client.GetAsync("/api/user/1");
-        var responseUser = await response.Content.ReadFromJsonAsync<UserDto>();
+        var rawContent = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"Response Status: {response.StatusCode}");
+        Console.WriteLine($"Raw response: {rawContent}");
+
         response.EnsureSuccessStatusCode();
+        var responseUser = await response.Content.ReadFromJsonAsync<UserDto>();
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("John", responseUser?.FirstName);
-        
     }
 
     [Fact]
