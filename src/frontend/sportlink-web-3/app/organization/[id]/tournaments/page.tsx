@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button"
 import { CalendarIcon, MapPinIcon, ActivityIcon, EuroIcon, PlusIcon, XIcon, PencilIcon, Trash2Icon } from 'lucide-react'
 import AddTournamentForm from './add-tournament-form'
 import NavMenu from '@/components/nav-org-profile'
-import { getTournamentsResponse, Tournament } from "@/types/tournaments"
+import { getTournamentsResponse, Tournament} from "@/types/tournaments"
 import { tournamentService } from '@/lib/services/api'
+import AuthorizedElement from '@/components/auth/authorized-element'
+import { UserRole } from '@/types/roles'
 
 // Mock data for competitions
 const initialCompetitions: Tournament[] = [];
 
-function CompetitionCard({ competition, onEdit, onDelete, popupOpened }: { competition: Tournament; onEdit: (tournament: Tournament) => void; onDelete: (id: number) => void, popupOpened : boolean }) {
+function CompetitionCard({ orgId, competition, onEdit, onDelete, popupOpened }: { orgId: number; competition: Tournament; onEdit: (tournament: Tournament) => void; onDelete: (id: number) => void, popupOpened : boolean }) {
   return (
     <Card className="h-full">
       <CardHeader>
@@ -41,18 +43,32 @@ function CompetitionCard({ competition, onEdit, onDelete, popupOpened }: { compe
           </div>
         </div>
         <div className="flex justify-end space-x-2 mt-4">
-        <Button variant="outline" size="sm" onClick={() => onEdit(competition)} disabled={popupOpened}>
-            <PencilIcon className="h-4 w-4 mr-2" />
-            Uredi
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => {
-            if (confirm(`Jeste li sigurni da želite izbrisati natjecanje "${competition.name}"?`)) {
-              onDelete(competition.id)
-            }
-          }} disabled={popupOpened}>
-            <Trash2Icon className="h-4 w-4 mr-2" />
-            Izbriši
-          </Button>
+
+        <AuthorizedElement 
+            roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+            requireOrganizationEdit = {false}
+            orgOwnerUserId={orgId.toString()}
+          >
+            {(userData) => (
+              <>
+              <Button variant="outline" size="sm" onClick={() => onEdit(competition)} disabled={popupOpened}>
+                <PencilIcon className="h-4 w-4 mr-2" />
+                Uredi
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => {
+                if (confirm(`Jeste li sigurni da želite izbrisati natjecanje "${competition.name}"?`)) {
+                  onDelete(competition.id)
+                }
+              }} disabled={popupOpened}>
+                <Trash2Icon className="h-4 w-4 mr-2" />
+                Izbriši
+              </Button>
+              </>
+
+            )}
+          </AuthorizedElement>
+
+
         </div>
       </CardContent>
     </Card>
@@ -92,20 +108,45 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
     setIsAddingTournament(true)
   }
 
-  const handleDeleteTournament = (id: number) => {
-    setCompetitions(competitions.filter(c => c.id !== id))
+  const handleDeleteTournament = async (id: number) => {
+    try {
+      const response: boolean = await tournamentService.deleteTournament(id);
+      console.log(response);
+      const tournaments: getTournamentsResponse = await tournamentService.getTournaments(params.id)
+      console.log(tournaments)
+      setCompetitions(tournaments.data)
+    } catch (error){
+      console.error('Error deleting tournament:', error)
+      console.log('Delete failed')
+    }
   }
 
-  const addNewTournament = (newTournament: Omit<Tournament, 'id'>) => {
-    if (editingTournament) {
-      setCompetitions(competitions.map(c =>
-        c.id === editingTournament.id ? { ...newTournament, id: editingTournament.id } : c
-      ))
-    } else {
-      const newId = Math.max(...competitions.map(c => c.id)) + 1
-      setCompetitions([...competitions, { ...newTournament, id: newId }])
-    }
+  const addNewTournament = async (newTournament: Tournament) => {
     toggleAddTournament()
+    if (editingTournament) {
+      try {
+        const response: boolean = await tournamentService.updateTournament(newTournament, newTournament.id);
+        console.log(response);
+        const tournaments: getTournamentsResponse = await tournamentService.getTournaments(params.id)
+        console.log(tournaments)
+        setCompetitions(tournaments.data)
+      } catch (error){
+        console.error('Error adding new tournament:', error)
+        console.log('Adding failed')
+      }
+    } else {
+      try {
+        newTournament.organizationId = Number(params.id);
+        const response: boolean = await tournamentService.createTournament(newTournament, params.id);
+        console.log(response);
+        const tournaments: getTournamentsResponse = await tournamentService.getTournaments(params.id)
+        console.log(tournaments)
+        setCompetitions(tournaments.data)
+      } catch (error){
+        console.error('Error adding new tournament:', error)
+        console.log('Adding failed')
+      }
+    }
   }
 
   return (
@@ -113,25 +154,28 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
       <NavMenu orgId={params.id}/>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Natjecanja</h1>
-        <Button onClick={toggleAddTournament}>
-          {isAddingTournament ? (
-            <>
-              <XIcon className="mr-2 h-4 w-4" />
-              Zatvori
-            </>
-          ) : (
-            <>
-              <PlusIcon className="mr-2 h-4 w-4" />
-              Dodaj natjecanje
-            </>
-          )}
-        </Button>
+
+        <AuthorizedElement 
+            roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+            requireOrganizationEdit = {false}
+            orgOwnerUserId={params.id.toString()}
+          >
+            {(userData) => (
+              <Button onClick={toggleAddTournament}>
+              {isAddingTournament ? (
+                <><XIcon className="mr-2 h-4 w-4" />Zatvori</>) 
+                : (<><PlusIcon className="mr-2 h-4 w-4" /> Dodaj natjecanje</>)}
+              </Button>
+            )}
+          </AuthorizedElement>
+
       </div>
       <div className={`flex ${isAddingTournament ? 'space-x-4' : ''}`}>
         <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${isAddingTournament ? 'w-2/3' : 'w-full'}`}>
           {competitions.map((competition) => (
             <CompetitionCard 
               key={competition.id} 
+              orgId={params.id}
               competition={competition} 
               onEdit={handleEditTournament}
               onDelete={handleDeleteTournament}

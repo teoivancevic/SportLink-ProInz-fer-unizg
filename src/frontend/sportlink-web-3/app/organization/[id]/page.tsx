@@ -36,7 +36,6 @@ export default function OrganizationPage({ params }: { params: { id: number } })
   const [error, setError] = useState<string | null>(null)
   const [mapImageUrl, setMapImageUrl] = useState<string | null>(null)
 
-  // Create map URL from location
   const createMapUrl = useCallback((location: string) => {
     const locationEncoded = encodeURIComponent(location)
     return `https://maps.googleapis.com/maps/api/staticmap?center=${locationEncoded}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${locationEncoded}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`

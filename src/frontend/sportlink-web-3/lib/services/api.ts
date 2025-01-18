@@ -31,15 +31,15 @@ import {
   RespondReviewRequest,
   ReviewDistributionResponse,
   ReviewStatsResponse,
-  CreateReviewRequest,
   Review
 } from '@/types/review'
 
 import {
   getTournamentsResponse,
-  Tournament,
-  TournamentCreate,
+  Tournament
 } from '@/types/tournaments'
+
+import { Sport, getSportsResponse } from '@/types/sport'
 
 type _ApiResponse<T> = {
   data: T;
@@ -232,15 +232,18 @@ export const tournamentService = {
   getTournaments: (organisationId: number) =>
     ApiClient.get<getTournamentsResponse>(`/api/Tournament/organization/${organisationId}`),
 
-  createTournament: (tournament: TournamentCreate) =>
-    ApiClient.post<boolean>(`/api/Tournament`, tournament),
+  createTournament: (tournament: Tournament, orgId: number) => 
+    ApiClient.post<boolean>(`/api/Tournament?organizationId=${orgId}`, tournament),
 
-  updateTournament: (tournament: Tournament) =>
-    ApiClient.put<boolean>(`/api/Tournament`, tournament),
+  updateTournament: (tournament: Tournament, tournamentId: number) => 
+    ApiClient.put<boolean>(`/api/Tournament?idTournament=${tournamentId}`, tournament),
 
   deleteTournament: (tournamentId: number) =>
-    ApiClient.delete<boolean>(`/api/Tournament`),
+    ApiClient.delete<boolean>(`/api/Tournament?idTournament=${tournamentId}`),
 }
 
-
+export const SportService  = {
+  getSports: () =>
+    ApiClient.get<getSportsResponse>(`/api/Sport`)
+}
 
