@@ -9,6 +9,7 @@ using SportLink.API.Data;
 using SportLink.API.Data.Entities;
 using SportLink.Api.IntegrationTests.Helpers;
 using SportLink.Core.Models;
+using Xunit.Abstractions;
 
 namespace SportLink.Api.IntegrationTests;
 
@@ -16,11 +17,13 @@ public class AuthControllerTests : IClassFixture<SportLinkWebApplicationFactory>
 {
     private readonly SportLinkWebApplicationFactory _factory;
     private readonly HttpClient _client;
+    private readonly ITestOutputHelper _output;
 
-    public AuthControllerTests(SportLinkWebApplicationFactory factory)
+    public AuthControllerTests(SportLinkWebApplicationFactory factory, ITestOutputHelper output)
     {
         _factory = factory;
         _client = _factory.CreateClient();
+        _output = output;
     }
 
     // [Fact]
@@ -42,13 +45,13 @@ public class AuthControllerTests : IClassFixture<SportLinkWebApplicationFactory>
         {
             var context = scope.ServiceProvider.GetRequiredService<DataContext>();
             var user = await context.Users.FindAsync(1);
-            Console.WriteLine($"Test database - User 1 exists: {user != null}, Name: {user?.FirstName}");
+            _output.WriteLine($"Test database - User 1 exists: {user != null}, Name: {user?.FirstName}");
         }
 
         var response = await _client.GetAsync("/api/user/1");
         var rawContent = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"Response Status: {response.StatusCode}");
-        Console.WriteLine($"Raw response: {rawContent}");
+        _output.WriteLine($"Response Status: {response.StatusCode}");
+        _output.WriteLine($"Raw response: {rawContent}");
 
         response.EnsureSuccessStatusCode();
         var responseUser = await response.Content.ReadFromJsonAsync<UserDto>();
