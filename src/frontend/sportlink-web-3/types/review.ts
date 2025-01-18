@@ -1,10 +1,12 @@
 export interface Review{
+    userId: number
     rating: number,
     description: string,
     response: string,
     userFirstName: string,
     userLastName: string,
     organizationName: string
+    organizationId: number
 };
 
 export interface GetReviewsResponse {
@@ -49,6 +51,10 @@ export interface RespondReviewRequest {
     organizationId: number, 
     userId: number, 
     response: string
+}
+
+export interface  RespondReviewResponse {
+    data: Review
 }
 
 export interface CreateReviewRequest {

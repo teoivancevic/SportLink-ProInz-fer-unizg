@@ -29,9 +29,9 @@ import {
   CreateReviewResponse,
   GetReviewsResponse,
   RespondReviewRequest,
+  RespondReviewResponse,
   ReviewDistributionResponse,
-  ReviewStatsResponse,
-  Review
+  ReviewStatsResponse
 } from '@/types/review'
 
 import {
@@ -218,11 +218,10 @@ export const reviewService = {
   createReview: (data: CreateReviewRequest) =>
     ApiClient.post<CreateReviewResponse>(`/api/Review`, data),
 
-  //TODO connect this
-  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review/`),
+  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review?organizationId=${organisationId}`),
 
   respondReview: (data: RespondReviewRequest) =>
-    ApiClient.put(`/api/Review/respond?organizationId=${data.organizationId}&userId=${data.userId}&response=${data.response}`, data)
+    ApiClient.put<RespondReviewResponse>(`/api/Review/respond?organizationId=${data.organizationId}&userId=${data.userId}&response=${data.response}`, data)
 }
 
 export const tournamentService = {

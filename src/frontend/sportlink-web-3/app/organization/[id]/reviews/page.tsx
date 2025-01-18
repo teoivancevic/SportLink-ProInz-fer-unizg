@@ -115,12 +115,9 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
       console.log("Sending data:", data);
       const response = await reviewService.respondReview(data);
       console.log("Response submitted successfully:", response);
-
-      setResponses((prev) => ({ ...prev, [reviewId]: reviewResponse }));
-      setTempResponses((prev) => ({ ...prev, [reviewId]: '' }));
       setShowResponseInput((prev) => ({ ...prev, [reviewId]: false }));
 
-      const reviewsResponse = await reviewService.getAllReviews(orgId, 0);
+      const reviewsResponse = await reviewService.getAllReviews(orgId, 0); //refresh reviews
       setReviews(reviewsResponse.data);
     } catch (error) {
       console.error("Error submitting response:", error);
@@ -128,15 +125,17 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
     }
   };
 
-  // const handleDeleteReview = async (reviewId: number) => {
-  //   try {
-  //     await reviewService.deleteReview(reviewId);
-  //     setReviews(reviews.filter(review => review.id !== reviewId));
-  //   } catch (error) {
-  //     console.error('Error deleting review:', error);
-  //     setError('There was an error deleting the review. Please try again.');
-  //   }
-  // };
+  const handleDeleteReview = async () => {
+    try {
+      await reviewService.deleteReview(params.id);
+      // setReviews(reviews.filter(review => review.id !== reviewId));
+      const reviewsResponse = await reviewService.getAllReviews(Number(params.id), 0); //refresh all reviews
+      setReviews(reviewsResponse.data);
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      setError('There was an error deleting the review. Please try again.');
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -226,10 +225,10 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
               </blockquote>
               <p className="text-sm text-gray-600 mb-4">- {review.userFirstName}, član </p>
               
-              {responses[reviews.indexOf(review)] && (
+              {review.response && (
                 <div className="bg-secondary/10 p-2 rounded-md text-sm mt-4">
                   <p className="font-semibold mb-1">Odgovor organizacije:</p>
-                  <p>{responses[reviews.indexOf(review)]}</p>
+                  <p>{review.response}</p>
                 </div>
               )}
               <AuthorizedElement 
@@ -256,7 +255,7 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
                               Odustani
                             </Button>
                             <Button 
-                              onClick={() => handleSubmitResponse(params.id, Number(userData.id), tempResponses[reviews.indexOf(review)], reviews.indexOf(review))}
+                              onClick={() => handleSubmitResponse(params.id, review.userId, tempResponses[reviews.indexOf(review)], reviews.indexOf(review))}
                               disabled={!tempResponses[reviews.indexOf(review)]?.trim()}
                               size="sm"
                             >
@@ -277,19 +276,20 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
                   </div>
                 )}
               </AuthorizedElement>
-              
-              {/* <AuthorizedElement roles={[UserRole.User, UserRole.OrganizationOwner]}>
-                {({ userData }) => (
+              <AuthorizedElement roles={[UserRole.User, UserRole.OrganizationOwner]}>
+                {({ userData }) => 
+                  (Number(userData.id) == Number(review.userId) && (
                   <Button 
                     variant="destructive" 
                     size="sm" 
                     className="mt-4"
-                    onClick={() => handleDeleteReview(review.id)}
+                    onClick={() => handleDeleteReview()}
                   >
-                    Izbriši<br/>recenziju
+                    Izbriši
                   </Button>
+                  )
                 )}
-              </AuthorizedElement> */}
+              </AuthorizedElement>
             </CardContent>
           </Card>
         ))}
