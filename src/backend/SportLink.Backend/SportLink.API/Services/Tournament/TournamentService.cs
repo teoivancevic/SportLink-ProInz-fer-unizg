@@ -44,7 +44,7 @@ namespace SportLink.API.Services.Tournament
             {
                 return null!;
             }
-            return _mapper.Map<List<TournamentDto>>(tournaments);
+            return tournaments;
         }
 
         public async Task<bool> AddTournament(TournamentDto tournamentDto, int organizationId)
