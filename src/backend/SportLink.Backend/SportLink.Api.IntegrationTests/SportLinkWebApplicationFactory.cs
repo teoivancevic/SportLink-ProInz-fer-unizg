@@ -13,6 +13,7 @@
     using Microsoft.VisualStudio.TestPlatform.TestHost;
     using SportLink.API.Data;
     using SportLink.Api.IntegrationTests.Helpers;
+    using SportLink.API.Services.Email;
 
     namespace SportLink.Api.IntegrationTests;
 
@@ -29,6 +30,9 @@
                 {
                     options.UseInMemoryDatabase(_dbName).EnableSensitiveDataLogging();
                 });
+
+                services.RemoveAll(typeof(IEmailService));
+                services.AddScoped<IEmailService, NoOpEmailService>();
                 
                 var serviceProvider = services.BuildServiceProvider();
                 using var scope = serviceProvider.CreateScope();
