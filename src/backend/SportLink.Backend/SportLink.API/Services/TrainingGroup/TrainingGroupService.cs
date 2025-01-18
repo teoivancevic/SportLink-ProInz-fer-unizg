@@ -28,7 +28,7 @@ namespace SportLink.API.Services.TrainingGroup
                 .Select(
                 x => new TrainingGroupDto
                 {
-                    //Id = x.Id,
+                    Id = x.Id,
                     Name = x.Name,
                     SportName = x.Sport.Name,
                     SportId = x.SportId,
