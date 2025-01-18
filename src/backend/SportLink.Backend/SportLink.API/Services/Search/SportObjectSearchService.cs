@@ -47,6 +47,7 @@ public class SportObjectSearchService : ISearchService<SportObjectSearchDto, Sea
                 Id = so.Id,
                 Name = so.Name,
                 Location = so.Location,
+                OrganizationId = so.OrganizationId,
                 OrganizationName = so.Organization.Name,
                 SportCourtDtos = so.SportCourts
                     .Where(sc =>
@@ -59,7 +60,8 @@ public class SportObjectSearchService : ISearchService<SportObjectSearchDto, Sea
                         SportName = sc.Sport.Name,
                         AvailableCourts = sc.AvailableCourts,
                         MinHourlyPrice = sc.minHourlyPrice,
-                        MaxHourlyPrice = sc.maxHourlyPrice
+                        MaxHourlyPrice = sc.maxHourlyPrice,
+                        SportsObjectId = sc.SportsObjectId
                     }).ToList()
             }).ToListAsync();
         

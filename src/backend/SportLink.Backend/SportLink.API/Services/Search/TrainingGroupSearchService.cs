@@ -70,11 +70,14 @@ public class TrainingGroupSearchService : ISearchService<TrainingGroupSearchDto,
                 MonthlyPrice = tg.MonthlyPrice,
                 SportName = tg.Sport.Name,
                 OrganizationName = tg.Organization.Name,
+                OrganizationId = tg.OrganizationId,
                 TrainingScheduleDtos = tg.TrainingSchedules.Select(ts => new TrainingScheduleSearchDto
                 {
+                    Id = ts.Id,
                     DayOfWeek = ts.DayOfWeek,
                     StartTime = ts.StartTime,
-                    EndTime = ts.EndTime
+                    EndTime = ts.EndTime,
+                    TrainingGroupId = ts.TrainingGroupId
                 }).ToList()
             })
             .ToListAsync();
