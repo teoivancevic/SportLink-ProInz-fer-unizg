@@ -7,4 +7,5 @@ public class SportCourtDtoSearch
     public string SportName { get; set; }
     public decimal MinHourlyPrice { get; set; }
     public decimal MaxHourlyPrice { get; set; }
+    public int SportsObjectId { get; set; }
 }

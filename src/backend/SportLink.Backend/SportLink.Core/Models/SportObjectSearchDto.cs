@@ -7,4 +7,5 @@ public class SportObjectSearchDto
     public string Location { get; set; }
     public string OrganizationName { get; set; }
     public List<SportCourtDtoSearch> SportCourtDtos { get; set; }
+    public int OrganizationId { get; set; }
 }

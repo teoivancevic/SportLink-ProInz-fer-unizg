@@ -12,6 +12,7 @@ public class TrainingGroupSearchDto
     public decimal MonthlyPrice { get; set; }
     public List<TrainingScheduleSearchDto> TrainingScheduleDtos { get; set; }
     public string OrganizationName { get; set; }
+    public int OrganizationId { get; set; }
     public string SportName { get; set; }
     
 }

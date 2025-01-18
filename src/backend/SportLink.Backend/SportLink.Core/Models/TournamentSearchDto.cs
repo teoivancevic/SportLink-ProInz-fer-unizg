@@ -10,4 +10,5 @@ public class TournamentSearchDto
     public string Location { get; set; }
     public string OrganizationName { get; set; }
     public string SportName { get; set; }
+    public int OrganizationId { get; set; }
 }
