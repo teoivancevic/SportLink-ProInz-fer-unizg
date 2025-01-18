@@ -16,7 +16,7 @@ const initialCompetitions: Tournament[] = [];
 
 function CompetitionCard({ orgId, competition, onEdit, onDelete, popupOpened }: { orgId: number; competition: Tournament; onEdit: (tournament: Tournament) => void; onDelete: (id: number) => void, popupOpened : boolean }) {
   return (
-    <Card className="h-full">
+    <Card className="max-h-[320px] min-w-[200px]">
       <CardHeader>
         <CardTitle>{competition.name}</CardTitle>
       </CardHeader>
@@ -81,6 +81,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
   const [editingTournament, setEditingTournament] = useState<Tournament | null>(null)  
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchTournaments = async () => {
         try {
@@ -111,18 +112,18 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
   const handleDeleteTournament = async (id: number) => {
     try {
       const response: boolean = await tournamentService.deleteTournament(id);
-      console.log(response);
-      const tournaments: getTournamentsResponse = await tournamentService.getTournaments(params.id)
-      console.log(tournaments)
-      setCompetitions(tournaments.data)
-    } catch (error){
-      console.error('Error deleting tournament:', error)
-      console.log('Delete failed')
+      if (response) {
+        setCompetitions((prevCompetitions) => prevCompetitions.filter((comp) => comp.id !== id));
+      } else {
+        console.error('Failed to delete the tournament.');
+      }
+    } catch (error) {
+      console.error('Error deleting tournament:', error);
     }
-  }
+  };
 
   const addNewTournament = async (newTournament: Tournament) => {
-    toggleAddTournament()
+    setIsSubmitting(true); 
     if (editingTournament) {
       try {
         const response: boolean = await tournamentService.updateTournament(newTournament, newTournament.id);
@@ -147,6 +148,8 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         console.log('Adding failed')
       }
     }
+    toggleAddTournament()
+    setIsSubmitting(false); 
   }
 
   return (
@@ -171,7 +174,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
 
       </div>
       <div className={`flex ${isAddingTournament ? 'space-x-4' : ''}`}>
-        <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${isAddingTournament ? 'w-2/3' : 'w-full'}`}>
+      <div className={`flex flex-wrap gap-6 ${isAddingTournament ? 'w-2/3' : 'w-full'}`}>
           {competitions.map((competition) => (
             <CompetitionCard 
               key={competition.id} 
@@ -191,6 +194,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
                 onClose={toggleAddTournament} 
                 onSubmit={addNewTournament}
                 initialData={editingTournament || undefined}
+                loading={isSubmitting} 
               />
             </div>
           </>

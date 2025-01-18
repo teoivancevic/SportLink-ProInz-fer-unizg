@@ -16,15 +16,15 @@ interface AddTournamentFormProps {
     onClose: () => void;
     onSubmit: (newTournament: Tournament) => void;
     initialData?: Tournament;
+    loading : boolean;
 }
 
-export default function AddTournamentForm({ onClose, onSubmit, initialData }: AddTournamentFormProps) {
+export default function AddTournamentForm({ onClose, onSubmit, initialData, loading  }: AddTournamentFormProps) {
     const [sports, setSports] = useState<Sport[]>([]);
 
     const fetchSports = async () => {
         try {
             const response: getSportsResponse = await SportService.getSports();
-            console.log(response.data);
             setSports(response.data);
         } catch (error) {
             console.error('Error fetching sports:', error);
@@ -150,7 +150,7 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData }: Ad
             
             <div className="flex justify-end space-x-2">
                 <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                <Button type="submit">{initialData ? 'Uredi' : 'Dodaj novo'}</Button>
+                <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</Button>
             </div>
         </form>
     );
