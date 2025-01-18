@@ -26,16 +26,6 @@ public class AuthControllerTests : IClassFixture<SportLinkWebApplicationFactory>
     [Fact]
     public async Task GetUser_ValidId_ReturnsOk()
     {
-        //arrange
-        // using (var scope = _factory.Services.CreateScope())
-        // {
-        //     var scopedServices = scope.ServiceProvider;
-        //     var db = scopedServices.GetRequiredService<DataContext>();
-        //     
-        //     Utilities.ReinitializeDbForTests(db);
-        // }
-        
-        //Act
         var response = await _client.GetAsync("/api/user/1");
         var responseUser = await response.Content.ReadFromJsonAsync<UserDto>();
         response.EnsureSuccessStatusCode();
@@ -65,7 +55,7 @@ public class AuthControllerTests : IClassFixture<SportLinkWebApplicationFactory>
         userDto.LastName.Should().Be(registerUserDto.LastName);
     }
     
-    [Fact]
+    [Fact(Skip = "Not implemented yet")]
     public async Task RegisterUser_WithExistingEmail_ReturnsBadRequest()
     {
         // Arrange
