@@ -44,8 +44,8 @@ import {
   TrainingGroup
 } from '@/types/training-groups'
 
-import { Sport, getSportsResponse } from '@/types/sport'
-import { CreateSportsObjectRequest, SportObject } from '@/types/sport-courtes'
+import { getSportsResponse } from '@/types/sport'
+import { SportObject } from '@/types/sport-courtes'
 
 type _ApiResponse<T> = {
   data: T;

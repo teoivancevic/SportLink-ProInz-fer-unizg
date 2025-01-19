@@ -3,7 +3,7 @@ export interface TrainingGroup {
     name: string
     ageFrom: number
     ageTo: number
-    sex: 'Male' | 'Female' | 'Any'
+    sex: 'Male' | 'Female' | 'Unisex'
     monthlyPrice: number
     description: string
     organizationId: number
