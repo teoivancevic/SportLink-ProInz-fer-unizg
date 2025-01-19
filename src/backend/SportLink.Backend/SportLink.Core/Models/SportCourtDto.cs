@@ -9,6 +9,7 @@ namespace SportLink.Core.Models
     {
         public int Id { get; set; }
         public int SportId { get; set; }
+        public string? SportName { get; set; }
         public int AvailableCourts { get; set; }
         public int SportsObjectId { get; set; }
         public decimal MaxHourlyPrice { get; set; }
