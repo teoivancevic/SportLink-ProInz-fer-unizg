@@ -256,4 +256,7 @@ export const sportsObjectService  = {
 
   updateSportObjectDetailed: (data: SportObject) => // create je org id, al tu je spobj id u queryju??
     ApiClient.put<boolean>(`/api/SportCourt?idSportObject=${data.id}`, data),
+  
+  deleteSportObjectDetailed: (idSportObject: number) => // create je org id, al tu je spobj id u queryju??
+    ApiClient.delete<boolean>(`/api/SportCourt?idSportObject=${idSportObject}`),
 }

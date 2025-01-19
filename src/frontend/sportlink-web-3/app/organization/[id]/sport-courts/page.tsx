@@ -85,9 +85,28 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
     setIsAddingOrEditing(true)
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm("Jeste li sigurni da želite izbrisati taj sportski objekt?")) {
-      setSportObjects(sportObjects.filter(obj => obj.id !== id))
+      try {
+        // Call the API to delete the object
+        await sportsObjectService.deleteSportObjectDetailed(id);
+        
+        // Update the UI
+        setSportObjects(sportObjects.filter(obj => obj.id !== id));
+        
+        // Show success message
+        toast({
+          title: "Success",
+          description: "Sportski objekt uspješno izbrisan",
+        });
+      } catch (error) {
+        console.error('Error deleting sport object:', error);
+        toast({
+          title: "Error",
+          description: "Došlo je do greške prilikom brisanja sportskog objekta",
+          variant: "destructive",
+        });
+      }
     }
   }
 
@@ -128,7 +147,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
       if (editingSportObject) {
         // Update existing sport object
         console.log("update object:", formattedObject);
-        response = await sportsObjectService.updateSportObjectDetailed(formattedObject, params.id)
+        response = await sportsObjectService.updateSportObjectDetailed(formattedObject)
         if (response) {
           toast({
             title: "Success",
@@ -224,7 +243,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
                           <span>{court.name} ({court.availableCourts}x)</span>
                           <div className="text-sm">
                             <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full mr-2">
-                              {court.sport}
+                              {court.sportName ? court.sportName : "placeholderSportName"}
                             </span>
                             <span className="border border-gray-300 text-gray-600 px-2 py-1 rounded-full">
                               {formatPriceRange(court)}
