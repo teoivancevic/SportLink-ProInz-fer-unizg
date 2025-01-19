@@ -280,6 +280,11 @@ const allDaysOfWeek = {
   7: 'Nedjelja'
 };
 
+const formatTime = (time: string) => {
+  const [hours, minutes] = time.split(':');
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
 export default function AddSportObjectForm({ onClose, onSubmit, initialData, isLoading = false }: AddSportObjectFormProps) {
   const [formData, setFormData] = useState<Omit<SportObject, 'id'>>(
     initialData || {
@@ -419,13 +424,13 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
     </select>
     <Input
       type="time" 
-      value={wt.openFrom}
+      value={formatTime(wt.openFrom)}
       onChange={(e) => handleWorkTimeChange(index, 'openFrom', e.target.value)}
       required
     />
     <Input
       type="time" 
-      value={wt.openTo}
+      value={formatTime(wt.openTo)}
       onChange={(e) => handleWorkTimeChange(index, 'openTo', e.target.value)}
       required
     />

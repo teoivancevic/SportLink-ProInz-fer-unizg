@@ -249,11 +249,11 @@ export const SportService  = {
 export const sportsObjectService  = {
   
   getSportObjectDetailedById: (organizationId: number) =>
-    ApiClient.post<SportObject[]>(`/api/SportCourt/organization/${organizationId}`),
+    ApiClient.get<SportObject[]>(`/api/SportCourt/organization/${organizationId}`),
 
   createSportObjectDetailed: (data: SportObject, organizationId: number) =>
     ApiClient.post<boolean>(`/api/SportCourt?id=${organizationId}`, data),
 
-  updateSportObjectDetailed: (data: SportObject) =>
-    ApiClient.put<boolean>(`/api/SportCourt`),
+  updateSportObjectDetailed: (data: SportObject) => // create je org id, al tu je spobj id u queryju??
+    ApiClient.put<boolean>(`/api/SportCourt?idSportObject=${data.id}`, data),
 }

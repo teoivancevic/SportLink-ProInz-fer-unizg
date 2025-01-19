@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import NavMenu from "@/components/nav-org-profile"
 import { sportObjectsMOCK as initialSportObjects, SportObject, SportCourt } from "../../../../types/sport-courtes"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,17 +12,63 @@ import { useToast } from "@/hooks/use-toast"
 import AuthorizedElement from '@/components/auth/authorized-element'
 import { UserRole } from '@/types/roles'
 
+const allDaysOfWeek = new Map<number, string>([
+  [1, 'Ponedjeljak'],
+  [2, 'Utorak'],
+  [3, 'Srijeda'],
+  [4, 'Četvrtak'],
+  [5, 'Petak'],
+  [6, 'Subota'],
+  [7, 'Nedjelja']
+]);
+
 export default function SportCourtsContent({ params }: { params: { id: number } }) {
   const [isAddingOrEditing, setIsAddingOrEditing] = useState(false)
-  const [sportObjects, setSportObjects] = useState<SportObject[]>(initialSportObjects)
+  // const [sportObjects, setSportObjects] = useState<SportObject[]>(initialSportObjects)
+  const [sportObjects, setSportObjects] = useState<SportObject[]>([])
   const [editingSportObject, setEditingSportObject] = useState<SportObject | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
   const { toast } = useToast()
+
+  
+
+  useEffect(() => {
+    fetchSportObjects()
+  }, [params.id])
+
+  const fetchSportObjects = async () => {
+    setIsFetching(true)
+    //setError(null)
+
+    // const response = await sportsObjectService.getSportObjectDetailedById(params.id)
+    // console.log(response);
+    try {
+      const response = await sportsObjectService.getSportObjectDetailedById(params.id)
+      setSportObjects(response.data)
+    } catch (error) {
+      console.error('Error fetching sport objects:', error)
+      //setError('Failed to load sport objects')
+      toast({
+        title: "Error",
+        description: "Failed to load sport objects",
+        variant: "destructive",
+      })
+    } finally {
+      setIsFetching(false)
+    }
+  }
+
 
   const formatWorkTimes = (workTimes: SportObject['workTimes']) => {
     return workTimes.map((wt, index) => (
-      <p key={index}>{wt.dayOfWeek}: {wt.openFrom} - {wt.openTo}</p>
+      <p key={index}>{allDaysOfWeek.get(wt.dayOfWeek)}: {formatTime(wt.openFrom)} - {formatTime(wt.openTo)}</p>
     ))
+  }
+
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   }
 
   const formatPriceRange = (court: SportCourt) => {
@@ -46,56 +92,78 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
   }
 
   // In the handleSubmit function of SportCourtsContent:
-const handleSubmit = async (sportObjectData: Omit<SportObject, 'id'>) => {
-  setIsLoading(true)
-  try {
-    if (!editingSportObject) {
+  const handleSubmit = async (sportObjectData: Omit<SportObject, 'id'>) => {
+    setIsLoading(true)
+    try {
       // Format the data according to the API requirements
+      const formatTimeForApi = (time: string) => {
+        // If the time already includes seconds/milliseconds, return as is
+        if (time.includes('.')) return time;
+        // If the time already has seconds but no milliseconds, add them
+        if (time.includes(':00')) return `${time}.0000000`;
+        // Otherwise, add both seconds and milliseconds
+        return `${time}:00.0000000`;
+      }
+      
       const formattedObject: SportObject = {
         ...sportObjectData,
-        id: 0, // API expects 0 for new objects
+        id: editingSportObject?.id || 0,
+        organizationId: params.id,
         workTimes: sportObjectData.workTimes.map(wt => ({
-          id: 0, // API expects 0 for new workTimes
-          dayOfWeek: Number(wt.dayOfWeek), // Convert to number
-          isWorking: true, // Add required field
-          openFrom: wt.openFrom,
-          openTo: wt.openTo
+          ...wt,
+          id: wt.id || 0,
+          dayOfWeek: Number(wt.dayOfWeek),
+          isWorking: true,
+          sportsObjectId: editingSportObject?.id || 0,
+          openFrom: formatTimeForApi(wt.openFrom),
+          openTo: formatTimeForApi(wt.openTo)
         })),
         sportCourts: sportObjectData.sportCourts.map(sc => ({
           ...sc,
-          id: 0 // API expects 0 for new sportCourts
+          id: sc.id || 0
         }))
       }
-
-      console.log('Sending formatted object:', formattedObject);
-      const response = await sportsObjectService.createSportObjectDetailed(formattedObject, params.id)
-      
-      if (response) {
-        toast({
-          title: "Success",
-          description: "Sportski objekt uspješno dodan",
-        })
-        setSportObjects(prev => [...prev, formattedObject])
-        toggleAddOrEdit()
+  
+      let response;
+      if (editingSportObject) {
+        // Update existing sport object
+        console.log("update object:", formattedObject);
+        response = await sportsObjectService.updateSportObjectDetailed(formattedObject, params.id)
+        if (response) {
+          toast({
+            title: "Success",
+            description: "Sportski objekt uspješno ažuriran",
+          })
+          // Update the local state by replacing the edited object
+          setSportObjects(prev => prev.map(obj => 
+            obj.id === editingSportObject.id ? formattedObject : obj
+          ))
+        }
+      } else {
+        // Create new sport object
+        response = await sportsObjectService.createSportObjectDetailed(formattedObject, params.id)
+        if (response) {
+          toast({
+            title: "Success",
+            description: "Sportski objekt uspješno dodan",
+          })
+          setSportObjects(prev => [...prev, formattedObject])
+        }
       }
-    } else {
-      // Handle editing case later
-      setSportObjects(sportObjects.map(obj =>
-        obj.id === editingSportObject.id ? { ...sportObjectData, id: editingSportObject.id } : obj
-      ))
-      toggleAddOrEdit()
+      
+      toggleAddOrEdit() // Close the form
+      await fetchSportObjects() // Refresh the list to get updated data from server
+    } catch (error) {
+      console.error('Error saving sport object:', error)
+      toast({
+        title: "Error",
+        description: `Došlo je do greške prilikom ${editingSportObject ? 'ažuriranja' : 'dodavanja'} sportskog objekta`,
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
-  } catch (error) {
-    console.error('Error creating sport object:', error)
-    toast({
-      title: "Error",
-      description: "Došlo je do greške prilikom dodavanja sportskog objekta",
-      variant: "destructive",
-    })
-  } finally {
-    setIsLoading(false)
   }
-}
 
   return (
     <div className="container mx-auto p-4 space-y-4">
@@ -142,23 +210,32 @@ const handleSubmit = async (sportObjectData: Omit<SportObject, 'id'>) => {
                   {formatWorkTimes(object.workTimes)}
                 </div>
               </CardContent>
+              
+              
+              
+              
               <CardFooter className="flex-col items-start">
-                <h3 className="font-semibold mb-2">Dostupni tereni:</h3>
-                <ul className="space-y-2 w-full">
-                  {object.sportCourts.map((court) => (
-                    <li key={court.id} className="flex justify-between items-center">
-                      <span>{court.name} ({court.availableCourts}x)</span>
-                      <div className="text-sm">
-                        <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full mr-2">
-                          {court.sport}
-                        </span>
-                        <span className="border border-gray-300 text-gray-600 px-2 py-1 rounded-full">
-                          {formatPriceRange(court)}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                {object.sportCourts.length > 0 ? (
+                  <>
+                    <h3 className="font-semibold mb-2">Dostupni tereni:</h3>
+                    <ul className="space-y-2 w-full">
+                      {object.sportCourts.map((court) => (
+                        <li key={court.id} className="flex justify-between items-center">
+                          <span>{court.name} ({court.availableCourts}x)</span>
+                          <div className="text-sm">
+                            <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full mr-2">
+                              {court.sport}
+                            </span>
+                            <span className="border border-gray-300 text-gray-600 px-2 py-1 rounded-full">
+                              {formatPriceRange(court)}
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+                
                 <div className="flex justify-end space-x-2 mt-4 w-full">
                   <Button 
                     variant="outline" 
