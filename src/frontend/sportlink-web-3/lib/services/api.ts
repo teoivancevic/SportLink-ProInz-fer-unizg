@@ -39,6 +39,11 @@ import {
   Tournament
 } from '@/types/tournaments'
 
+import {
+  getTrainingGroupsResponse,
+  TrainingGroup
+} from '@/types/training-groups'
+
 import { Sport, getSportsResponse } from '@/types/sport'
 
 type _ApiResponse<T> = {
@@ -241,5 +246,19 @@ export const tournamentService = {
 export const SportService  = {
   getSports: () =>
     ApiClient.get<getSportsResponse>(`/api/Sport`)
+}
+
+export const trainingGroupService = {
+  getTrainingGroups: (organisationId: number) =>
+    ApiClient.get<getTrainingGroupsResponse>(`/api/TrainingGroup/organization/${organisationId}`),
+
+  createTrainingGroup: (group: TrainingGroup, orgId: number) => 
+    ApiClient.post<boolean>(`/api/TrainingGroup?id=${orgId}`, group),
+
+  updateTrainingGroup: (group: TrainingGroup, idGroup: number) => 
+    ApiClient.put<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`, group),
+
+  deleteTrainingGroup: (idGroup: number) =>
+    ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
 }
 

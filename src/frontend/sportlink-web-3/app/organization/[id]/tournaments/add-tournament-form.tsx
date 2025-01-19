@@ -67,7 +67,7 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData, load
         const { name, value } = e.target;
         setFormData(prevData => ({
             ...prevData,
-            [name]: name === "entryFee" || name === "organizationId" ? Number(value) : value, // Convert to number if necessary
+            [name]: name === "entryFee" || name === "organizationId" ? Number(value) : value, 
         }));
     };
     

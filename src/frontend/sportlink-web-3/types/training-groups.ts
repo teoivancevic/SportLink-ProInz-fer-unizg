@@ -6,12 +6,20 @@ export interface TrainingGroup {
     sex: 'Male' | 'Female' | 'Any'
     monthlyPrice: number
     description: string
-    sport: string
-    schedule: {
-      day: string
+    organizationId: number
+    sportId: number
+    sportName: string
+    trainingSchedules: {
+      id: number
+      dayOfWeek: number
       startTime: string
       endTime: string
+      trainingGroupId: number
     }[]
+  }
+
+  export interface getTrainingGroupsResponse {
+    data: TrainingGroup[];
   }
   
   

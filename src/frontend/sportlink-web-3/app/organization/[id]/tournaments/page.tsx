@@ -79,25 +79,18 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
   const [isAddingTournament, setIsAddingTournament] = useState(false)
   const [competitions, setCompetitions] = useState<Tournament[]>(initialCompetitions)
   const [editingTournament, setEditingTournament] = useState<Tournament | null>(null)  
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchTournaments = async () => {
-        try {
-          setIsLoading(true)
-          setError(null)
-          const response: getTournamentsResponse = await tournamentService.getTournaments(params.id)
-          console.log(response);
-          setCompetitions(response.data)
-        } catch (error) {
-          console.error('Error fetching tournaments:', error)
-          setError('Došlo je do greške prilikom učitavanja tournamenta.')
-        } finally {
-          setIsLoading(false)
-        }
-    }
-    useEffect(() => { fetchTournaments() }, [])
+      try {
+        const response: getTournamentsResponse = await tournamentService.getTournaments(params.id)
+        console.log(response);
+        setCompetitions(response.data)
+      } catch (error) {
+        console.error('Error fetching tournaments:', error)
+      } 
+  }
+  useEffect(() => { fetchTournaments() }, [])
 
   const toggleAddTournament = () => {
     setIsAddingTournament(!isAddingTournament)
