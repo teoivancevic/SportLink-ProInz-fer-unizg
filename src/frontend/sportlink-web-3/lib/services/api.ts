@@ -40,6 +40,7 @@ import {
 } from '@/types/tournaments'
 
 import { Sport, getSportsResponse } from '@/types/sport'
+import { CreateSportsObjectRequest, SportObject } from '@/types/sport-courtes'
 
 type _ApiResponse<T> = {
   data: T;
@@ -243,3 +244,18 @@ export const SportService  = {
     ApiClient.get<getSportsResponse>(`/api/Sport`)
 }
 
+// TODO Teo, na backendu promijenit ovo da bude SportsObject controller
+export const sportsObjectService  = {
+  
+  getSportObjectDetailedById: (organizationId: number) =>
+    ApiClient.get<SportObject[]>(`/api/SportCourt/organization/${organizationId}`),
+
+  createSportObjectDetailed: (data: SportObject, organizationId: number) =>
+    ApiClient.post<boolean>(`/api/SportCourt?id=${organizationId}`, data),
+
+  updateSportObjectDetailed: (data: SportObject) => // create je org id, al tu je spobj id u queryju??
+    ApiClient.put<boolean>(`/api/SportCourt?idSportObject=${data.id}`, data),
+  
+  deleteSportObjectDetailed: (idSportObject: number) => // create je org id, al tu je spobj id u queryju??
+    ApiClient.delete<boolean>(`/api/SportCourt?idSportObject=${idSportObject}`),
+}
