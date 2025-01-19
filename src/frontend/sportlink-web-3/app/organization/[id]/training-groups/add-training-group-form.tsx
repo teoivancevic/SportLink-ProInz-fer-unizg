@@ -60,7 +60,7 @@ export function AddTrainingGroup({ loading, group, onSubmit, onCancel }: AddTrai
       name: "",
       ageFrom: 0,
       ageTo: 0,
-      sex: 'Any',
+      sex: 'Unisex',
       monthlyPrice: 0,
       description: '',
       organizationId: 0,
