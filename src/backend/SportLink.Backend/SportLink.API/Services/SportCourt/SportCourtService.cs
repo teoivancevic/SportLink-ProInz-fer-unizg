@@ -25,6 +25,7 @@ namespace SportLink.API.Services.SportCourt
         {
             var sportObjects = await _context.SportsObjects
             .Include(so => so.SportCourts)
+                .ThenInclude(sc => sc.Sport)
             .Include(so => so.WorkTimes)
             .Where(so => so.OrganizationId == id)
             .Select(so => new SportObjectDto
@@ -38,6 +39,7 @@ namespace SportLink.API.Services.SportCourt
                 {
                     Id = sc.Id,
                     SportId = sc.SportId,
+                    SportName = sc.Sport.Name,
                     AvailableCourts = sc.AvailableCourts,
                     SportsObjectId = sc.SportsObjectId,
                     MaxHourlyPrice = sc.maxHourlyPrice,
