@@ -36,7 +36,6 @@ export default function OrganizationPage({ params }: { params: { id: number } })
   const [error, setError] = useState<string | null>(null)
   const [mapImageUrl, setMapImageUrl] = useState<string | null>(null)
 
-  // Create map URL from location
   const createMapUrl = useCallback((location: string) => {
     const locationEncoded = encodeURIComponent(location)
     return `https://maps.googleapis.com/maps/api/staticmap?center=${locationEncoded}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${locationEncoded}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
@@ -120,11 +119,11 @@ export default function OrganizationPage({ params }: { params: { id: number } })
               <p><strong>Email:</strong> {orgInfo.contactEmail}</p>
               <p><strong>Telefon:</strong> {orgInfo.contactPhoneNumber}</p>
             </div>
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4" >
               <a href="#" className="text-blue-600 hover:underline">Facebook</a>
               <a href="#" className="text-blue-400 hover:underline">Twitter</a>
               <a href="#" className="text-pink-600 hover:underline">Instagram</a>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 

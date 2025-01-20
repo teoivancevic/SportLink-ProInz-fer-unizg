@@ -1,32 +1,72 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrainingGroup } from "../../../../types/training-groups"
+import { TrainingGroup } from "@/types/training-groups"
 import { Trash2Icon } from 'lucide-react'
+import { SportService } from '@/lib/services/api'
+import { getSportsResponse, Sport } from '@/types/sport'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Check, ChevronDown } from 'lucide-react'
 
 interface AddTrainingGroupProps {
   group?: TrainingGroup
   onSubmit: (group: TrainingGroup) => void
   onCancel: () => void
+  loading: boolean
 }
 
-export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroupProps) {
+const dayOfWeekMapping: Record<string, number> = {
+  Ponedjeljak: 1,
+  Utorak: 2,
+  Srijeda: 3,
+  Četvrtak: 4,
+  Petak: 5,
+  Subota: 6,
+  Nedjelja: 7,
+};
+
+export const reverseDayOfWeekMapping: Record<number, string> = {
+  1: "Ponedjeljak",
+  2: "Utorak",
+  3: "Srijeda",
+  4: "Četvrtak",
+  5: "Petak",
+  6: "Subota",
+  7: "Nedjelja",
+};
+
+export function AddTrainingGroup({ loading, group, onSubmit, onCancel }: AddTrainingGroupProps) {
+  const [sports, setSports] = useState<Sport[]>([]);
+
+  const fetchSports = async () => {
+      try {
+          const response: getSportsResponse = await SportService.getSports();
+          setSports(response.data);
+      } catch (error) {
+          console.error('Error fetching sports:', error);
+      }
+  };
+
+  useEffect(() => { fetchSports(); }, []);
+
   const [formData, setFormData] = React.useState<TrainingGroup>(
     group || {
       id: 0,
-      name: '',
+      name: "",
       ageFrom: 0,
       ageTo: 0,
-      sex: 'Any',
+      sex: 'Unisex',
       monthlyPrice: 0,
       description: '',
-      sport: '',
-      schedule: [{ day: 'Ponedjeljak', startTime: '', endTime: '' }]
+      organizationId: 0,
+      sportId: 0,
+      sportName: "",
+      trainingSchedules: []
     }
   )
 
@@ -35,18 +75,22 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleScheduleChange = (index: number, field: string, value: string) => {
-    setFormData(prev => {
-      const newSchedule = [...prev.schedule]
-      newSchedule[index] = { ...newSchedule[index], [field]: value }
-      return { ...prev, schedule: newSchedule }
-    })
-  }
+  const handleSportChange = (sportId: number) => {
+    const selectedSport = sports.find(sport => sport.id === sportId);
+    if (selectedSport) {
+        setFormData(prevData => ({
+            ...prevData,
+            sportId: selectedSport.id,
+            sportName: selectedSport.name,
+        }));
+    }
+  };
 
+  
   const handleDeleteSchedule = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      schedule: prev.schedule.filter((_, i) => i !== index)
+      trainingSchedules: prev.trainingSchedules.filter((_, i) => i !== index)
     }))
   }
 
@@ -54,6 +98,22 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
     e.preventDefault()
     onSubmit(formData)
   }
+  
+  const handleScheduleChange = (index: number, field: string, value: string) => {
+    setFormData((prev) => {
+      const newSchedule = [...prev.trainingSchedules];
+      if (field === "dayOfWeek") {
+        newSchedule[index] = { ...newSchedule[index], [field]: dayOfWeekMapping[value] };
+      } else {
+        newSchedule[index] = { ...newSchedule[index], [field]: value };
+      }
+      return { ...prev, trainingSchedules: newSchedule };
+    });
+  };
+  
+  const getDayOfWeekOptionValue = (dayOfWeek: number) => {
+    return reverseDayOfWeekMapping[dayOfWeek] || "";
+  };
 
   return (
     <Card>
@@ -67,8 +127,26 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
             <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required />
           </div>
           <div>
-            <Label htmlFor="sport">Sport</Label>
-            <Input id="sport" name="sport" value={formData.sport} onChange={handleInputChange} required />
+          <Label htmlFor="sport">Sport</Label>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                        {formData.sportName || "Odaberite sport"}
+                        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                    {sports.map((sport) => (
+                        <DropdownMenuItem
+                            key={sport.id}
+                            onSelect={() => handleSportChange(sport.id)}
+                        >
+                            {sport.name}
+                            {sport.id === formData.sportId && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="flex gap-4">
             <div className="flex-1">
@@ -90,7 +168,7 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
               className="w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
             >
-              <option value="Any">Any</option>
+              <option value="Unisex">Unisex</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
@@ -104,11 +182,11 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
             <Textarea id="description" name="description" value={formData.description} onChange={handleInputChange} required />
           </div>
            <div><Label>Termini</Label></div>
-            {formData.schedule.map((session, index) => (
+            {formData.trainingSchedules.map((session, index) => (
               <div key={index} className="flex gap-2 mt-2 items-center">
                 <select
-                  value={session.day}
-                  onChange={(e) => handleScheduleChange(index, 'day', e.target.value)}
+                  value={getDayOfWeekOptionValue(session.dayOfWeek)}
+                  onChange={(e) => handleScheduleChange(index, "dayOfWeek", e.target.value)}
                   className="w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="Ponedjeljak">Ponedjeljak</option>
@@ -121,14 +199,14 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
                 </select>
                 <Input
                   placeholder="Početak"
-                  value={session.startTime}
+                  value={session.startTime.slice(0, 5)}
                   type="time" 
                   onChange={(e) => handleScheduleChange(index, 'startTime', e.target.value)}
                   required
                 />
                 <Input
                   placeholder="Kraj"
-                  value={session.endTime}
+                  value={session.endTime.slice(0, 5)}
                   type="time" 
                   onChange={(e) => handleScheduleChange(index, 'endTime', e.target.value)}
                   required
@@ -148,7 +226,7 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
               variant="default"
               size="sm"
               className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
-              onClick={() => setFormData(prev => ({ ...prev, schedule: [...prev.schedule, { day: '', startTime: '', endTime: '' }] }))}
+              onClick={() => setFormData(prev => ({ ...prev, trainingSchedules: [...prev.trainingSchedules, { id: 0, dayOfWeek: 1, startTime: '', endTime: '', trainingGroupId: 0}] }))}
             >
               Dodaj termin
             </Button>
@@ -156,7 +234,7 @@ export function AddTrainingGroup({ group, onSubmit, onCancel }: AddTrainingGroup
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit">{group ? 'Update' : 'Submit'}</Button>
+            <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</Button>
           </div>
         </form>
       </CardContent>

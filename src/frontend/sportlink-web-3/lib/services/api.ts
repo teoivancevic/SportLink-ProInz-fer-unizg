@@ -28,15 +28,24 @@ import {
   CreateReviewRequest,
   CreateReviewResponse,
   GetReviewsResponse,
+  RespondReviewRequest,
+  RespondReviewResponse,
   ReviewDistributionResponse,
-  ReviewStatsResponse,
+  ReviewStatsResponse
 } from '@/types/review'
 
 import {
   getTournamentsResponse,
-  Tournament,
-  TournamentCreate,
+  Tournament
 } from '@/types/tournaments'
+
+import {
+  getTrainingGroupsResponse,
+  TrainingGroup
+} from '@/types/training-groups'
+
+import { getSportsResponse } from '@/types/sport'
+import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
 
 type _ApiResponse<T> = {
   data: T;
@@ -198,7 +207,7 @@ export const orgService = {
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
 
   rejectOrganization: (id: number, reason: string) => 
-    ApiClient.put(`/api/Organization/${id}/decline/`, { reason }),
+    ApiClient.put(`/api/Organization/${id}/decline/`, reason ),
 }
 
 export const reviewService = {
@@ -211,31 +220,60 @@ export const reviewService = {
   getReviewDistribution: (organisationId: number) =>
     ApiClient.get<ReviewDistributionResponse>(`/api/Review/organization/${organisationId}/distribution`),
 
-  // TODO check this
   createReview: (data: CreateReviewRequest) =>
-    ApiClient.post<CreateReviewResponse>(`/api/Review`, data, 'text'),
+    ApiClient.post<CreateReviewResponse>(`/api/Review`, data),
 
-  //TODO check this
-  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review`),
+  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review?organizationId=${organisationId}`),
 
-  //TODO check this
-  respondToReview: (organizationId: number, userId: number, response: string) =>
-    ApiClient.put(`/api/Review/respond`)
+  respondReview: (data: RespondReviewRequest) =>
+    ApiClient.put<RespondReviewResponse>(`/api/Review/respond?organizationId=${data.organizationId}&userId=${data.userId}&response=${data.response}`, data)
 }
 
 export const tournamentService = {
   getTournaments: (organisationId: number) =>
     ApiClient.get<getTournamentsResponse>(`/api/Tournament/organization/${organisationId}`),
 
-  createTournament: (tournament: TournamentCreate) =>
-    ApiClient.post<boolean>(`/api/Tournament`, tournament),
+  createTournament: (tournament: Tournament, orgId: number) => 
+    ApiClient.post<boolean>(`/api/Tournament?organizationId=${orgId}`, tournament),
 
-  updateTournament: (tournament: Tournament) =>
-    ApiClient.put<boolean>(`/api/Tournament`, tournament),
+  updateTournament: (tournament: Tournament, tournamentId: number) => 
+    ApiClient.put<boolean>(`/api/Tournament?idTournament=${tournamentId}`, tournament),
 
   deleteTournament: (tournamentId: number) =>
-    ApiClient.delete<boolean>(`/api/Tournament`),
+    ApiClient.delete<boolean>(`/api/Tournament?idTournament=${tournamentId}`),
 }
 
+export const SportService  = {
+  getSports: () =>
+    ApiClient.get<getSportsResponse>(`/api/Sport`)
+}
 
+// TODO Teo, na backendu promijenit ovo da bude SportsObject controller
+export const sportsObjectService  = {
+  
+  getSportObjectDetailedById: (organizationId: number) =>
+    ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportCourt/organization/${organizationId}`),
 
+  createSportObjectDetailed: (data: SportObject, organizationId: number) =>
+    ApiClient.post<boolean>(`/api/SportCourt?id=${organizationId}`, data),
+
+  updateSportObjectDetailed: (data: SportObject) => // create je org id, al tu je spobj id u queryju??
+    ApiClient.put<boolean>(`/api/SportCourt?idSportObject=${data.id}`, data),
+  
+  deleteSportObjectDetailed: (idSportObject: number) => // create je org id, al tu je spobj id u queryju??
+    ApiClient.delete<boolean>(`/api/SportCourt?idSportObject=${idSportObject}`),
+}
+
+export const trainingGroupService = {
+  getTrainingGroups: (organisationId: number) =>
+    ApiClient.get<getTrainingGroupsResponse>(`/api/TrainingGroup/organization/${organisationId}`),
+
+  createTrainingGroup: (group: TrainingGroup, orgId: number) => 
+    ApiClient.post<boolean>(`/api/TrainingGroup?id=${orgId}`, group),
+
+  updateTrainingGroup: (group: TrainingGroup, idGroup: number) => 
+    ApiClient.put<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`, group),
+
+  deleteTrainingGroup: (idGroup: number) =>
+    ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
+}
