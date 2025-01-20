@@ -21,13 +21,13 @@ namespace SportLink.API.Services.SportCourt
             _mapper = mapper;
         }
 
-        public async Task<List<SportObjectDto>> GetSportObjects(int id)
+        public async Task<List<SportObjectDto>> GetSportObjects(int organizationId)
         {
             var sportObjects = await _context.SportsObjects
             .Include(so => so.SportCourts)
                 .ThenInclude(sc => sc.Sport)
             .Include(so => so.WorkTimes)
-            .Where(so => so.OrganizationId == id)
+            .Where(so => so.OrganizationId == organizationId)
             .Select(so => new SportObjectDto
             {
                 Id = so.Id,
@@ -59,9 +59,9 @@ namespace SportLink.API.Services.SportCourt
             return sportObjects!;
         }
 
-        public async Task<bool> AddSportObject(int id, SportObjectDto sportObjectDto)
+        public async Task<bool> AddSportObject(int organizationId, SportObjectDto sportObjectDto)
         {
-            var org = await _context.Organizations.FindAsync(id);
+            var org = await _context.Organizations.FindAsync(organizationId);
             if (org is null)
             {
                 return false;
@@ -72,7 +72,7 @@ namespace SportLink.API.Services.SportCourt
                 Name = sportObjectDto.Name,
                 Description = sportObjectDto.Description,
                 Location = sportObjectDto.Location,
-                OrganizationId = id,
+                OrganizationId = organizationId,
             };
 
             _context.SportsObjects.Add(sportsObject);
@@ -162,7 +162,7 @@ namespace SportLink.API.Services.SportCourt
                             SportId = sc.SportId,
                             AvailableCourts = sc.AvailableCourts,
                             maxHourlyPrice = sc.MaxHourlyPrice,
-                            SportsObjectId = sc.SportsObjectId
+                            SportsObjectId = sportObject.Id
                         };
                         _context.SportCourts.Add(sportCourt);
                         await _context.SaveChangesAsync();
