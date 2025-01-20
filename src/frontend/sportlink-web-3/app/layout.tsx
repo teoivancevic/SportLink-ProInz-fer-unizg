@@ -7,6 +7,8 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbS
 import { Separator } from "@radix-ui/react-separator"
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from "@/components/auth/auth-context"
+import { ThemeProvider } from "@/components/theme-provider"
+
 
 
 function DynamicBreadcrumbs() {
@@ -52,6 +54,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+      <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
         {isAuthPage ? (
           <>
             <AuthProvider>
@@ -78,6 +86,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </SidebarProvider>
           </AuthProvider>
         )}
+                  </ThemeProvider>
+
       </body>
     </html>
   )

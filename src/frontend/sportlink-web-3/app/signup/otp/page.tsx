@@ -26,6 +26,7 @@ function OTPVerificationForm() {
   const userId = searchParams.get("id")
 
   const handleVerify = async () => {
+    console.log("User ID:", userId) 
     if (!userId) {
       toast({
         variant: "destructive",
@@ -38,12 +39,14 @@ function OTPVerificationForm() {
     setIsLoading(true)
     try {
       const otpCode = otp.join("")
+      console.log(otpCode)
       const response = await authService.verify(
         {
           userId: parseInt(userId),
           otpCode: otpCode
         }
       )
+      console.log("Response:", response);
       // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
       if ('ok' in response && response.ok && response.status === 200) {
         toast({

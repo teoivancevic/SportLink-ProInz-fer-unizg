@@ -9,17 +9,14 @@ on:
     branches: [ "dev" ]
     paths: [ "src/backend/SportLink.Backend/**" ]
   workflow_dispatch:
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     env:
       REGISTRY: acrsportlink02.azurecr.io
       ACR_NAME: acrsportlink02
       IMAGE_NAME: api
-      WEB_APP_NAME: api-sportlink-test-03
-      RESOURCE_GROUP: rg-sportlink-test-02
-      FRONTEND_REDIRECT_URL: https://webapp-sportlink-test-nextjs-03.azurewebsites.net/auth/callback
-
 
     steps:
     - name: Checkout code
@@ -40,16 +37,32 @@ jobs:
 
     - name: Test
       env:
-        ASPNETCORE_ENVIRONMENT: Production
+        ASPNETCORE_ENVIRONMENT: Development
         ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING_TEST_DB }}
         EmailSettings__AppPassword: ${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}
         Jwt__Key: ${{ secrets.JWT_KEY_TEST }}
         Google__ClientId: ${{ secrets.GOOGLE_CLIENTID }}
         Google__ClientSecret: ${{ secrets.GOOGLE_CLIENTSECRET }}
-        ExternalLogin__FrontendRedirectUrl: ${{ env.FRONTEND_REDIRECT_URL }}
+        ExternalLogin__FrontendRedirectUrl: https://webapp-sportlink-test-nextjs-03.azurewebsites.net/auth/callback
       run: dotnet test --no-build --verbosity normal
       working-directory: ./src/backend/SportLink.Backend
 
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' || github.event.pull_request.merged
+    env:
+      REGISTRY: acrsportlink02.azurecr.io
+      ACR_NAME: acrsportlink02
+      IMAGE_NAME: api
+      WEB_APP_NAME: api-sportlink-test-03
+      RESOURCE_GROUP: rg-sportlink-test-02
+      FRONTEND_REDIRECT_URL: https://webapp-sportlink-test-nextjs-03.azurewebsites.net/auth/callback
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
     - name: Build Docker image
       run: |
         docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
@@ -76,6 +89,7 @@ jobs:
     - name: Push Docker image to ACR
       run: |
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
     - name: Configure App Settings
       run: |
         az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.WEB_APP_NAME }} --settings \
@@ -87,6 +101,7 @@ jobs:
           Google__ClientId="${{ secrets.GOOGLE_CLIENTID }}" \
           Google__ClientSecret="${{ secrets.GOOGLE_CLIENTSECRET }}" \
           ExternalLogin__FrontendRedirectUrl="${{ env.FRONTEND_REDIRECT_URL }}"
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:

@@ -2,13 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Data;
+using SportLink.API.Data.Entities;
 using SportLink.API.Services.Email;
+using SportLink.API.Services.Review;
+using SportLink.API.Services.SportCourt;
+using SportLink.API.Services.Tournament;
+using SportLink.API.Services.TrainingGroup;
 using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
@@ -20,12 +27,22 @@ namespace SportLink.API.Services.Organization
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailService _emailService;
-        public OrganizationService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IEmailService emailService)
+        private readonly IReviewService _reviewService;
+        private readonly ISportCourtService _sportCourtService;
+        private readonly ITrainingGroupService _trainingGroupService;
+        private readonly ITournamentService _tournamentService;
+        public OrganizationService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor,
+                    IEmailService emailService, IReviewService reviewService, ISportCourtService sportCourtService,
+                    ITrainingGroupService trainingGroupService, ITournamentService tournamentService)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _emailService = emailService;
+            _reviewService = reviewService;
+            _sportCourtService = sportCourtService;
+            _trainingGroupService = trainingGroupService;
+            _tournamentService = tournamentService;
         }
 
         public async Task<ActionResult<OrganizationDto>> CreateOrganization(OrganizationDto organizationDto)
@@ -61,12 +78,42 @@ namespace SportLink.API.Services.Organization
             }
         }
 
-        public async Task<OrganizationDto> GetSingleOrganization(int id)
+        public async Task<OrganizationDetailedDto> GetSingleOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
             if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
             {
-                return _mapper.Map<OrganizationDto>(organization);
+                var (AverageRating, ReviewCount) = await _reviewService.GetOrganizationReviewStats(id);
+                var rating = AverageRating;
+                var profile = await _context.Organizations
+                            .Include(x => x.SocialNetworks)
+                            .Where(x => x.Id == id)
+                            .Select(x => new OrganizationDetailedDto
+                            {
+                                Id = x.Id,
+                                Name = x.Name,
+                                Description = x.Description,
+                                ContactEmail = x.ContactEmail,
+                                ContactPhoneNumber = x.ContactPhoneNumber,
+                                Location = x.Location,
+                                Owner = new UserDto
+                                {
+                                    Id = x.Owner.Id,
+                                    FirstName = x.Owner.FirstName,
+                                    LastName = x.Owner.LastName
+,
+                                    Email = x.Owner.Email
+                                },
+                                Rating = rating,
+                                SocialNetworks = x.SocialNetworks.Select(s => new SocialNetworkDto
+                                {
+                                    Type = s.Type,
+                                    Link = s.Link,
+                                    Username = s.Username,
+                                    OrganizationId = s.OrganizationId
+                                }).ToList()
+                            }).FirstOrDefaultAsync();
+                return profile!;
             }
             else
             {
@@ -98,7 +145,7 @@ namespace SportLink.API.Services.Organization
         public async Task<bool> VerifyOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
-            var organizationOwner = await _context.Users.FindAsync(organization?.OwnerId);
+            var organizationOwner = await _context.Users.FindAsync(organization?.Owner.Id);
             if (organizationOwner is not null && organization?.VerificationStatus == VerificationStatusEnum.Unverified)
             {
                 organizationOwner.RoleId = (int)RolesEnum.OrganizationOwner;
@@ -128,7 +175,7 @@ namespace SportLink.API.Services.Organization
                 organization.RejectionResponse = reason;
                 var orgDto = _mapper.Map<OrganizationDto>(organization);
 
-                await _emailService.SendRejectionEmailAsync(orgDto, reason, organizationOwner.Email); 
+                await _emailService.SendRejectionEmailAsync(orgDto, reason, organizationOwner.Email);
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -136,6 +183,75 @@ namespace SportLink.API.Services.Organization
             {
                 return false;
             }
+        }
+
+        // ---------------------- Organization's Profile ---------------------- //
+
+        public async Task<ActionResult<OrganizationDetailedDto>> UpdateProfile(int id, OrganizationDetailedDto organizationDetailedDto)
+        {
+            var organization = await _context.Organizations.FindAsync(id);
+            var existingSocialNetworks = await _context.SocialNetworks.Where(x => x.OrganizationId == id).ToListAsync();
+            if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
+            {
+                organization.Name = organizationDetailedDto.Name ?? organization.Name;
+                organization.Description = organizationDetailedDto.Description ?? organization.Description;
+                organization.ContactEmail = organizationDetailedDto.ContactEmail ?? organization.ContactEmail;
+                organization.ContactPhoneNumber = organizationDetailedDto.ContactPhoneNumber ?? organization.ContactPhoneNumber;
+                organization.Location = organizationDetailedDto.Location ?? organization.Location;
+                List<SocialNetwork> updatedSocialNetworks = existingSocialNetworks;
+                foreach (var sn in organizationDetailedDto.SocialNetworks)
+                {
+                    var existing = updatedSocialNetworks.FirstOrDefault(x => x.Type == sn.Type);
+                    if (existing is null)
+                    {
+                        updatedSocialNetworks.Add(new SocialNetwork
+                        {
+                            Type = sn.Type,
+                            Link = sn.Link,
+                            Username = sn.Username,
+                            OrganizationId = id
+                        });
+                    }
+                    else if (existing is not null && (existing.Link != sn.Link || existing.Username != sn.Username))
+                    {
+                        existing.Link = sn.Link;
+                        existing.Username = sn.Username;
+                    }
+                }
+
+                for (int i = updatedSocialNetworks.Count - 1; i >= 0; i--)
+                {
+                    var sn = updatedSocialNetworks[i];
+                    var matching = organizationDetailedDto.SocialNetworks?.FirstOrDefault(x => x.Type == sn.Type);
+                    if (matching is null)
+                    {
+                        updatedSocialNetworks.RemoveAt(i);
+                    }
+                }
+
+                organization.SocialNetworks = updatedSocialNetworks;
+                await _context.SaveChangesAsync();
+
+                return new OkObjectResult(organizationDetailedDto);
+            }
+            return null!;
+        }
+
+        public async Task<bool> DeleteOrganization(int id)
+        {
+            var organization = await _context.Organizations.FindAsync(id);
+            if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
+            {
+                _context.Organizations.Remove(organization);
+                _context.SocialNetworks.RemoveRange(_context.SocialNetworks.Where(x => x.OrganizationId == id));
+                await _reviewService.DeleteReview(id);
+                await _tournamentService.DeleteTournament(id);
+                await _trainingGroupService.DeleteTrainingGroup(id);
+                await _sportCourtService.DeleteSportObject(id);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }

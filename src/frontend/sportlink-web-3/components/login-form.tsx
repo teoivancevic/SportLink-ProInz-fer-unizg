@@ -87,9 +87,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Prijavi se</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Unesi podatke svog SportLink računa
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -100,7 +100,7 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value)
@@ -111,18 +111,20 @@ export function LoginForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Lozinka</Label>
                 </div>
                 <div className="relative">
                   <Input 
                     id="password" 
                     type={showPassword ? "text" : "password"}
+                    placeholder="Lozinka"
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value)
                       setError(null)
                     }}
                     required 
+                    className='pr-8'
                   />
                   <Button
                     type="button"
@@ -149,7 +151,7 @@ export function LoginForm({
                 className="w-full"
                 disabled={isLoading}
               >
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? "Prijava..." : "Prijavi se"}
               </Button>
               <Button 
                 type="button"
@@ -159,13 +161,13 @@ export function LoginForm({
                 disabled={isLoading}
               >
                 <FcGoogle className="mr-2" />
-                <span>Login with Google</span>
+                <span>Prijava Google računom</span>
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
+              Nemaš račun?{" "}
               <Link href="/signup" className="underline underline-offset-4">
-                Sign up
+                Registriraj se
               </Link>
             </div>
           </form>

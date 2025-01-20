@@ -235,6 +235,83 @@ namespace SportLink.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sport", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Nogomet"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Košarka"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Tenis"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Odbojka"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Stolni tenis"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Rukomet"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Badminton"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Plivanje"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Atletika"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Biciklizam"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Mali nogomet"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "Gimnastika"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "Džudo"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Hrvanje"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Hokej na travi"
+                        });
                 });
 
             modelBuilder.Entity("SportLink.API.Data.Entities.SportCourt", b =>
@@ -582,13 +659,13 @@ namespace SportLink.API.Migrations
                     b.HasOne("SportLink.API.Data.Entities.Organization", "Organization")
                         .WithMany("Reviews")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SportLink.API.Data.Entities.User", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -642,7 +719,7 @@ namespace SportLink.API.Migrations
                     b.HasOne("SportLink.API.Data.Entities.Organization", "Organization")
                         .WithMany("Tournaments")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SportLink.API.Data.Entities.Sport", "Sport")
@@ -680,7 +757,7 @@ namespace SportLink.API.Migrations
                     b.HasOne("SportLink.API.Data.Entities.TrainingGroup", "TrainingGroup")
                         .WithMany("TrainingSchedules")
                         .HasForeignKey("TrainingGroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("TrainingGroup");
