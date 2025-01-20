@@ -112,14 +112,14 @@ const data = {
   navAppAdmin: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      url: "/admin/dashboard",
       icon: LayoutDashboard,
       isActive: true,
       items: [],
     },
     {
       title: "Korisnici",
-      url: "/users",
+      url: "/admin/users",
       icon: UsersRound,
       isActive: true,
       items: [],
