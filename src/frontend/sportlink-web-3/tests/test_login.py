@@ -50,8 +50,11 @@ def test_tocanLogin(driver):
     login_button.click()
 
     WebDriverWait(driver, 10).until(
-        lambda d: d.current_url == "http://localhost:3000/"
-    )
+      EC.visibility_of_element_located((By.XPATH, "//button[@aria-expanded='false']")))
+
+    # WebDriverWait(driver, 10).until(
+    #     lambda d: d.current_url == "http://localhost:3000/"
+    # )
 
 
 def test_netocanMail(driver):
