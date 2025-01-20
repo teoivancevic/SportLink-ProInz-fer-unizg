@@ -53,7 +53,7 @@ jobs:
         Google__ClientId: ${{ secrets.GOOGLE_CLIENTID }}
         Google__ClientSecret: ${{ secrets.GOOGLE_CLIENTSECRET }}
         ExternalLogin__FrontendRedirectUrl: ${{ env.FRONTEND_REDIRECT_URL }}
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --verbosity normal
       working-directory: ./src/backend/SportLink.Backend
 
     - name: Build Docker image
@@ -90,7 +90,7 @@ jobs:
           EmailSettings__AppPassword="${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}" \
           Jwt__Key="${{ secrets.JWT_KEY_PROD }}" \
           ASPNETCORE_ENVIRONMENT="Production" \
-          WEBSITES_PORT=8080
+          WEBSITES_PORT=8080 \
           Google__ClientId="${{ secrets.GOOGLE_CLIENTID }}" \
           Google__ClientSecret="${{ secrets.GOOGLE_CLIENTSECRET }}" \
           ExternalLogin__FrontendRedirectUrl="${{ env.FRONTEND_REDIRECT_URL }}"
