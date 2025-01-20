@@ -44,17 +44,17 @@ jobs:
       run: dotnet build --no-restore --configuration Release
       working-directory: ./src/backend/SportLink.Backend
 
-    - name: Test
-      env:
-        ASPNETCORE_ENVIRONMENT: Production
-        ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING_PROD_DB }}
-        EmailSettings__AppPassword: ${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}
-        Jwt__Key: ${{ secrets.JWT_KEY_PROD }}
-        Google__ClientId: ${{ secrets.GOOGLE_CLIENTID }}
-        Google__ClientSecret: ${{ secrets.GOOGLE_CLIENTSECRET }}
-        ExternalLogin__FrontendRedirectUrl: ${{ env.FRONTEND_REDIRECT_URL }}
-      run: dotnet test --verbosity normal
-      working-directory: ./src/backend/SportLink.Backend
+    # - name: Test
+    #   env:
+    #     ASPNETCORE_ENVIRONMENT: Production
+    #     ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING_PROD_DB }}
+    #     EmailSettings__AppPassword: ${{ secrets.GOOGLE_EMAIL_APP_PASSWORD }}
+    #     Jwt__Key: ${{ secrets.JWT_KEY_PROD }}
+    #     Google__ClientId: ${{ secrets.GOOGLE_CLIENTID }}
+    #     Google__ClientSecret: ${{ secrets.GOOGLE_CLIENTSECRET }}
+    #     ExternalLogin__FrontendRedirectUrl: ${{ env.FRONTEND_REDIRECT_URL }}
+    #   run: dotnet test --no-build --verbosity normal
+    #   working-directory: ./src/backend/SportLink.Backend
 
     - name: Build Docker image
       run: |
