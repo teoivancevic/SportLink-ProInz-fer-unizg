@@ -2,5 +2,5 @@
 
 public enum ExternalUserSourceEnum
 {
-    Google
+    Google = 1
 }

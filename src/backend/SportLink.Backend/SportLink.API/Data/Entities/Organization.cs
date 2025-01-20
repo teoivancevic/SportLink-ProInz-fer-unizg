@@ -18,14 +18,14 @@ public class Organization : BaseEntity
     //public bool IsVerified { get; set; }
     public VerificationStatusEnum VerificationStatus { get; set; }
     public string? RejectionResponse { get; set; }
-    
+
     public virtual User Owner { get; set; }
-    
+
     public virtual ICollection<Review> Reviews { get; set; }
     public virtual ICollection<SocialNetwork> SocialNetworks { get; set; }
     public virtual ICollection<Sport> Sports { get; set; }
     public virtual ICollection<TrainingGroup> TrainingGroups { get; set; }
-    public virtual ICollection<CourtBooking> CourtBookings { get; set; }
+    public virtual ICollection<SportsObject> SportsObjects { get; set; }
     public virtual ICollection<Tournament> Tournaments { get; set; }
 }
 
@@ -55,19 +55,19 @@ public class OrganizationConfigurationBuilder : IEntityTypeConfiguration<Organiz
             .HasConversion(_converter);
         builder.Property(x => x.RejectionResponse)
             .IsRequired(false);
-        
+
         builder.Property(x => x.CreatedAt)
             .IsRequired();
         builder.Property(x => x.UpdatedAt)
             .IsRequired();
-        
+
         builder.HasOne(x => x.Owner)
             .WithMany(u => u.Organizations)
             .HasForeignKey(x => x.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasMany(x => x.Sports)
-            .WithMany(s => s.Organizations) 
+            .WithMany(s => s.Organizations)
             .UsingEntity<Dictionary<string, object>>(
                 "OrganizationSport", // Join table name
                 j => j.HasOne<Sport>().WithMany().HasForeignKey("SportId"),

@@ -6,6 +6,7 @@ namespace SportLink.API.Data.Entities;
 public class Tournament : BaseEntity
 {
     public int Id { get; set; }
+    public string Name { get; set; }
     public string Description { get; set; }
     public DateTime TimeFrom { get; set; }
     public DateTime TimeTo { get; set; }
@@ -26,6 +27,8 @@ public class TournamentConfigurationBuilder : IEntityTypeConfiguration<Tournamen
     {
         builder.ToTable(nameof(Tournament));
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Name)
+            .IsRequired();
         builder.Property(x => x.TimeFrom)
             .IsRequired();
         builder.Property(x => x.TimeTo)
@@ -50,6 +53,6 @@ public class TournamentConfigurationBuilder : IEntityTypeConfiguration<Tournamen
         builder.HasOne(x => x.Organization)
             .WithMany(o => o.Tournaments)
             .HasForeignKey(x => x.OrganizationId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

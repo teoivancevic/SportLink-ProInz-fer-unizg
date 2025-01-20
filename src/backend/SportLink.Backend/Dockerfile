@@ -6,6 +6,7 @@ WORKDIR /app
 COPY ["SportLink.Backend.sln", "./"]
 COPY ["SportLink.API/SportLink.API.csproj", "SportLink.API/"]
 COPY ["SportLink.Core/SportLink.Core.csproj", "SportLink.Core/"]
+COPY ["SportLink.Api.IntegrationTests/SportLink.Api.IntegrationTests.csproj", "SportLink.Api.IntegrationTests/"]
 
 # Restore dependencies
 RUN dotnet restore
@@ -25,7 +26,6 @@ COPY --from=build /app/publish .
 
 # Expose the application on port 8080
 EXPOSE 8080
-
 
 # Start the application
 ENTRYPOINT ["dotnet", "SportLink.API.dll"]
