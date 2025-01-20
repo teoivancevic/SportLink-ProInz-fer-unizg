@@ -119,11 +119,11 @@ export default function OrganizationPage({ params }: { params: { id: number } })
               <p><strong>Email:</strong> {orgInfo.contactEmail}</p>
               <p><strong>Telefon:</strong> {orgInfo.contactPhoneNumber}</p>
             </div>
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4" >
               <a href="#" className="text-blue-600 hover:underline">Facebook</a>
               <a href="#" className="text-blue-400 hover:underline">Twitter</a>
               <a href="#" className="text-pink-600 hover:underline">Instagram</a>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 

@@ -208,7 +208,7 @@ export const orgService = {
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
 
   rejectOrganization: (id: number, reason: string) => 
-    ApiClient.put(`/api/Organization/${id}/decline/`, { reason }),
+    ApiClient.put(`/api/Organization/${id}/decline/`, reason ),
 }
 
 export const reviewService = {

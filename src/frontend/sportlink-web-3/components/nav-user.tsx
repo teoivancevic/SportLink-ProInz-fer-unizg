@@ -26,6 +26,7 @@ import {
 import { UserInfo } from "./ui-custom/user-info";
 import AuthorizedElement from "./auth/authorized-element";
 import { useAuth } from "./auth/auth-context";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 export function NavUser({
   user
@@ -77,42 +78,21 @@ export function NavUser({
               
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem >
+            <DropdownMenuItem>
               <AuthorizedElement>
                 {({ userData }) => (
                   <>
                     <div className="flex aspect-square size-6 shrink-0 items-center justify-center rounded-sm border text-xs font-medium">
                       <FileUser className="size-4 shrink-0" />
                     </div>
-                    <span className="flex-1">{userData.role}</span>
+                    <span className="flex-1 ml-2">{userData.role}</span>
                   </>
                 )}
               </AuthorizedElement>
-
             </DropdownMenuItem>
-            
-            {/* <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup> */}
+            <div className="px-2 py-1.5">
+              <ThemeSwitcher />
+            </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut />

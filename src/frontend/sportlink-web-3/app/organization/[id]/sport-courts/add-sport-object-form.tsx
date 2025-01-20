@@ -131,7 +131,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
       } else {
         return {
           ...prevData,
-          sportCourts: [...prevData.sportCourts, { ...currentSportCourt, id: prevData.sportCourts.length + 1 }]
+          sportCourts: [...prevData.sportCourts, { ...currentSportCourt, id: 0}]
         };
       }
     });
