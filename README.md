@@ -1,15 +1,18 @@
 # SportLink
+
+# Opis projekta
+Ovaj projekt rezultat je timskog rada razvijenog u sklopu projektnog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu.
+
 SportLink je platforma namjenjena rekreativnim sportašima svih uzrasta za otkrivanje sportskih klubova, prijavu na natjecanja i rezervacije termina.  
+
+Sport i rekreacija jedne su od temeljnih potreba svakog čovjeka te doprinose općem zdravlju i smanjenju stresa. U današnjem užurbanom načinu života, sve je važnije imati jednostavan pristup sportskim aktivnostima kako bi se korisnicima olakšalo redovito bavljenje tjelesnom aktivnošću. Iako postoji velik broj dostupnih sportskih i rekreativnih opcija, korisnici često ostaju zbunjeni ili preopterećeni izborom, što može smanjiti njihovu motivaciju. Također, neke organizacije ostaju izgubljene među morem ostalih izbora te tako ostanu nepoznate javnosti. Zbog toga je nužno razviti aplikaciju koja će objediniti različite sportske aktivnosti na jednom mjestu, korisnicima olakšati pronalazak odgovora za vlastite interese, a organizacijama olakšati oglašavanje.
 
 # Url na aplikaciju
 
-https://webapp-sportlink-prod.azurewebsites.net/  
-Za lokalno pokretanje frontenda upute se nalaze u: src/frontend/SportLink-web.  
+https://webapp-sportlink-prod-nextjs-03.azurewebsites.net/  
+Za lokalno pokretanje frontenda upute se nalaze u: src/frontend/sportlink-web-3.  
 Za lokalno pokretanje backenda upute se nalaze u: src/backend/SportLink.Backend.  
 
-# Opis projekta
-
-Sport i rekreacija jedne su od temeljnih potreba svakog čovjeka te doprinose općem zdravlju i smanjenju stresa. U današnjem užurbanom načinu života, sve je važnije imati jednostavan pristup sportskim aktivnostima kako bi se korisnicima olakšalo redovito bavljenje tjelesnom aktivnošću. Iako postoji velik broj dostupnih sportskih i rekreativnih opcija, korisnici često ostaju zbunjeni ili preopterećeni izborom, što može smanjiti njihovu motivaciju. Također, neke organizacije ostaju izgubljene među morem ostalih izbora te tako ostanu nepoznate javnosti. Zbog toga je nužno razviti aplikaciju koja će objediniti različite sportske aktivnosti na jednom mjestu, korisnicima olakšati pronalazak odgovora za vlastite interese, a organizacijama olakšati oglašavanje.
 
 # Funkcionalni zahtjevi
 

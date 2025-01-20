@@ -170,8 +170,7 @@ export const authService = {
 
   verify: (data: VerifRequest) => 
     ApiClient.put<string>(
-      `/api/Auth/verify`,
-      data
+      `/api/Auth/verify?userId=${data.userId}&otpCode=${data.otpCode}`
     ),
 
   resendOTP: (userId: number, data: ResendOTPRequest) => 

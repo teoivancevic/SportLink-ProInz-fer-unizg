@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Services.Organization;
+using SportLink.Core.Enums;
 using SportLink.Core.Models;
 
 namespace SportLink.API.Controllers
@@ -58,9 +60,9 @@ namespace SportLink.API.Controllers
             }
         }
 
-        [HttpGet, Authorize(Policy = "jwt_policy")]
+        [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<OrganizationDto>> GetSingleOrganization(int id)
+        public async Task<ActionResult<OrganizationDetailedDto>> GetSingleOrganization(int id)
         {
             var organization = await _organizationService.GetSingleOrganization(id);
             if (organization is null)
@@ -108,6 +110,34 @@ namespace SportLink.API.Controllers
                 return BadRequest("Odbijanje nije uspjelo.");
             }
             return Ok("Organizacija uspješno odbijena.");
+        }
+
+        [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+        [Route("")]
+        public async Task<ActionResult<bool>> UpdateProfile(int id, [FromBody] OrganizationDetailedDto profile)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _organizationService.UpdateProfile(id, profile);
+                if (result is null)
+                {
+                    return BadRequest("Profil neuspješno ažuriran.");
+                }
+                return Ok(profile);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete, Authorize(Roles = "AppAdmin, OrganizationOwner", Policy = "jwt_policy")]
+        [Route("")]
+        public async Task<ActionResult<bool>> DeleteOrganization(int id)
+        {
+            var result = await _organizationService.DeleteOrganization(id);
+            if (!result)
+            {
+                return BadRequest("Brisanje nije uspjelo.");
+            }
+            return Ok("Organizacija uspješno obrisana.");
         }
     }
 }

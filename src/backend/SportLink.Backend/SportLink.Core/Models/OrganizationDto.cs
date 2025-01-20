@@ -14,6 +14,7 @@ public class OrganizationDto
     public string ContactEmail { get; set; }
     public string ContactPhoneNumber { get; set; }
     public string Location { get; set; }
+    public UserDto? Owner { get; set; }
 }
 
 public class OrganizationValidator : AbstractValidator<OrganizationDto>
