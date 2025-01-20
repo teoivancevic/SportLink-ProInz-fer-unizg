@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import NavMenu from "@/components/nav-org-profile"
-import { sportObjectsMOCK as initialSportObjects, SportObject, SportCourt } from "../../../../types/sport-courtes"
+import { SportObject, SportCourt } from "../../../../types/sport-courtes"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PlusIcon, XIcon, PencilIcon, Trash2Icon } from 'lucide-react'
@@ -11,6 +11,7 @@ import { sportsObjectService } from '@/lib/services/api'
 import { useToast } from "@/hooks/use-toast"
 import AuthorizedElement from '@/components/auth/authorized-element'
 import { UserRole } from '@/types/roles'
+import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies'
 
 const allDaysOfWeek = new Map<number, string>([
   [1, 'Ponedjeljak'],
@@ -25,7 +26,7 @@ const allDaysOfWeek = new Map<number, string>([
 export default function SportCourtsContent({ params }: { params: { id: number } }) {
   const [isAddingOrEditing, setIsAddingOrEditing] = useState(false)
   // const [sportObjects, setSportObjects] = useState<SportObject[]>(initialSportObjects)
-  const [sportObjects, setSportObjects] = useState<SportObject[]>([])
+  const [sportObjects, setSportObjects] = useState<SportObject[]>([]);
   const [editingSportObject, setEditingSportObject] = useState<SportObject | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
@@ -45,6 +46,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
     // console.log(response);
     try {
       const response = await sportsObjectService.getSportObjectDetailedById(params.id)
+      console.log("fetch sports objects response:", response);
       setSportObjects(response.data)
     } catch (error) {
       console.error('Error fetching sport objects:', error)

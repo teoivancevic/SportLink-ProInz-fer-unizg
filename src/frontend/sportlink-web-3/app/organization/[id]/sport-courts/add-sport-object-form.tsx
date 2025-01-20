@@ -18,7 +18,7 @@ interface AddSportObjectFormProps {
   isLoading?: boolean;
 }
 
-const allDaysOfWeek = {
+const allDaysOfWeek: Record<number, string> = {
   1: 'Ponedjeljak',
   2: 'Utorak',
   3: 'Srijeda',
@@ -190,7 +190,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
       className="w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {Object.entries(allDaysOfWeek)
-        .filter(([id, name]) => !formData.workTimes.some(wt => wt.dayOfWeek === id) || wt.dayOfWeek === id)
+        .filter(([id, name]) => !formData.workTimes.some(wt => wt.dayOfWeek === Number(id)) || wt.dayOfWeek === Number(id))
         .map(([id, name]) => (
           <option key={id} value={id}>{name}</option>
         ))}
@@ -225,11 +225,11 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
     className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
     onClick={() => {
       const availableId = Object.keys(allDaysOfWeek).find(
-        id => !formData.workTimes.some(wt => wt.dayOfWeek === id)
+        id => !formData.workTimes.some(wt => wt.dayOfWeek === Number(id))
       ) || '1';
       setFormData(prev => ({ 
         ...prev, 
-        workTimes: [...prev.workTimes, { dayOfWeek: availableId, openFrom: '', openTo: '' }] 
+        workTimes: [...prev.workTimes, { dayOfWeek: Number(availableId), openFrom: '', openTo: '' }] 
       }))
     }}
   >

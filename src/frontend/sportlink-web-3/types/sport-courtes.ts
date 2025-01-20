@@ -74,4 +74,9 @@ export interface WorkTime {
   //   },
   // ];
   
+
+
+  export interface getSportObjectsDetailedResponse {
+    data: SportObject[]
+}
   

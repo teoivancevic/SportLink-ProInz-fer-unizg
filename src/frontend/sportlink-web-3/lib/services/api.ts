@@ -45,7 +45,7 @@ import {
 } from '@/types/training-groups'
 
 import { getSportsResponse } from '@/types/sport'
-import { SportObject } from '@/types/sport-courtes'
+import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
 
 type _ApiResponse<T> = {
   data: T;
@@ -252,7 +252,7 @@ export const SportService  = {
 export const sportsObjectService  = {
   
   getSportObjectDetailedById: (organizationId: number) =>
-    ApiClient.get<SportObject[]>(`/api/SportCourt/organization/${organizationId}`),
+    ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportCourt/organization/${organizationId}`),
 
   createSportObjectDetailed: (data: SportObject, organizationId: number) =>
     ApiClient.post<boolean>(`/api/SportCourt?id=${organizationId}`, data),
