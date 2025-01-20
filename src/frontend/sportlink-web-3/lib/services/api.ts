@@ -23,6 +23,7 @@ import type {
   GetOrganisationInfoResponse,
   Organization
 } from '@/types/org'
+import { arrayOutputType } from 'zod'
 
 import {
   CreateReviewRequest,
@@ -46,6 +47,11 @@ import {
 
 import { getSportsResponse } from '@/types/sport'
 import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
+
+import type {
+  searchSportsObjectsResponse,
+  SportsObject
+} from '@/types/sportObject'
 
 type _ApiResponse<T> = {
   data: T;
@@ -241,6 +247,9 @@ export const tournamentService = {
 
   deleteTournament: (tournamentId: number) =>
     ApiClient.delete<boolean>(`/api/Tournament?idTournament=${tournamentId}`),
+
+  searchTournaments: (startDate: string, endDate: string, sportsTerm: string, sportIds: Array<Number>, maxPrice: number) =>
+    ApiClient.get(`/api/Tournament/search?StartDate=${startDate}&EndDate=${endDate}&SearchTerm=${sportsTerm}&SportsIds=${sportIds}&MaxPrice=${maxPrice}`)
 }
 
 export const SportService  = {
@@ -250,6 +259,8 @@ export const SportService  = {
 
 // TODO Teo, na backendu promijenit ovo da bude SportsObject controller
 export const sportsObjectService  = {
+  searchSportsObjects: (sportsTerm: string, sportIds: Array<Number>, maxPrice: number) =>
+    ApiClient.get<searchSportsObjectsResponse>(`/api/SportsObject/search?SearchTerm=${sportsTerm}&SportsIds=${sportIds}&MaxPrice=${maxPrice}`),
   
   getSportObjectDetailedById: (organizationId: number) =>
     ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportCourt/organization/${organizationId}`),
@@ -276,4 +287,8 @@ export const trainingGroupService = {
 
   deleteTrainingGroup: (idGroup: number) =>
     ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
+
+  searchTrainingGroups: (sex: Array<string>, minAge: number, maxAge:number, sportsTerm: string, sportIds: Array<Number>, maxPrice: number) =>
+    ApiClient.get(`/api/TrainingGroup/search?Sex=${sex}&MinAge=${minAge}&MaxAge=${maxAge}&SearchTerm=${sportsTerm}&SportsIds=${sportIds}&MaxPrice=${maxPrice}`)
 }
+
