@@ -201,7 +201,7 @@ export const orgService = {
     ApiClient.get<GetOrganisationInfoResponse>(`/api/Organization/${id}`),
 
   updateOrganization: (data: Organization) =>
-    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization/${data.id}/update`, data),
+    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization?id=${data.id}`, data),
 
   acceptOrganization: (id: number) => 
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
