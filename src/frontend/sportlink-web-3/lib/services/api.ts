@@ -249,7 +249,7 @@ export const tournamentService = {
     ApiClient.delete<boolean>(`/api/Tournament?idTournament=${tournamentId}`),
 
   searchTournaments: (startDate: string, endDate: string, sportsTerm: string, sportIds: Array<Number>, maxPrice: number) =>
-    ApiClient.get(`/api/Tournament/search?StartDate=${startDate}&EndDate=${endDate}&SearchTerm=${sportsTerm}&SportsIds=${sportIds}&MaxPrice=${maxPrice}`)
+    ApiClient.get<getTournamentsResponse>(`/api/Tournament/search?StartDate=${startDate}&EndDate=${endDate}&SearchTerm=${sportsTerm}&SportsIds=${sportIds}&MaxPrice=${maxPrice}`)
 }
 
 export const SportService  = {
