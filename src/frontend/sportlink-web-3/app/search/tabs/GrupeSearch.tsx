@@ -22,6 +22,7 @@ export default function GroupSearch() {
   const [maxAge, setMaxAge] = useState<number>(0)
   const [useAgeRange, setUseAgeRange] = useState(false)
   const [selectedSex, setSelectedSex] = useState<string | null>(null)
+  const [noSearchResults, setNoSearchresults] = useState(false)
 
   const [sportsList, setSportsList] = useState<Sport[]>([])
   const [selectedSports, setSelectedSports] = useState<number[]>([])
@@ -43,6 +44,7 @@ export default function GroupSearch() {
 
   const handleSearch = async () => {
     try {
+      setNoSearchresults(false)
       const searchTrainingGroupResponse = await trainingGroupService.searchTrainingGroups(
         selectedSex ? [selectedSex] : [],
         useAgeRange ? minAge : undefined,
@@ -53,6 +55,9 @@ export default function GroupSearch() {
       )
       setSearchResults(searchTrainingGroupResponse.data)
       console.log("Search successful:", searchTrainingGroupResponse.data)
+      if(searchTrainingGroupResponse.data.length === 0){
+        setNoSearchresults(true)
+      }
     } catch (error) {
       console.error("Error during search:", error)
     }
@@ -66,6 +71,7 @@ export default function GroupSearch() {
     setUseAgeRange(false)
     setSelectedSex('')
     setSelectedSports([])
+    setNoSearchresults(false)
   }
 
   const handleSportSelection = (sportId: number) => {
@@ -221,6 +227,14 @@ export default function GroupSearch() {
           </Link>
         ))}
       </div>
+      {noSearchResults &&
+            <Card className="bg-yellow-100 border border-yellow-300 mt-4">
+              <CardContent className="p-4">
+                <p className="text-center text-yellow-800">
+                  Ne postoje grupe za uneseno pretraživanje. Pokušajte ponovo s drugim filterima.
+                </p>
+              </CardContent>
+            </Card>}
     </div>
   )
 }

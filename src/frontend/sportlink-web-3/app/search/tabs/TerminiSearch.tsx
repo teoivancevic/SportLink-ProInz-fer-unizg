@@ -20,6 +20,7 @@ export default function BookingsSearch() {
   const [selectedSports, setSelectedSports] = useState<number[]>([])
   const [useMaxPrice, setUseMaxPrice] = useState(false)
   const [searchResults, setSearchResults] = useState<SportsObject[]>([])
+  const [noSearchResults, setNoSearchresults] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +39,7 @@ export default function BookingsSearch() {
 
   const handleSearch = async () => {
     try {
+      setNoSearchresults(false)
       console.log("SEARCHHH");
       console.log(searchTerm + ' ' + selectedSports)
       const searchSportsObjectsresponse = await sportsObjectService.searchSportsObjects(
@@ -46,6 +48,9 @@ export default function BookingsSearch() {
         useMaxPrice ? maxPrice : undefined
       );
       setSearchResults(searchSportsObjectsresponse.data);
+      if(searchSportsObjectsresponse.data.length === 0){
+        setNoSearchresults(true)
+      }
       console.log("Search successful:", searchSportsObjectsresponse.data);
     } catch (error) {
       console.error("Error during search:", error);
@@ -63,6 +68,7 @@ export default function BookingsSearch() {
     setMaxPrice(0)
     setUseMaxPrice(false)
     setSelectedSports([])
+    setNoSearchresults(false)
   }
 
   return (
@@ -146,7 +152,7 @@ export default function BookingsSearch() {
 
             <div className="space-y-4">
               {searchResults.map((sportsObject) => (
-                <Link href={`/organization/${sportsObject.organizationId}`} key={sportsObject.id}>
+                <Link href={`/organization/${sportsObject.organizationId}/sport-courts`} key={sportsObject.id}>
                   <Card className="cursor-pointer bg-blue-100 hover:bg-blue-200 border border-blue-300 hover:shadow-md transition-shadow my-4">
                     <CardContent className="p-4">
                       <h3 className="text-lg font-semibold">{sportsObject.name}</h3>
@@ -170,6 +176,15 @@ export default function BookingsSearch() {
                 </Link>
               ))}
             </div>
+
+            {noSearchResults &&
+            <Card className="bg-yellow-100 border border-yellow-300 mt-4">
+              <CardContent className="p-4">
+                <p className="text-center text-yellow-800">
+                  Ne postoje termini za uneseno pretraživanje. Pokušajte ponovo s drugim filterima.
+                </p>
+              </CardContent>
+            </Card>}
         </div>
     )
     }

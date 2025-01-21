@@ -21,11 +21,10 @@ const [sportsList, setSportsList] = useState<Sport[]>([])
 const [startDate, setStartDate] = useState<string>('')
 const [endDate, setEndDate] = useState<string>('')
 const [selectedSports, setSelectedSports] = useState<number[]>([])
-
 const [useDateRange, setUseDateRange] = useState(false)
 const [useMaxPrice, setUseMaxPrice] = useState(false)
-
 const [searchResults, setSearchResults] = useState<Tournament[]>([])
+const [noSearchResults, setNoSearchresults] = useState(false)
 
 useEffect(() => {
   const fetchData = async () => {
@@ -44,6 +43,7 @@ useEffect(() => {
 
 const handleSearch = async () => {
   try {
+    setNoSearchresults(false)
     console.log(startDate + ' ' + endDate + ' ' + searchTerm + ' ' + selectedSports)
     const searchTournamentsResponse = await tournamentService.
     searchTournaments(
@@ -56,6 +56,9 @@ const handleSearch = async () => {
 
     console.log("Success! Retrieved data:", searchTournamentsResponse.data);
     setSearchResults(searchTournamentsResponse.data);
+    if(searchTournamentsResponse.data.length === 0){
+      setNoSearchresults(true)
+    }
   } catch (error) {
     console.error("Error during search:", error);
   }
@@ -75,6 +78,7 @@ const clearFilters = () => {
   setSelectedSports([])
   setUseMaxPrice(false)
   setUseDateRange(false)
+  setNoSearchresults(false)
 }
 
 return (
@@ -188,7 +192,7 @@ return (
 
       <div className="space-y-4">
           {searchResults.map((tournament) => (
-          <Link href={`/organization/${tournament.organizationId}`}>
+          <Link href={`/organization/${tournament.organizationId}/tournaments`}>
             <Card className="cursor-pointer bg-blue-100 hover:bg-blue-200 border border-blue-300 hover:shadow-md transition-shadow my-4">
             <CardContent className="p-4">
               <h3 className="text-lg font-semibold">{tournament.name}</h3>
@@ -214,6 +218,14 @@ return (
           </Link>
           ))}
       </div>
+      {noSearchResults &&
+            <Card className="bg-yellow-100 border border-yellow-300 mt-4">
+              <CardContent className="p-4">
+                <p className="text-center text-yellow-800">
+                  Ne postoje natjecanja za uneseno pretraživanje. Pokušajte ponovo s drugim filterima.
+                </p>
+              </CardContent>
+            </Card>}
       </div>
   )
   }
