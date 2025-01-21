@@ -199,7 +199,11 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
               {({ userData }) => (
                <>
                {/* <p>{params.id}</p> */}
-              <Button onClick={toggleAddOrEdit} disabled={isLoading}>
+               <Button
+                  onClick={toggleAddOrEdit}
+                  disabled={isLoading}
+                  className="bg-[#228be6] hover:bg-[#1e7bbf] text-white"
+                >
                 {isAddingOrEditing ? (
                   <>
                     <XIcon className="mr-2 h-4 w-4" />

@@ -158,7 +158,10 @@ export default function EditProfilePopup({
                   <Button type="button" variant="outline" onClick={onClose}>
                     Odustani
                   </Button>
-                  <Button type="submit">
+                  <Button
+                    type="submit"
+                    className="bg-[#228be6] hover:bg-[#1c7ed6] text-white"
+                  >
                     Spremi promjene
                   </Button>
                 </div>

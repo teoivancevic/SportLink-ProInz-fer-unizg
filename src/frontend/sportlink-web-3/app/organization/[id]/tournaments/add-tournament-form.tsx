@@ -65,10 +65,21 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData, load
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: name === "entryFee" || name === "organizationId" ? Number(value) : value, 
-        }));
+        if (name === "entryFee") {
+            const numericValue = value.replace(/[^0-9]/g, ''); 
+            let sanitizedValue = numericValue.replace(/^0+/, '');
+            if (sanitizedValue === "") sanitizedValue = "0"; 
+            
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: Number(sanitizedValue), 
+            }));
+        } else {
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: name === "organizationId" ? Number(value) : value, 
+            }));
+        }
     };
     
     const handleSubmit = (e: React.FormEvent) => {
@@ -118,7 +129,7 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData, load
             
             <div>
                 <Label htmlFor="entryFee">Kotizacija (€)</Label>
-                <Input id="entryFee" type='number' name="entryFee" value={formData.entryFee} onChange={handleChange} required />
+                <Input id="entryFee" type="text" name="entryFee" value={formData.entryFee} onChange={handleChange} required />
             </div>
             
             <div>
@@ -150,7 +161,7 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData, load
             
             <div className="flex justify-end space-x-2">
                 <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</Button>
+                <Button type="submit" className="bg-[#228be6] hover:bg-[#1e7bbf] text-white" disabled={loading}>{loading ? "Submitting..." : "Submit"}</Button>
             </div>
         </form>
     );

@@ -97,12 +97,12 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
             requireOrganizationEdit = {false}
             orgOwnerUserId={params.id.toString()}>
             {(userData) => (
-              <Button 
-                onClick={() => setShowForm(true)} 
-                disabled={showForm}
-                className="bg-blue-500 hover:bg-blue-600 text-white">
-                <Plus className="mr-2 h-4 w-4" /> Dodaj grupu za trening
-              </Button>
+              <Button
+              onClick={() => setShowForm(true)}
+              disabled={showForm}
+              className={`bg-[#228be6] hover:bg-[#1c7ed6] text-white ${showForm ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <Plus className="mr-2 h-4 w-4" /> Dodaj grupu za trening
+            </Button>
             )}
           </AuthorizedElement>
       </div>

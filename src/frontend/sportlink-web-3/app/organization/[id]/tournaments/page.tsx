@@ -157,7 +157,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
             orgOwnerUserId={params.id.toString()}
           >
             {(userData) => (
-              <Button onClick={toggleAddTournament}>
+              <Button onClick={toggleAddTournament} className="bg-[#228be6] hover:bg-[#1e7bbf] text-white">
               {isAddingTournament ? (
                 <><XIcon className="mr-2 h-4 w-4" />Zatvori</>) 
                 : (<><PlusIcon className="mr-2 h-4 w-4" /> Dodaj natjecanje</>)}
