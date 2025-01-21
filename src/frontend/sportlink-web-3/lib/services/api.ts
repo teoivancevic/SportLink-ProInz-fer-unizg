@@ -46,6 +46,7 @@ import {
 
 import { getSportsResponse } from '@/types/sport'
 import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
+import { User } from '@/types'
 
 type _ApiResponse<T> = {
   data: T;
@@ -276,4 +277,9 @@ export const trainingGroupService = {
 
   deleteTrainingGroup: (idGroup: number) =>
     ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
+}
+
+export const userService ={
+  getAllUsers: () =>
+    ApiClient.get<User[]>(`/api/User`),
 }

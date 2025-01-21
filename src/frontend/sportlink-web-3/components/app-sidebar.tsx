@@ -46,23 +46,6 @@ const ORG_CACHE_TIMESTAMP_KEY = 'organizationsCacheTimestamp'
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
 const data = {
-  // organizations: [
-  //   {
-  //     name: "Acme Inc",
-  //     logo: GalleryVerticalEnd,
-  //     plan: "Enterprise",
-  //   },
-  //   {
-  //     name: "Acme Corp.",
-  //     logo: AudioWaveform,
-  //     plan: "Startup",
-  //   },
-  //   {
-  //     name: "Evil Corp.",
-  //     logo: Command,
-  //     plan: "Free",
-  //   },
-  // ],
   navMain: [
     {
       title: "Home",
