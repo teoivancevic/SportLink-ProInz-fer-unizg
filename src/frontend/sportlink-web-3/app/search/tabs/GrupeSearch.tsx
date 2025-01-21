@@ -21,7 +21,7 @@ export default function GroupSearch() {
   const [minAge, setMinAge] = useState<number>(0)
   const [maxAge, setMaxAge] = useState<number>(0)
   const [useAgeRange, setUseAgeRange] = useState(false)
-  const [selectedSex, setSelectedSex] = useState<string[]>([])
+  const [selectedSex, setSelectedSex] = useState<string | null>(null)
 
   const [sportsList, setSportsList] = useState<Sport[]>([])
   const [selectedSports, setSelectedSports] = useState<number[]>([])
@@ -44,7 +44,7 @@ export default function GroupSearch() {
   const handleSearch = async () => {
     try {
       const searchTrainingGroupResponse = await trainingGroupService.searchTrainingGroups(
-        selectedSex,
+        selectedSex ? [selectedSex] : [],
         useAgeRange ? minAge : undefined,
         useAgeRange ? maxAge : undefined,
         searchTerm,
@@ -64,12 +64,14 @@ export default function GroupSearch() {
     setMaxAge(0)
     setUseMaxPrice(false)
     setUseAgeRange(false)
-    setSelectedSex([])
+    setSelectedSex('')
     setSelectedSports([])
   }
 
   const handleSportSelection = (sportId: number) => {
-    setSelectedSports((prev) => (prev.includes(sportId) ? prev.filter((id) => id !== sportId) : [...prev, sportId]))
+    setSelectedSports(prev => 
+      prev.includes(sportId) ? prev.filter(id => id !== sportId) : [...prev, sportId]
+    )
     console.log(selectedSports)
   }
 
@@ -136,10 +138,8 @@ export default function GroupSearch() {
               {sexOptions.map((sex) => (
                 <Button
                   key={sex}
-                  variant={selectedSex.includes(sex) ? "default" : "outline"}
-                  onClick={() => {
-                    setSelectedSex((prev) => (prev.includes(sex) ? prev.filter((s) => s !== sex) : [...prev, sex]))
-                  }}
+                  variant={selectedSex === sex ? "default" : "outline"}
+                  onClick={() => setSelectedSex(selectedSex === sex ? null : sex)}
                   className="text-sm"
                 >
                   {sex === "Male" ? "Muški" : sex === "Female" ? "Ženski" : "Mješovito"}
@@ -195,8 +195,8 @@ export default function GroupSearch() {
 
       <div className="space-y-4 mt-4">
         {searchResults.map((group) => (
-          <Link href={`/organization/${group.organizationId}/training-group/${group.id}`} key={group.id}>
-            <Card className="cursor-pointer hover:bg-gray-50 border hover:shadow-md transition-shadow">
+          <Link href={`/organization/${group.organizationId}/training-groups`} key={group.id}>
+            <Card className="cursor-pointer bg-blue-100 hover:bg-blue-200 border border-blue-300 hover:shadow-md transition-shadow my-4">
               <CardContent className="p-4">
                 <h3 className="text-lg font-semibold">{group.name}</h3>
                 <p>

@@ -306,11 +306,11 @@ export const trainingGroupService = {
     ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
 
   searchTrainingGroups: (
-    sex: Array<string>,
+    sex: string[],
     minAge: number | undefined,
     maxAge: number | undefined,
     sportsTerm: string,
-    sportIds: Array<number>,
+    sportIds: number[],
     maxPrice: number | undefined,
   ) => {
     const params = new URLSearchParams()
@@ -319,7 +319,7 @@ export const trainingGroupService = {
     if (minAge !== undefined) params.append("MinAge", minAge.toString())
     if (maxAge !== undefined) params.append("MaxAge", maxAge.toString())
     if (sportsTerm) params.append("SearchTerm", sportsTerm)
-    if (sportIds.length > 0) params.append("SportIds", sportIds.join(","))
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
     if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString())
 
     return ApiClient.get<trainingGroupSearchResponse>(`/api/TrainingGroup/search?${params.toString()}`)
