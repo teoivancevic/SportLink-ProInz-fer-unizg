@@ -76,3 +76,51 @@ public class OrganizationConfigurationBuilder : IEntityTypeConfiguration<Organiz
 
     }
 }
+
+public class CopyOfOrganizationConfigurationBuilder : IEntityTypeConfiguration<Organization>
+{
+    private readonly EnumToStringConverter<VerificationStatusEnum> _converter = new EnumToStringConverter<VerificationStatusEnum>();
+    public void Configure(EntityTypeBuilder<Organization> builder)
+    {
+        builder.ToTable(nameof(Organization));
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Name)
+            .IsRequired();
+        builder.Property(x => x.Description)
+            .IsRequired();
+        builder.Property(x => x.ContactEmail)
+            .IsRequired();
+        builder.Property(x => x.ContactPhoneNumber)
+            .IsRequired();
+        builder.Property(x => x.Location)
+            .IsRequired();
+        builder.Property(x => x.OwnerId)
+            .IsRequired();
+
+        builder.Property(x => x.VerificationStatus)
+            .HasDefaultValue(VerificationStatusEnum.Unverified)
+            .IsRequired()
+            .HasConversion(_converter);
+        builder.Property(x => x.RejectionResponse)
+            .IsRequired(false);
+
+        builder.Property(x => x.CreatedAt)
+            .IsRequired();
+        builder.Property(x => x.UpdatedAt)
+            .IsRequired();
+
+        builder.HasOne(x => x.Owner)
+            .WithMany(u => u.Organizations)
+            .HasForeignKey(x => x.OwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(x => x.Sports)
+            .WithMany(s => s.Organizations)
+            .UsingEntity<Dictionary<string, object>>(
+                "OrganizationSport", // Join table name
+                j => j.HasOne<Sport>().WithMany().HasForeignKey("SportId"),
+                j => j.HasOne<Organization>().WithMany().HasForeignKey("OrganizationId")
+            );
+
+    }
+}

@@ -21,3 +21,14 @@ public class RoleConfigurationBuilder : IEntityTypeConfiguration<Role>
             .IsRequired();
     }
 }
+
+public class CopyOfRoleConfigurationBuilder : IEntityTypeConfiguration<Role>
+{
+    public void Configure(EntityTypeBuilder<Role> builder)
+    {
+        builder.ToTable(nameof(Role));
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Name)
+            .IsRequired();
+    }
+}

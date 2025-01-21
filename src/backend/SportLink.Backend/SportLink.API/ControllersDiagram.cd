@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SportLink.API.Controllers.OrganizationController">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABEAAAAEAAAAQAAAQAAAAAAAggAAAAAAAAAAoAA=</HashCode>
+      <FileName>Controllers\OrganizationController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_organizationService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Controllers.AuthController">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <AssociationLine Name="_userService" Type="SportLink.API.Services.User.IUserService" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.5" Y="2.684" />
+        <Point X="2.562" Y="2.684" />
+        <Point X="2.562" Y="3.25" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAQAAAAAAAAAAgAgAAAAAAAAAAEVAAAAABA=</HashCode>
+      <FileName>Controllers\AuthController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_authService" />
+      <Field Name="_userService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Controllers.UserController">
+    <Position X="1.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAEAAEAAAA=</HashCode>
+      <FileName>Controllers\UserController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_userService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Controllers.ReviewController">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAgAAAAAAIAAAQIAAAAABAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Controllers\ReviewController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_reviewService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Controllers.SportController">
+    <Position X="9.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\SportController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_sportService" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="SportLink.API.Services.Review.IReviewService">
+    <Position X="5.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAgAAAAAAAAAAAIAAAAABAAAAAAAAAAAABEAAAAAAAA=</HashCode>
+      <FileName>Services\Review\IReviewService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.User.IUserService">
+    <Position X="1.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAIAAAAAAAAgAAAAAAAAAAAACAAAAAAAAEAAAA=</HashCode>
+      <FileName>Services\User\IUserService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.Auth.IAuthService">
+    <Position X="3.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EkAAAIABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Auth\IAuthService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.Organization.IOrganizationService">
+    <Position X="8" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABEAAAAEAAAAQAAAQAAAAAAAggAAAAAAAAAAIAA=</HashCode>
+      <FileName>Services\Organization\IOrganizationService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.Sports.ISportService">
+    <Position X="9.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Sports\ISportService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

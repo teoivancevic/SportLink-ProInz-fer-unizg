@@ -44,3 +44,32 @@ public class SocialNetworkConfigurationBuilder : IEntityTypeConfiguration<Social
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public class CopyOfSocialNetworkConfigurationBuilder : IEntityTypeConfiguration<SocialNetwork>
+{
+    private readonly EnumToStringConverter<SocialNetworkTypeEnum> _converter = new EnumToStringConverter<SocialNetworkTypeEnum>();
+    public void Configure(EntityTypeBuilder<SocialNetwork> builder)
+    {
+        builder.ToTable(nameof(SocialNetwork));
+
+        // Composite key
+        builder.HasKey(r => new { r.Type, r.OrganizationId });
+        builder.Property(r => r.Username)
+            .IsRequired();
+        builder.Property(r => r.Link)
+            .IsRequired();
+        builder.Property(r => r.Type)
+            .HasConversion(_converter);
+
+        builder.Property(x => x.CreatedAt)
+            .IsRequired();
+        builder.Property(x => x.UpdatedAt)
+            .IsRequired();
+
+        // Relationships
+        builder.HasOne(r => r.Organization)
+            .WithMany(o => o.SocialNetworks)
+            .HasForeignKey(r => r.OrganizationId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}

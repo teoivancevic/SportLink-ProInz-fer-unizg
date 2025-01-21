@@ -25,5 +25,8 @@
         <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       </Content>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="UMLDiagrams\" />
+    </ItemGroup>
   
 </Project>
