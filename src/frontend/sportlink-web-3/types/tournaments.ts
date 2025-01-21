@@ -1,17 +1,17 @@
 export interface Tournament {
   id: number;
   name: string;
-  description: string;
   timeFrom: string;
   timeTo: string;
   entryFee: number;
   location: string;
-  organizationId: number;
+  organizationName: number;
   sportName: string;
-  sportId: number;
+  organizationId: number;
 }
 
 export interface getTournamentsResponse {
     data: Tournament[];
 }
+
   

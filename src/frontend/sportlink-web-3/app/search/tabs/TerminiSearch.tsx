@@ -17,40 +17,46 @@ export default function BookingsSearch() {
   const [searchTerm, setSearchTerm] = useState('')
   const [maxPrice, setMaxPrice] = useState<number>(0) //probaj da nije 0
   const [sportsList, setSportsList] = useState<Sport[]>([])
-  const [selectedSports, setSelectedSports] = useState<Number[]>([])
+  const [selectedSports, setSelectedSports] = useState<number[]>([])
   const [useMaxPrice, setUseMaxPrice] = useState(false)
   const [searchResults, setSearchResults] = useState<SportsObject[]>([])
 
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const [sportsListResponse] = await Promise.all([
-            SportService.getSports(),
-          ]);
-
-          setSportsList(sportsListResponse.data)
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-    
-      fetchData();
-    });
+    const fetchData = async () => {
+      try {
+        const [sportsListResponse] = await Promise.all([
+          SportService.getSports(),
+        ]);
+        setSportsList(sportsListResponse.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
 
   const handleSearch = async () => {
-      try {
-        console.log("SEARCHHH")
-        const searchSportsObjectsresponse = await sportsObjectService.searchSportsObjects(searchTerm, selectedSports, maxPrice)
-        setSearchResults(searchSportsObjectsresponse.data)
-      } catch(error){
-        console.log(error)
-      }
-  }
+    try {
+      console.log("SEARCHHH");
+      console.log(searchTerm + ' ' + selectedSports)
+      const searchSportsObjectsresponse = await sportsObjectService.searchSportsObjects(
+        searchTerm, 
+        selectedSports, 
+        useMaxPrice ? maxPrice : undefined
+      );
+      setSearchResults(searchSportsObjectsresponse.data);
+      console.log("Search successful:", searchSportsObjectsresponse.data);
+    } catch (error) {
+      console.error("Error during search:", error);
+    }
+  };
 
   const handleSportSelection = (sportId: number) => {
     setSelectedSports(prev => 
       prev.includes(sportId) ? prev.filter(id => id !== sportId) : [...prev, sportId]
     )
+    console.log(selectedSports)
   }
 
   const clearFilters = () => {
@@ -94,40 +100,40 @@ export default function BookingsSearch() {
                 </div>
 
                 <div>
-            <Label>Sportovi</Label>
-            <Select onValueChange={(value) => handleSportSelection(Number(value))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Odaberi sportove" />
-              </SelectTrigger>
-              <SelectContent>
-                {sportsList.map((sport) => (
-                  <SelectItem key={sport.id} value={sport.id.toString()}>
-                    {sport.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {selectedSports.map((sportId) => {
-                const sport = sportsList.find((s) => s.id === sportId)
-                return sport ? (
-                  <span
-                    key={sport.id}
-                    className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-                  >
-                    {sport.name}
-                    <button
-                      onClick={() => handleSportSelection(sport.id)}
-                      className="ml-1 text-blue-600 hover:text-blue-800"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ) : null
-              })}
+                <Label>Sportovi</Label>
+                <Select onValueChange={(value) => handleSportSelection(Number(value))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Odaberi sportove" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sportsList.map((sport) => (
+                      <SelectItem key={sport.id} value={sport.id.toString()}>
+                        {sport.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {selectedSports.map((sportId) => {
+                    const sport = sportsList.find((s) => s.id === sportId)
+                    return sport ? (
+                      <span
+                        key={sport.id}
+                        className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                      >
+                        {sport.name}
+                        <button
+                          onClick={() => handleSportSelection(sport.id)}
+                          className="ml-1 text-blue-600 hover:text-blue-800"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ) : null
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
             <div className="flex justify-between mb-4">
                 <Button onClick={handleSearch}>Traži</Button>

@@ -248,8 +248,17 @@ export const tournamentService = {
   deleteTournament: (tournamentId: number) =>
     ApiClient.delete<boolean>(`/api/Tournament?idTournament=${tournamentId}`),
 
-  searchTournaments: (startDate: string, endDate: string, sportsTerm: string, sportIds: Array<Number>, maxPrice: number) =>
-    ApiClient.get<getTournamentsResponse>(`/api/Tournament/search?StartDate=${startDate}&EndDate=${endDate}&SearchTerm=${sportsTerm}&SportsIds=${sportIds}&MaxPrice=${maxPrice}`)
+  searchTournaments: (startDate: string, endDate: string, sportsTerm: string, sportIds: number[], maxPrice?: number) => {
+    const params = new URLSearchParams();
+  
+    if (startDate) params.append("StartDate", startDate);
+    if (endDate) params.append("EndDate", endDate);
+    if (sportsTerm) params.append("SearchTerm", sportsTerm);
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
+  
+    return ApiClient.get<getTournamentsResponse>(`/api/Tournament/search?${params.toString()}`);
+  }
 }
 
 export const SportService  = {
@@ -259,8 +268,15 @@ export const SportService  = {
 
 // TODO Teo, na backendu promijenit ovo da bude SportsObject controller
 export const sportsObjectService  = {
-  searchSportsObjects: (sportsTerm: string, sportIds: Array<Number>, maxPrice: number) =>
-    ApiClient.get<searchSportsObjectsResponse>(`/api/SportsObject/search?SearchTerm=${sportsTerm}&SportsIds=${sportIds}&MaxPrice=${maxPrice}`),
+  searchSportsObjects: (sportsTerm: string, sportIds: number[], maxPrice?: number) => {
+    const params = new URLSearchParams();
+
+    if (sportsTerm) params.append("SearchTerm", sportsTerm);
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportsIds", id.toString()));
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
+
+    return ApiClient.get<searchSportsObjectsResponse>(`/api/SportsObject/search?${params.toString()}`);
+  },
   
   getSportObjectDetailedById: (organizationId: number) =>
     ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportCourt/organization/${organizationId}`),

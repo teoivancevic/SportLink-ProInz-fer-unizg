@@ -6,10 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { format } from "date-fns"
-import { CalendarIcon, SearchIcon, XIcon } from 'lucide-react'
+import { SearchIcon, XIcon } from 'lucide-react'
 import { Select, SelectTrigger, SelectValue, SelectItem, SelectContent } from "@/components/ui/select"
 import Link from 'next/link'
 import { Tournament } from '@/types/tournaments'
@@ -19,11 +16,11 @@ import { SportService, tournamentService } from '@/lib/services/api'
 
 export default function CompetitionSearch() {
 const [searchTerm, setSearchTerm] = useState('')
-const [maxPrice, setMaxPrice] = useState<number>(0) //probaj da nije 0
+const [maxPrice, setMaxPrice] = useState<number>(0)
 const [sportsList, setSportsList] = useState<Sport[]>([])
 const [startDate, setStartDate] = useState<string>('')
 const [endDate, setEndDate] = useState<string>('')
-const [selectedSports, setSelectedSports] = useState<Number[]>([])
+const [selectedSports, setSelectedSports] = useState<number[]>([])
 
 const [useDateRange, setUseDateRange] = useState(false)
 const [useMaxPrice, setUseMaxPrice] = useState(false)
@@ -36,33 +33,39 @@ useEffect(() => {
       const [sportsListResponse] = await Promise.all([
         SportService.getSports(),
       ]);
-
-      setSportsList(sportsListResponse.data)
+      setSportsList(sportsListResponse.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
   fetchData();
-});
+}, []);
 
 const handleSearch = async () => {
-    try {
-      const searchTournamentsResponse = await tournamentService.searchTournaments(encodeURIComponent(startDate), 
-      encodeURIComponent(endDate), 
-      encodeURIComponent(searchTerm), 
-      selectedSports, 
-      maxPrice)
-      setSearchResults(searchTournamentsResponse.data)
-    } catch(error){
-      console.log(error)
-    }
-}
+  try {
+    console.log(startDate + ' ' + endDate + ' ' + searchTerm + ' ' + selectedSports)
+    const searchTournamentsResponse = await tournamentService.
+    searchTournaments(
+      useDateRange ? startDate : '',
+      useDateRange ? endDate : '',
+      searchTerm,
+      selectedSports,
+      useMaxPrice ? maxPrice : undefined
+    );
+
+    console.log("Success! Retrieved data:", searchTournamentsResponse.data);
+    setSearchResults(searchTournamentsResponse.data);
+  } catch (error) {
+    console.error("Error during search:", error);
+  }
+};
 
 const handleSportSelection = (sportId: number) => {
   setSelectedSports(prev => 
     prev.includes(sportId) ? prev.filter(id => id !== sportId) : [...prev, sportId]
   )
+  console.log(selectedSports)
 }
 
 const clearFilters = () => {
@@ -189,7 +192,6 @@ return (
             <Card className="cursor-pointer bg-blue-100 hover:bg-blue-200 border border-blue-300 hover:shadow-md transition-shadow my-4">
             <CardContent className="p-4">
               <h3 className="text-lg font-semibold">{tournament.name}</h3>
-              <p className="text-sm text-gray-600 mt-1">{tournament.description}</p>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <p>
                   <strong>Sport:</strong> {tournament.sportName}
