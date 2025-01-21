@@ -167,17 +167,21 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
 
       </div>
       <div className={`flex ${isAddingTournament ? 'space-x-4' : ''}`}>
-      <div className={`flex flex-wrap gap-6 ${isAddingTournament ? 'w-2/3' : 'w-full'}`}>
-          {competitions.map((competition) => (
-            <CompetitionCard 
-              key={competition.id} 
-              orgId={params.id}
-              competition={competition} 
-              onEdit={handleEditTournament}
-              onDelete={handleDeleteTournament}
-              popupOpened = {isAddingTournament}
-            />
-          ))}
+        <div className={`flex flex-wrap gap-6 ${isAddingTournament ? 'w-2/3' : 'w-full'}`}>
+          {competitions.length === 0 ? (
+            <p className="text-lg text-gray-500">Nema dostupnih natjecanja unutar ove organizacije.</p>
+          ) : (
+            competitions.map((competition) => (
+              <CompetitionCard 
+                key={competition.id} 
+                orgId={params.id}
+                competition={competition} 
+                onEdit={handleEditTournament}
+                onDelete={handleDeleteTournament}
+                popupOpened={isAddingTournament}
+              />
+            ))
+          )}
         </div>
         {isAddingTournament && (
           <>

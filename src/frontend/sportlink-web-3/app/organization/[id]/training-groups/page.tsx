@@ -108,53 +108,58 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
       </div>
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow">
-          {groups.map((group) => (
-            <Card key={group.id} className="flex flex-col max-h-[400px] overflow-y-auto">
-              <CardHeader>
-                <CardTitle>{group.name}</CardTitle>
-                <p className="text-sm text-muted-foreground">{group.sportName}</p>
-              </CardHeader>
-              <CardContent className="flex-grow overflow-y-auto">
-                <p className="text-sm text-muted-foreground mb-2">{group.description}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">Dob: {group.ageFrom}-{group.ageTo}</span>
-                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">Spol: {group.sex}</span>
-                  <span className="text-sm bg-gray-100 px-2 py-1 rounded">€{group.monthlyPrice}/mjesec</span>
-                </div>
-                <div className="space-y-2">
-                  {group.trainingSchedules.map((session, index) => (
-                    <div key={index} className="flex items-center text-sm">
-                      <CalendarDays className="mr-2 h-4 w-4" />
-                      <span className="mr-2">{reverseDayOfWeekMapping[session.dayOfWeek]}:</span>
-                      <Clock className="mr-2 h-4 w-4" />
-                      <span>{session.startTime.slice(0, 5)} - {session.endTime.slice(0, 5)}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-              <AuthorizedElement 
-                roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-                requireOrganizationEdit = {false}
-                orgOwnerUserId={params.id.toString()}
-              >
-                {(userData) => (
+          {groups.length === 0 ? (
+            <div className="text-lg text-gray-500">
+              Nema dostupnih grupa za trening unutar ove organizacije.
+            </div>
+          ) : (
+            groups.map((group) => (
+              <Card key={group.id} className="flex flex-col max-h-[400px] overflow-y-auto">
+                <CardHeader>
+                  <CardTitle>{group.name}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{group.sportName}</p>
+                </CardHeader>
+                <CardContent className="flex-grow overflow-y-auto">
+                  <p className="text-sm text-muted-foreground mb-2">{group.description}</p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="text-sm bg-gray-100 px-2 py-1 rounded">Age: {group.ageFrom}-{group.ageTo}</span>
+                    <span className="text-sm bg-gray-100 px-2 py-1 rounded">Gender: {group.sex}</span>
+                    <span className="text-sm bg-gray-100 px-2 py-1 rounded">€{group.monthlyPrice}/month</span>
+                  </div>
+                  <div className="space-y-2">
+                    {group.trainingSchedules.map((session, index) => (
+                      <div key={index} className="flex items-center text-sm">
+                        <CalendarDays className="mr-2 h-4 w-4" />
+                        <span className="mr-2">{reverseDayOfWeekMapping[session.dayOfWeek]}:</span>
+                        <Clock className="mr-2 h-4 w-4" />
+                        <span>{session.startTime.slice(0, 5)} - {session.endTime.slice(0, 5)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+                <AuthorizedElement 
+                  roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+                  requireOrganizationEdit={false}
+                  orgOwnerUserId={params.id.toString()}
+                >
+                  {(userData) => (
                     <CardFooter>
-                    <div className="flex justify-end space-x-2 mt-4 w-full">
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(group)} disabled={showForm}>
-                        <PencilIcon className="h-4 w-4 mr-2" />
-                        Uredi
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDelete(group.id)} disabled={showForm}>
-                        <Trash2Icon className="h-4 w-4 mr-2" />
-                        Izbriši
-                      </Button>
-                    </div>
-                  </CardFooter>
-                )}
-              </AuthorizedElement>
-              
-            </Card>
-          ))}
+                      <div className="flex justify-end space-x-2 mt-4 w-full">
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(group)} disabled={showForm}>
+                          <PencilIcon className="h-4 w-4 mr-2" />
+                          Uredi
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleDelete(group.id)} disabled={showForm}>
+                          <Trash2Icon className="h-4 w-4 mr-2" />
+                          Izbriši
+                        </Button>
+                      </div>
+                    </CardFooter>
+                  )}
+                </AuthorizedElement>
+              </Card>
+            ))
+          )}
         </div>
         {showForm && (
           <div className="w-full lg:w-1/3 lg:min-w-[300px]">
@@ -170,3 +175,5 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
     </div>
   )
 }
+
+
