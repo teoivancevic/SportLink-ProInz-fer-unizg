@@ -6,9 +6,23 @@ import OrgList from "./OrgList"
 import { ChevronDown, ChevronRight, CheckCircle, AlertCircle, Mail } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { UserRole } from "@/types/roles"
+import { NavUser } from "./nav-user"
+import { UserInfo } from "./ui-custom/user-info"
 
 interface UserRowProps {
   user: User
+}
+
+function formatDateToGerman(dateString: string) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = date.getFullYear();
+  
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+  return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
 
 export default function UserRow({ user }: UserRowProps) {
@@ -64,7 +78,7 @@ export default function UserRow({ user }: UserRowProps) {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case "OrganizationOwner":
+      case "OrgOwner":
         return "bg-blue-100 text-blue-800"
       case "AppAdmin":
         return "bg-purple-100 text-purple-800"
@@ -80,7 +94,7 @@ export default function UserRow({ user }: UserRowProps) {
       case 3:
         return UserRole.User;
       case 2:
-        return UserRole.OrganizationOwner;
+        return "OrgOwner";
       case 1:
         return UserRole.AppAdmin;
       default:
@@ -92,26 +106,39 @@ export default function UserRow({ user }: UserRowProps) {
     <>
       <tr className="hover:bg-gray-50">
         <td className="px-6 py-4 whitespace-nowrap">
-          {user.role === "OrgOwner" && (
+          {getRoleName(user.roleId) === "OrgOwner" && (
             <button onClick={toggleExpand} className="focus:outline-none">
               {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </button>
           )}
         </td>
+        
         <td className="px-6 py-4 whitespace-nowrap">{user.id}</td>
-        <td className="px-6 py-4 whitespace-nowrap">{user.firstName}</td>
+        {/* <td className="px-6 py-4 whitespace-nowrap">{user.firstName}</td>
         <td className="px-6 py-4 whitespace-nowrap">{user.lastName}</td>
-        <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
+        <td className="px-6 py-4 whitespace-nowrap">{user.email}</td> */}
+        <td className="px-6 py-4 whitespace-nowrap">
+        <UserInfo 
+              user={{
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                avatar: ""
+              }} 
+              showAvatar={false}
+            />
+        </td>
+        
         <td className="px-6 py-4 whitespace-nowrap">
           <Badge className={`${getRoleBadgeColor(getRoleName(user.roleId))}`}>
             {getRoleName(user.roleId)}
           </Badge>
         </td>
         <td className="px-6 py-4 whitespace-nowrap">{renderLoginSource()}</td>
-        <td className="px-6 py-4 whitespace-nowrap">{user.createdAt}</td>
-        <td className="px-6 py-4 whitespace-nowrap">{user.lastLoginAt}</td>
+        <td className="px-6 py-4 whitespace-nowrap">{formatDateToGerman(user.createdAt)}</td>
+        <td className="px-6 py-4 whitespace-nowrap">{formatDateToGerman(user.lastLoginAt)}</td>
       </tr>
-      {expanded && user.role === "OrgOwner" && user.organizations && (
+      {expanded && getRoleName(user.roleId) === "OrgOwner" && user.organizations && (
         <tr>
           <td colSpan={9} className="px-6 py-4 bg-gray-50">
             <OrgList organizations={user.organizations} />
