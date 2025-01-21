@@ -43,7 +43,7 @@ namespace SportLink.API.Controllers
             {
                 var result = await _searchService.SearchAsync(searchParameters);
 
-                if (result == null || !result.Any())
+                if (result == null)
 
                 {
                     return NotFound("No training groups found matching the search criteria.");
