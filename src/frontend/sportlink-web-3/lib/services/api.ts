@@ -42,7 +42,8 @@ import {
 
 import {
   getTrainingGroupsResponse,
-  TrainingGroup
+  TrainingGroup,
+  trainingGroupSearchResponse
 } from '@/types/training-groups'
 
 import { getSportsResponse } from '@/types/sport'
@@ -272,7 +273,7 @@ export const sportsObjectService  = {
     const params = new URLSearchParams();
 
     if (sportsTerm) params.append("SearchTerm", sportsTerm);
-    if (sportIds.length) sportIds.forEach((id) => params.append("SportsIds", id.toString()));
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
     if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
 
     return ApiClient.get<searchSportsObjectsResponse>(`/api/SportsObject/search?${params.toString()}`);
@@ -304,7 +305,24 @@ export const trainingGroupService = {
   deleteTrainingGroup: (idGroup: number) =>
     ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
 
-  searchTrainingGroups: (sex: Array<string>, minAge: number, maxAge:number, sportsTerm: string, sportIds: Array<Number>, maxPrice: number) =>
-    ApiClient.get(`/api/TrainingGroup/search?Sex=${sex}&MinAge=${minAge}&MaxAge=${maxAge}&SearchTerm=${sportsTerm}&SportsIds=${sportIds}&MaxPrice=${maxPrice}`)
-}
+  searchTrainingGroups: (
+    sex: Array<string>,
+    minAge: number | undefined,
+    maxAge: number | undefined,
+    sportsTerm: string,
+    sportIds: Array<number>,
+    maxPrice: number | undefined,
+  ) => {
+    const params = new URLSearchParams()
+
+    if (sex.length > 0) params.append("Sex", sex.join(","))
+    if (minAge !== undefined) params.append("MinAge", minAge.toString())
+    if (maxAge !== undefined) params.append("MaxAge", maxAge.toString())
+    if (sportsTerm) params.append("SearchTerm", sportsTerm)
+    if (sportIds.length > 0) params.append("SportIds", sportIds.join(","))
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString())
+
+    return ApiClient.get<trainingGroupSearchResponse>(`/api/TrainingGroup/search?${params.toString()}`)
+  },
+};
 

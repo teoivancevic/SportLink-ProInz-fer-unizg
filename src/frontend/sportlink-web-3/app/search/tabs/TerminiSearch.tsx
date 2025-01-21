@@ -15,7 +15,7 @@ import { SportsObject } from '@/types/sportObject'
 
 export default function BookingsSearch() {
   const [searchTerm, setSearchTerm] = useState('')
-  const [maxPrice, setMaxPrice] = useState<number>(0) //probaj da nije 0
+  const [maxPrice, setMaxPrice] = useState<number>(0)
   const [sportsList, setSportsList] = useState<Sport[]>([])
   const [selectedSports, setSelectedSports] = useState<number[]>([])
   const [useMaxPrice, setUseMaxPrice] = useState(false)

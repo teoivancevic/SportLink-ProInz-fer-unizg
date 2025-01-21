@@ -1,57 +1,76 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarIcon, SearchIcon, XIcon } from 'lucide-react'
-import Link from 'next/link'
-
-type Group = {
-  id: number;
-  name: string;
-  price: number;
-  location: string;
-  sex: string;
-  age: number;
-  sports: string[];
-}
-
-const sportsList = [
-  "Football", "Basketball", "Tennis", "Swimming", "Athletics", "Volleyball", "Handball"
-]
+import { SearchIcon, XIcon } from "lucide-react"
+import Link from "next/link"
+import type { TrainingGroup, TrainingGroupSearchedObject } from "@/types/training-groups"
+import { SportService, trainingGroupService } from "@/lib/services/api"
+import type { Sport } from "@/types/sport"
 
 export default function GroupSearch() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [maxPrice, setMaxPrice] = useState('')
+  const sexOptions = ["Male", "Female", "Unisex"]
+  const [searchTerm, setSearchTerm] = useState("")
+  const [maxPrice, setMaxPrice] = useState<number>(0)
   const [useMaxPrice, setUseMaxPrice] = useState(false)
-  const [minAge, setMinAge] = useState('')
-  const [maxAge, setMaxAge] = useState('')
+  const [minAge, setMinAge] = useState<number>(0)
+  const [maxAge, setMaxAge] = useState<number>(0)
   const [useAgeRange, setUseAgeRange] = useState(false)
   const [selectedSex, setSelectedSex] = useState<string[]>([])
-  const [selectedSports, setSelectedSports] = useState<string[]>([])
 
-  const [searchResults, setSearchResults] = useState<Group[]>([])
+  const [sportsList, setSportsList] = useState<Sport[]>([])
+  const [selectedSports, setSelectedSports] = useState<number[]>([])
 
-  const handleSearch = () => {
-    setSearchResults([
-      { id: 1, name: 'Grupa 1', price: 100, location: 'Osijek', sex: 'Male', age: 15, sports: ['Football', 'Basketball'] },
-      { id: 2, name: 'Grupa 2', price: 150, location: 'Zagreb', sex: 'Female', age: 18, sports: ['Swimming', 'Athletics'] },
-      { id: 3, name: 'Grupa 3', price: 200, location: 'Split', sex: 'Mixed', age: 12, sports: ['Tennis', 'Volleyball'] },
-    ])
+  const [searchResults, setSearchResults] = useState<TrainingGroupSearchedObject[]>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [sportsListResponse] = await Promise.all([SportService.getSports()])
+        setSportsList(sportsListResponse.data)
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const handleSearch = async () => {
+    try {
+      const searchTrainingGroupResponse = await trainingGroupService.searchTrainingGroups(
+        selectedSex,
+        useAgeRange ? minAge : undefined,
+        useAgeRange ? maxAge : undefined,
+        searchTerm,
+        selectedSports,
+        useMaxPrice ? maxPrice : undefined,
+      )
+      setSearchResults(searchTrainingGroupResponse.data)
+      console.log("Search successful:", searchTrainingGroupResponse.data)
+    } catch (error) {
+      console.error("Error during search:", error)
+    }
   }
 
   const clearFilters = () => {
-    setMaxPrice('')
-    setMinAge('')
-    setMaxAge('')
+    setMaxPrice(0)
+    setMinAge(0)
+    setMaxAge(0)
     setUseMaxPrice(false)
     setUseAgeRange(false)
     setSelectedSex([])
     setSelectedSports([])
+  }
+
+  const handleSportSelection = (sportId: number) => {
+    setSelectedSports((prev) => (prev.includes(sportId) ? prev.filter((id) => id !== sportId) : [...prev, sportId]))
+    console.log(selectedSports)
   }
 
   return (
@@ -83,7 +102,7 @@ export default function GroupSearch() {
               type="number"
               placeholder="Najskuplja cijena"
               value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
+              onChange={(e) => setMaxPrice(Number(e.target.value))}
               disabled={!useMaxPrice}
             />
           </div>
@@ -98,14 +117,14 @@ export default function GroupSearch() {
                 type="number"
                 placeholder="Min"
                 value={minAge}
-                onChange={(e) => setMinAge(Math.max(0, parseInt(e.target.value) || 0).toString())}
+                onChange={(e) => setMinAge(Math.max(0, Number.parseInt(e.target.value) || 0))}
                 disabled={!useAgeRange}
               />
               <Input
                 type="number"
                 placeholder="Max"
                 value={maxAge}
-                onChange={(e) => setMaxAge(Math.max(0, parseInt(e.target.value) || 0).toString())}
+                onChange={(e) => setMaxAge(Math.max(0, Number.parseInt(e.target.value) || 0))}
                 disabled={!useAgeRange}
               />
             </div>
@@ -113,45 +132,54 @@ export default function GroupSearch() {
 
           <div>
             <Label>Spol</Label>
-            <Select
-              onValueChange={(value) => setSelectedSex(value === 'all' ? [] : [value])}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Odaberi spol" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Svi</SelectItem>
-                <SelectItem value="Male">Muški</SelectItem>
-                <SelectItem value="Female">Ženski</SelectItem>
-                <SelectItem value="Mixed">Mješovito</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {sexOptions.map((sex) => (
+                <Button
+                  key={sex}
+                  variant={selectedSex.includes(sex) ? "default" : "outline"}
+                  onClick={() => {
+                    setSelectedSex((prev) => (prev.includes(sex) ? prev.filter((s) => s !== sex) : [...prev, sex]))
+                  }}
+                  className="text-sm"
+                >
+                  {sex === "Male" ? "Muški" : sex === "Female" ? "Ženski" : "Mješovito"}
+                </Button>
+              ))}
+            </div>
           </div>
 
           <div>
             <Label>Sportovi</Label>
-            <Select
-              onValueChange={(value) => setSelectedSports(prev => 
-                prev.includes(value) ? prev.filter(sport => sport !== value) : [...prev, value]
-              )}
-            >
+            <Select onValueChange={(value) => handleSportSelection(Number(value))}>
               <SelectTrigger>
                 <SelectValue placeholder="Odaberi sportove" />
               </SelectTrigger>
               <SelectContent>
                 {sportsList.map((sport) => (
-                  <SelectItem key={sport} value={sport}>
-                    {sport}
+                  <SelectItem key={sport.id} value={sport.id.toString()}>
+                    {sport.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <div className="mt-2 flex flex-wrap gap-2">
-              {selectedSports.map((sport) => (
-                <span key={sport} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-                  {sport}
-                </span>
-              ))}
+              {selectedSports.map((sportId) => {
+                const sport = sportsList.find((s) => s.id === sportId)
+                return sport ? (
+                  <span
+                    key={sport.id}
+                    className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                  >
+                    {sport.name}
+                    <button
+                      onClick={() => handleSportSelection(sport.id)}
+                      className="ml-1 text-blue-600 hover:text-blue-800"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ) : null
+              })}
             </div>
           </div>
         </div>
@@ -165,17 +193,29 @@ export default function GroupSearch() {
         </div>
       </Card>
 
-      <div className="space-y-4">
+      <div className="space-y-4 mt-4">
         {searchResults.map((group) => (
-          <Link href={`/group/${group.id}`} key={group.id}>
-            <Card className="cursor-pointer bg-blue-100 hover:bg-blue-200 border border-blue-300 hover:shadow-md transition-shadow my-4">
+          <Link href={`/organization/${group.organizationId}/training-group/${group.id}`} key={group.id}>
+            <Card className="cursor-pointer hover:bg-gray-50 border hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <h3 className="text-lg font-semibold">{group.name}</h3>
-                <p>Lokacija: {group.location}</p>
-                <p>Cijena: €{group.price}</p>
-                <p>Spol: {group.sex}</p>
-                <p>Dob: {group.age}</p>
-                <p>Sportovi: {group.sports.join(', ')}</p>
+                <p>
+                  Dob: {group.ageFrom} - {group.ageTo} godina
+                </p>
+                <p>Spol: {group.sex === "Male" ? "Muški" : group.sex === "Female" ? "Ženski" : "Mješovito"}</p>
+                <p>Cijena: €{group.monthlyPrice} mjesečno</p>
+                <p>Sport: {group.sportName}</p>
+                <div className="mt-2">
+                  <h4 className="font-semibold">Raspored treninga:</h4>
+                  <ul className="list-disc list-inside">
+                    {group.trainingScheduleDtos.map((schedule) => (
+                      <li key={schedule.id}>
+                        {["Ned", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"][schedule.dayOfWeek]}:{" "}
+                        {schedule.startTime.slice(0, 5)} - {schedule.endTime.slice(0, 5)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </CardContent>
             </Card>
           </Link>
@@ -184,4 +224,5 @@ export default function GroupSearch() {
     </div>
   )
 }
+
 
