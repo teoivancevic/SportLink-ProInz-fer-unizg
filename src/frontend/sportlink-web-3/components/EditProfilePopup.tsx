@@ -50,7 +50,7 @@ export default function EditProfilePopup({
     }
   }, [isOpen])
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: Organization) => {
     onSubmit(data);
   }
 
