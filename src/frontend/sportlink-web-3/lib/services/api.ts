@@ -48,6 +48,7 @@ import {
 
 import { getSportsResponse } from '@/types/sport'
 import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
+import { getAllUsersResponse } from '@/types'
 
 import type {
   searchSportsObjectsResponse,
@@ -208,7 +209,7 @@ export const orgService = {
     ApiClient.get<GetOrganisationInfoResponse>(`/api/Organization/${id}`),
 
   updateOrganization: (data: Organization) =>
-    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization/${data.id}/update`, data),
+    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization?id=${data.id}`, data),
 
   acceptOrganization: (id: number) => 
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
@@ -305,6 +306,7 @@ export const trainingGroupService = {
   deleteTrainingGroup: (idGroup: number) =>
     ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
 
+
   searchTrainingGroups: (
     sex: string[],
     minAge: number | undefined,
@@ -324,5 +326,12 @@ export const trainingGroupService = {
 
     return ApiClient.get<trainingGroupSearchResponse>(`/api/TrainingGroup/search?${params.toString()}`)
   },
-};
+}
+
+
+export const userService ={
+  getAllUsers: () =>
+    ApiClient.get<getAllUsersResponse>(`/api/User`),
+
+}
 

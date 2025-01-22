@@ -46,23 +46,6 @@ const ORG_CACHE_TIMESTAMP_KEY = 'organizationsCacheTimestamp'
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
 const data = {
-  // organizations: [
-  //   {
-  //     name: "Acme Inc",
-  //     logo: GalleryVerticalEnd,
-  //     plan: "Enterprise",
-  //   },
-  //   {
-  //     name: "Acme Corp.",
-  //     logo: AudioWaveform,
-  //     plan: "Startup",
-  //   },
-  //   {
-  //     name: "Evil Corp.",
-  //     logo: Command,
-  //     plan: "Free",
-  //   },
-  // ],
   navMain: [
     {
       title: "Home",
@@ -112,14 +95,14 @@ const data = {
   navAppAdmin: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      url: "/admin/dashboard",
       icon: LayoutDashboard,
       isActive: true,
       items: [],
     },
     {
       title: "Korisnici",
-      url: "/users",
+      url: "/admin/users",
       icon: UsersRound,
       isActive: true,
       items: [],

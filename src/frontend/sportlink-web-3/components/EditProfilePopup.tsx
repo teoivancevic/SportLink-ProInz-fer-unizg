@@ -1,14 +1,24 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { LocationInput } from "@/components/location-input"
 import { Organization } from '@/types/org'
 import { useAuth } from './auth/auth-context'
 import { UserRole } from '@/types/roles'
 import AuthorizedElement from './auth/authorized-element'
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
+import { useForm } from 'react-hook-form'
 
 interface EditProfilePopupProps {
   isOpen: boolean
@@ -17,14 +27,17 @@ interface EditProfilePopupProps {
   initialData: Organization
 }
 
-export default function EditProfilePopup({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  initialData 
+export default function EditProfilePopup({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
 }: EditProfilePopupProps) {
-  const [formData, setFormData] = useState(initialData)
   const { userData } = useAuth()
+
+  const form = useForm({
+    defaultValues: initialData,
+  })
 
   useEffect(() => {
     if (isOpen) {
@@ -37,18 +50,8 @@ export default function EditProfilePopup({
     }
   }, [isOpen])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prevData => ({ ...prevData, [name]: value }))
-  }
-
-  const handleLocationChange = (value: string) => {
-    setFormData(prevData => ({ ...prevData, location: value }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
+  const handleSubmit = async (data: Organization) => {
+    onSubmit(data);
   }
 
   if (!isOpen) return null
@@ -63,60 +66,107 @@ export default function EditProfilePopup({
         <div className="fixed top-[-50px] left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">Uredi profil organizacije</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Ime</Label>
-                <Input
-                  id="name"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
                   name="name"
-                  value={formData.name}
-                  onChange={handleChange}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ime organizacije</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Acme Corp"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <Label htmlFor="description">Opis</Label>
-                <textarea
-                  id="description"
+                <FormField
+                  control={form.control}
                   name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-                  rows={4}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Opis</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Tell us about your organization"
+                          className="resize-none"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
+                <FormField
+                  control={form.control}
                   name="contactEmail"
-                  value={formData.contactEmail}
-                  onChange={handleChange}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="contact@acmecorp.com"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <Label htmlFor="phone">Telefon</Label>
-                <Input
-                  id="phone"
+                <FormField
+                  control={form.control}
                   name="contactPhoneNumber"
-                  value={formData.contactPhoneNumber}
-                  onChange={handleChange}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefon</FormLabel>
+                      <FormControl>
+                        <PhoneInput
+                          international
+                          defaultCountry="HR"
+                          value={field.value}
+                          onChange={(value) => {
+                            form.setValue('contactPhoneNumber', value || '')
+                          }}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <LocationInput
-                  value={formData.location}
-                  onChange={handleLocationChange}
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <LocationInput
+                          value={field.value}
+                          onChange={(value) => form.setValue('location', value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="flex justify-end space-x-4">
-                <Button type="button" variant="outline" onClick={onClose}>
-                  Odustani
-                </Button>
-                <Button type="submit">
-                  Spremi promjene
-                </Button>
-              </div>
-            </form>
+                <div className="flex justify-end space-x-4">
+                  <Button type="button" variant="outline" onClick={onClose}>
+                    Odustani
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-[#228be6] hover:bg-[#1c7ed6] text-white"
+                  >
+                    Spremi promjene
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </div>
         </div>
       )}
