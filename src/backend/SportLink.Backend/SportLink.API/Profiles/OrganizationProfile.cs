@@ -11,6 +11,8 @@ public class OrganizationProfile : Profile
         CreateMap<Organization, OrganizationDto>();
         CreateMap<OrganizationDetailedDto, Organization>();
         CreateMap<Organization, OrganizationDetailedDto>();
+        CreateMap<OrganizationForAdminDto, Organization>();
+        CreateMap<Organization, OrganizationForAdminDto>();
 
         CreateMap<TournamentDto, Tournament>();
         CreateMap<Tournament, TournamentDto>();
