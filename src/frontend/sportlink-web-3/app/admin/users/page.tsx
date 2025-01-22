@@ -80,10 +80,10 @@ export default function AdminUsersPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">App Admin - User List</h1>
-        <Button onClick={() => setIsInviteDialogOpen(true)}>
+        <h1 className="text-3xl font-bold">Admin - Korisnici</h1>
+        {/* <Button onClick={() => setIsInviteDialogOpen(true)}>
           <UserPlus className="mr-2 h-4 w-4" /> Invite User
-        </Button>
+        </Button> */}
       </div>
       
       <div className="relative mb-6">

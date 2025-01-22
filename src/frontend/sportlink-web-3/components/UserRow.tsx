@@ -22,7 +22,7 @@ function formatDateToGerman(dateString: string) {
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   
-  return `${day}.${month}.${year} ${hours}:${minutes}`;
+  return `${day}.${month}.${year}. ${hours}:${minutes}`;
 }
 
 export default function UserRow({ user }: UserRowProps) {
@@ -30,7 +30,7 @@ export default function UserRow({ user }: UserRowProps) {
 
   const toggleExpand = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (user.role === "OrgOwner") {
+    if (getRoleName(user.roleId) === "OrgOwner" || user.organizations.length > 0) {
       setExpanded(!expanded)
     }
   }
@@ -106,7 +106,7 @@ export default function UserRow({ user }: UserRowProps) {
     <>
       <tr className="hover:bg-gray-50">
         <td className="px-6 py-4 whitespace-nowrap">
-          {getRoleName(user.roleId) === "OrgOwner" && (
+          {(getRoleName(user.roleId) === "OrgOwner" || user.organizations.length > 0) && (
             <button onClick={toggleExpand} className="focus:outline-none">
               {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </button>
@@ -138,7 +138,7 @@ export default function UserRow({ user }: UserRowProps) {
         <td className="px-6 py-4 whitespace-nowrap">{formatDateToGerman(user.createdAt)}</td>
         <td className="px-6 py-4 whitespace-nowrap">{formatDateToGerman(user.lastLoginAt)}</td>
       </tr>
-      {expanded && getRoleName(user.roleId) === "OrgOwner" && user.organizations && (
+      {expanded && (getRoleName(user.roleId) === "OrgOwner" || user.organizations) && (
         <tr>
           <td colSpan={9} className="px-6 py-4 bg-gray-50">
             <OrgList organizations={user.organizations} />

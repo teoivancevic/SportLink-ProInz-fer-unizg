@@ -1,4 +1,4 @@
-interface User {
+export interface UserDetailed {
   id: number;
   firstName: string;
   lastName: string;
@@ -9,12 +9,20 @@ interface User {
   externalUserSource?: number;
   createdAt: string;
   updatedAt: string;
-  organizations: Organization[];
+  organizations: OrganizationForAdmin[];
 }
 
-interface Organization {
+export interface OrganizationForAdmin {
   id: number;
   name: string;
   location: string;
-  verificationStatus: string;
+  // jos nekih stvari, ostavio prazno
+  verificationStatus: VerificationStatusEnum;
+}
+
+export enum VerificationStatusEnum
+{
+    Unverified = 0,
+    Accepted = 1,
+    Rejected = 2
 }
