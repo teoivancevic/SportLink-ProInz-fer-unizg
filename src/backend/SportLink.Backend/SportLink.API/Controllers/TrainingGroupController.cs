@@ -58,6 +58,11 @@ namespace SportLink.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Return training groups by organization
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("organization/{id}")]
         public async Task<ActionResult<List<TrainingGroupDto>>> GetTrainingGroups(int id)
@@ -68,13 +73,15 @@ namespace SportLink.API.Controllers
                 return NotFound("Organizacija ne postoji.");
             }
             var trainingGroups = await _trainingGroupService.GetTrainingGroups(id);
-            if (trainingGroups.IsNullOrEmpty() && org is not null)
-            {
-                return NotFound("Nema formiranih grupa za trening.");
-            }
             return Ok(trainingGroups);
         }
 
+        /// <summary>
+        /// Add new training group
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="trainingGroup"></param>
+        /// <returns></returns>
         [HttpPost, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]
         public async Task<ActionResult<bool>> AddTrainingGroup(int id, [FromBody] TrainingGroupDto trainingGroup)
@@ -91,6 +98,13 @@ namespace SportLink.API.Controllers
             return Ok(trainingGroup);
         }
 
+
+        /// <summary>
+        /// Update training group
+        /// </summary>
+        /// <param name="trainingGroup"></param>
+        /// <param name="idTrainingGroup"></param>
+        /// <returns></returns>
         [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]
         public async Task<ActionResult<bool>> UpdateTrainingGroup([FromBody] TrainingGroupDto trainingGroup, int idTrainingGroup)
@@ -107,6 +121,11 @@ namespace SportLink.API.Controllers
             return Ok(trainingGroup);
         }
 
+        /// <summary>
+        /// Delete training group
+        /// </summary>
+        /// <param name="idTrainingGroup"></param>
+        /// <returns></returns>
         [HttpDelete, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]
         public async Task<ActionResult<bool>> DeleteTrainingGroup(int idTrainingGroup)

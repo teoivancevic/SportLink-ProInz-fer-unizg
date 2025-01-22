@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,12 @@ namespace SportLink.API.Services.TrainingGroup
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public TrainingGroupService(DataContext context, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public TrainingGroupService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<List<TrainingGroupDto>> GetTrainingGroups(int id)
@@ -57,8 +60,9 @@ namespace SportLink.API.Services.TrainingGroup
 
         public async Task<bool> AddTrainingGroup(int id, TrainingGroupDto trainingGroupDto)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var org = await _context.Organizations.FindAsync(id);
-            if (org is null)
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
             {
                 return false;
             }
@@ -94,6 +98,12 @@ namespace SportLink.API.Services.TrainingGroup
 
         public async Task<bool> UpdateTrainingGroup(TrainingGroupDto trainingGroup, int trainingGroupId)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var org = await _context.Organizations.FindAsync(trainingGroup.OrganizationId);
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
+            {
+                return false;
+            }
             var trainingGroupToUpdate = await _context.TrainingGroups.FindAsync(trainingGroupId);
             if (trainingGroupToUpdate is null)
             {
@@ -176,8 +186,14 @@ namespace SportLink.API.Services.TrainingGroup
 
         public async Task<bool> DeleteTrainingGroup(int trainingGroupId)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var trainingGroupToDelete = await _context.TrainingGroups.FindAsync(trainingGroupId);
             if (trainingGroupToDelete is null)
+            {
+                return false;
+            }
+            var org = await _context.Organizations.FindAsync(trainingGroupToDelete.OrganizationId);
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
             {
                 return false;
             }

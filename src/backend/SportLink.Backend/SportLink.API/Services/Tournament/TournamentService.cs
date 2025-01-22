@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -49,8 +50,9 @@ namespace SportLink.API.Services.Tournament
 
         public async Task<bool> AddTournament(TournamentDto tournamentDto, int organizationId)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var org = await _context.Organizations.FindAsync(organizationId);
-            if (org is null)
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
             {
                 return false;
             }
@@ -75,6 +77,12 @@ namespace SportLink.API.Services.Tournament
 
         public async Task<bool> UpdateTournament(TournamentDto tournament, int idTournament)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var org = await _context.Organizations.FindAsync(tournament.OrganizationId);
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
+            {
+                return false;
+            }
             var tournamentToUpdate = await _context.Tournaments.FindAsync(idTournament);
             if (tournamentToUpdate is null)
             {
@@ -93,8 +101,14 @@ namespace SportLink.API.Services.Tournament
 
         public async Task<bool> DeleteTournament(int tournamentId)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var tournamentToDelete = await _context.Tournaments.FindAsync(tournamentId);
             if (tournamentToDelete is null)
+            {
+                return false;
+            }
+            var org = await _context.Organizations.FindAsync(tournamentToDelete.OrganizationId);
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
             {
                 return false;
             }

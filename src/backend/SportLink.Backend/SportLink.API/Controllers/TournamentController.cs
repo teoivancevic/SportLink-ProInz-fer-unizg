@@ -55,6 +55,11 @@ namespace SportLink.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Return tournaments by organization
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("organization/{id}")]
         public async Task<ActionResult<List<TournamentDto>>> GetTournaments(int id)
@@ -65,13 +70,15 @@ namespace SportLink.API.Controllers
                 return NotFound("Organizacija ne postoji.");
             }
             var tournaments = await _tournamentService.GetTournaments(id);
-            if (tournaments.IsNullOrEmpty() && org is not null)
-            {
-                return NotFound("Nema formiranih turnira.");
-            }
             return Ok(tournaments);
         }
 
+        /// <summary>
+        /// Add new tournament
+        /// </summary>
+        /// <param name="tournament"></param>
+        /// <param name="organizationId"></param>
+        /// <returns></returns>
         [HttpPost, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]
         public async Task<ActionResult<bool>> AddTournament([FromBody] TournamentDto tournament, int organizationId)
@@ -88,6 +95,12 @@ namespace SportLink.API.Controllers
             return Ok(tournament);
         }
 
+        /// <summary>
+        /// Update tournament
+        /// </summary>
+        /// <param name="tournament"></param>
+        /// <param name="idTournament"></param>
+        /// <returns></returns>
         [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]
         public async Task<ActionResult<bool>> UpdateTournament([FromBody] TournamentDto tournament, int idTournament)
@@ -104,6 +117,11 @@ namespace SportLink.API.Controllers
             return Ok(tournament);
         }
 
+        /// <summary>
+        /// Delete tournament
+        /// </summary>
+        /// <param name="idTournament"></param>
+        /// <returns></returns>
         [HttpDelete, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]
         public async Task<ActionResult<bool>> DeleteTournament(int idTournament)
