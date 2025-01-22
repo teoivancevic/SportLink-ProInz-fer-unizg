@@ -111,6 +111,22 @@ public class AuthControllerTests : IClassFixture<SportLinkWebApplicationFactory>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+    
+    [Fact]
+    public async Task RegisterUser_EdgeCase_ReturnsBadRequest()
+    {
+        var registerUserDto = new RegisterUserDto
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@@example.com",
+            Password = "Test1234!"
+        };
+        
+        var response = await _client.PostAsJsonAsync("/api/auth/register", registerUserDto);
+        
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 
     [Fact]
     public async Task LoginUser_ValidCredentials_ReturnsOk()
