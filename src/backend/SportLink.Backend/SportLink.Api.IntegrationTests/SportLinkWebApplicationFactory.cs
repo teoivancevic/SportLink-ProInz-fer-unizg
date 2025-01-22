@@ -20,12 +20,13 @@
     public class SportLinkWebApplicationFactory : WebApplicationFactory<Program>
     {
         private string _dbName = $"SportLinkTestDb_{Guid.NewGuid()}";
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureTestServices(services =>
             {
                 services.RemoveAll(typeof(DbContextOptions<DataContext>));
-                
+
                 services.AddDbContext<DataContext>(options =>
                 {
                     options.UseInMemoryDatabase(_dbName).EnableSensitiveDataLogging();
@@ -33,17 +34,32 @@
 
                 services.RemoveAll(typeof(IEmailService));
                 services.AddScoped<IEmailService, NoOpEmailService>();
-                
+
                 var serviceProvider = services.BuildServiceProvider();
                 using var scope = serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                
+
                 context.Database.EnsureDeleted();
                 Utilities.InitializeDbForTests(context);
 
                 //context.Database.OpenConnection(); 
             });
-                    
+
+
+        }
+
+        public async Task ReInitializeDbForTests()
+        {
+            using (var scope = Services.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var context = scopedServices.GetRequiredService<DataContext>();
+
+                await context.Database.EnsureDeletedAsync();
+                await context.Database.EnsureCreatedAsync();
+                Utilities.ReinitializeDbForTests(context);
+            }
+
             
         }
     }

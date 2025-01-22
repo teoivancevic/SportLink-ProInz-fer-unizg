@@ -16,15 +16,18 @@ public class Utilities
             db.Users.AddRange(users);
             db.SaveChanges();
         }
-        // db.Organizations.AddRange(GetSeedingOrganizations());
-        // db.SaveChanges();
-        
+        db.Organizations.AddRange(GetSeedingOrganizations());
+        db.SaveChanges();
+        db.SportsObjects.AddRange(GetSeedingSportsObjects());
+        db.SaveChanges();
+
     }
 
     public static void ReinitializeDbForTests(DataContext db)
     {
         db.Users.RemoveRange(db.Users);
         db.Organizations.RemoveRange(db.Organizations);
+        db.SportsObjects.RemoveRange(db.SportsObjects);
         InitializeDbForTests(db);
     }
 
@@ -102,6 +105,160 @@ public class Utilities
                 Location = "City B",
                 OwnerId = 1,
                 VerificationStatus = VerificationStatusEnum.Accepted
+            }
+        };
+    }
+
+    public static List<SportsObject> GetSeedingSportsObjects()
+    {
+                return new List<SportsObject>()
+        {
+            new SportsObject
+            {
+                Name = "Central Tennis Complex",
+                Description = "Premier tennis facility with indoor and outdoor courts",
+                Location = "123 Sports Avenue, City A",
+                OrganizationId = 1,
+                SportCourts = new List<SportCourt>
+                {
+                    new SportCourt
+                    {
+                        SportId = 1, // Assuming 1 is Tennis
+                        SportsObjectId = 1,
+                        AvailableCourts = 6,
+                        minHourlyPrice = 25.00M,
+                        maxHourlyPrice = 40.00M
+                        
+                    }
+                },
+                WorkTimes = new List<WorkTime>
+                {
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Ponedjeljak,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(7, 0),
+                        OpenTo = new TimeOnly(22, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Utorak,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(7, 0),
+                        OpenTo = new TimeOnly(22, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Srijeda,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(7, 0),
+                        OpenTo = new TimeOnly(22, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Četvrtak,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(7, 0),
+                        OpenTo = new TimeOnly(22, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Petak,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(7, 0),
+                        OpenTo = new TimeOnly(22, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Subota,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(8, 0),
+                        OpenTo = new TimeOnly(20, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Nedjelja,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(8, 0),
+                        OpenTo = new TimeOnly(20, 0)
+                    }
+                }
+            },
+            new SportsObject
+            {
+                Name = "MultiSport Arena",
+                Description = "Modern sports complex featuring basketball and volleyball courts",
+                Location = "456 Athletic Drive, City B",
+                OrganizationId = 2,
+                SportCourts = new List<SportCourt>
+                {
+                    new SportCourt
+                    {
+                        SportId = 2, // Assuming 2 is Basketball
+                        AvailableCourts = 3,
+                        minHourlyPrice = 30.00M,
+                        maxHourlyPrice = 45.00M
+                    },
+                    new SportCourt
+                    {
+                        SportId = 3, // Assuming 3 is Volleyball
+                        AvailableCourts = 2,
+                        minHourlyPrice = 28.00M,
+                        maxHourlyPrice = 40.00M
+                    }
+                },
+                WorkTimes = new List<WorkTime>
+                {
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Ponedjeljak,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(6, 0),
+                        OpenTo = new TimeOnly(23, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Utorak,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(6, 0),
+                        OpenTo = new TimeOnly(23, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Srijeda,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(6, 0),
+                        OpenTo = new TimeOnly(23, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Četvrtak,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(6, 0),
+                        OpenTo = new TimeOnly(23, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Petak,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(6, 0),
+                        OpenTo = new TimeOnly(23, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Subota,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(8, 0),
+                        OpenTo = new TimeOnly(22, 0)
+                    },
+                    new WorkTime
+                    {
+                        DayOfWeek = DanUTjednuEnum.Nedjelja,
+                        isWorking = true,
+                        OpenFrom = new TimeOnly(8, 0),
+                        OpenTo = new TimeOnly(22, 0)
+                    }
+                }
             }
         };
     }
