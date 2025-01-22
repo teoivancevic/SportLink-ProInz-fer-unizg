@@ -23,20 +23,37 @@ import type {
   GetOrganisationInfoResponse,
   Organization
 } from '@/types/org'
+import { arrayOutputType } from 'zod'
 
 import {
   CreateReviewRequest,
   CreateReviewResponse,
   GetReviewsResponse,
+  RespondReviewRequest,
+  RespondReviewResponse,
   ReviewDistributionResponse,
-  ReviewStatsResponse,
+  ReviewStatsResponse
 } from '@/types/review'
 
 import {
   getTournamentsResponse,
-  Tournament,
-  TournamentCreate,
+  Tournament
 } from '@/types/tournaments'
+
+import {
+  getTrainingGroupsResponse,
+  TrainingGroup,
+  trainingGroupSearchResponse
+} from '@/types/training-groups'
+
+import { getSportsResponse } from '@/types/sport'
+import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
+import { getAllUsersResponse } from '@/types'
+
+import type {
+  searchSportsObjectsResponse,
+  SportsObject
+} from '@/types/sportObject'
 
 type _ApiResponse<T> = {
   data: T;
@@ -192,13 +209,13 @@ export const orgService = {
     ApiClient.get<GetOrganisationInfoResponse>(`/api/Organization/${id}`),
 
   updateOrganization: (data: Organization) =>
-    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization/${data.id}/update`, data),
+    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization?id=${data.id}`, data),
 
   acceptOrganization: (id: number) => 
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
 
   rejectOrganization: (id: number, reason: string) => 
-    ApiClient.put(`/api/Organization/${id}/decline/`, { reason }),
+    ApiClient.put(`/api/Organization/${id}/decline/`, reason ),
 }
 
 export const reviewService = {
@@ -211,31 +228,110 @@ export const reviewService = {
   getReviewDistribution: (organisationId: number) =>
     ApiClient.get<ReviewDistributionResponse>(`/api/Review/organization/${organisationId}/distribution`),
 
-  // TODO check this
   createReview: (data: CreateReviewRequest) =>
-    ApiClient.post<CreateReviewResponse>(`/api/Review`, data, 'text'),
+    ApiClient.post<CreateReviewResponse>(`/api/Review`, data),
 
-  //TODO check this
-  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review`),
+  deleteReview: (organisationId: number) => ApiClient.delete(`/api/Review?organizationId=${organisationId}`),
 
-  //TODO check this
-  respondToReview: (organizationId: number, userId: number, response: string) =>
-    ApiClient.put(`/api/Review/respond`)
+  respondReview: (data: RespondReviewRequest) =>
+    ApiClient.put<RespondReviewResponse>(`/api/Review/respond?organizationId=${data.organizationId}&userId=${data.userId}&response=${data.response}`, data)
 }
 
 export const tournamentService = {
   getTournaments: (organisationId: number) =>
     ApiClient.get<getTournamentsResponse>(`/api/Tournament/organization/${organisationId}`),
 
-  createTournament: (tournament: TournamentCreate) =>
-    ApiClient.post<boolean>(`/api/Tournament`, tournament),
+  createTournament: (tournament: Tournament, orgId: number) => 
+    ApiClient.post<boolean>(`/api/Tournament?organizationId=${orgId}`, tournament),
 
-  updateTournament: (tournament: Tournament) =>
-    ApiClient.put<boolean>(`/api/Tournament`, tournament),
+  updateTournament: (tournament: Tournament, tournamentId: number) => 
+    ApiClient.put<boolean>(`/api/Tournament?idTournament=${tournamentId}`, tournament),
 
   deleteTournament: (tournamentId: number) =>
-    ApiClient.delete<boolean>(`/api/Tournament`),
+    ApiClient.delete<boolean>(`/api/Tournament?idTournament=${tournamentId}`),
+
+  searchTournaments: (startDate: string, endDate: string, sportsTerm: string, sportIds: number[], maxPrice?: number) => {
+    const params = new URLSearchParams();
+  
+    if (startDate) params.append("StartDate", startDate);
+    if (endDate) params.append("EndDate", endDate);
+    if (sportsTerm) params.append("SearchTerm", sportsTerm);
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
+  
+    return ApiClient.get<getTournamentsResponse>(`/api/Tournament/search?${params.toString()}`);
+  }
+}
+
+export const SportService  = {
+  getSports: () =>
+    ApiClient.get<getSportsResponse>(`/api/Sport`)
+}
+
+// TODO Teo, na backendu promijenit ovo da bude SportsObject controller
+export const sportsObjectService  = {
+  searchSportsObjects: (sportsTerm: string, sportIds: number[], maxPrice?: number) => {
+    const params = new URLSearchParams();
+
+    if (sportsTerm) params.append("SearchTerm", sportsTerm);
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
+
+    return ApiClient.get<searchSportsObjectsResponse>(`/api/SportsObject/search?${params.toString()}`);
+  },
+  
+  getSportObjectDetailedById: (organizationId: number) =>
+    ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportCourt/organization/${organizationId}`),
+
+  createSportObjectDetailed: (data: SportObject, organizationId: number) =>
+    ApiClient.post<boolean>(`/api/SportCourt?id=${organizationId}`, data),
+
+  updateSportObjectDetailed: (data: SportObject) => // create je org id, al tu je spobj id u queryju??
+    ApiClient.put<boolean>(`/api/SportCourt?idSportObject=${data.id}`, data),
+  
+  deleteSportObjectDetailed: (idSportObject: number) => // create je org id, al tu je spobj id u queryju??
+    ApiClient.delete<boolean>(`/api/SportCourt?idSportObject=${idSportObject}`),
+}
+
+export const trainingGroupService = {
+  getTrainingGroups: (organisationId: number) =>
+    ApiClient.get<getTrainingGroupsResponse>(`/api/TrainingGroup/organization/${organisationId}`),
+
+  createTrainingGroup: (group: TrainingGroup, orgId: number) => 
+    ApiClient.post<boolean>(`/api/TrainingGroup?id=${orgId}`, group),
+
+  updateTrainingGroup: (group: TrainingGroup, idGroup: number) => 
+    ApiClient.put<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`, group),
+
+  deleteTrainingGroup: (idGroup: number) =>
+    ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
+
+
+  searchTrainingGroups: (
+    sex: string[],
+    minAge: number | undefined,
+    maxAge: number | undefined,
+    sportsTerm: string,
+    sportIds: number[],
+    maxPrice: number | undefined,
+  ) => {
+    const params = new URLSearchParams()
+
+    if (sex.length > 0) params.append("Sex", sex.join(","))
+    if (minAge !== undefined) params.append("MinAge", minAge.toString())
+    if (maxAge !== undefined) params.append("MaxAge", maxAge.toString())
+    if (sportsTerm) params.append("SearchTerm", sportsTerm)
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString())
+
+    return ApiClient.get<trainingGroupSearchResponse>(`/api/TrainingGroup/search?${params.toString()}`)
+  },
 }
 
 
+export const userService ={
+  getAllUsers: () =>
+    ApiClient.get<getAllUsersResponse>(`/api/User`),
+
+}
 

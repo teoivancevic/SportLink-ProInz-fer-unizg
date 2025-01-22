@@ -26,6 +26,7 @@ public class TournamentSearchService : ISearchService<TournamentSearchDto, Tourn
         {
             query = query.Where(t => t.Name.ToLower().Contains(parameters.SearchTerm.ToLower()) || 
                                      t.Description.ToLower().Contains(parameters.SearchTerm.ToLower()) ||
+                                     t.Location.ToLower().Contains(parameters.SearchTerm.ToLower()) || 
                                      t.Organization.Name.ToLower().Contains(parameters.SearchTerm.ToLower()));
         }
 

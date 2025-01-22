@@ -1,10 +1,12 @@
 export interface Review{
+    userId: number
     rating: number,
     description: string,
     response: string,
     userFirstName: string,
     userLastName: string,
     organizationName: string
+    organizationId: number
 };
 
 export interface GetReviewsResponse {
@@ -20,25 +22,43 @@ export interface ReviewStatsResponse {
     data: Stats
 }
 
-export interface ReviewDistributionResponse {
-    one: number,
-    two: number,
-    three: number,
-    four: number,
-    five: number,
+export interface Distribution {
+    oneStar: number,
+    twoStars: number,
+    threeStars: number,
+    fourStars: number,
+    fiveStars: number,
 }
 
-export interface CreateReviewRequest {
-    orgId: number,
-    rating: number,
-    description: string
+export interface ApiDistribution {
+    [key: number]: number;
+}
+
+export interface ReviewDistributionResponse {
+    data: ApiDistribution
 }
 
 export interface CreateReviewResponse {
-    rating: 0,
+    rating: number,
     description: string,
     response: string,
     userFirstName: string,
     userLastName: string,
     organizationName: string
+}
+
+export interface RespondReviewRequest {
+    organizationId: number, 
+    userId: number, 
+    response: string
+}
+
+export interface  RespondReviewResponse {
+    data: Review
+}
+
+export interface CreateReviewRequest {
+    organizationId: number,
+    rating: number,
+    description: string
 }

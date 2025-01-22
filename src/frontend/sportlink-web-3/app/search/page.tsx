@@ -1,15 +1,10 @@
-import { PageHeader } from "@/components/ui-custom/page-header"
+import { Suspense } from 'react'
+import SearchContent from './tabs/SearchContent'
 
-
-export default function SearchPage(){
-
-    return (
-        <PageHeader 
-            title="Pretrazivanje organizacija"
-            description="laksjhbdasd"
-        >
-      <p>content of the actual page</p>
-    </PageHeader>
-    )
-    
+export default function SearchPage() {
+  return (
+    <div className="container mx-auto p-4">
+      <SearchContent />
+    </div>
+  )
 }

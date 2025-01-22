@@ -70,6 +70,8 @@ export function OrganizationSwitcher({ organizations, isLoading }: OrganizationS
     setActiveOrganization(organization)
     localStorage.setItem(ACTIVE_ORG_KEY, organization.id.toString())
     dispatchOrgChange(organization.id.toString())
+    
+    router.push(`/organization/${organization.id}`)
   }
 
   if (isLoading) {

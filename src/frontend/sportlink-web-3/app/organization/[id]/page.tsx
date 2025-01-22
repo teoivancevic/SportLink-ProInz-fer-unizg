@@ -3,7 +3,7 @@ import { Star, Edit, AlertCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import EditProfilePopup from '../../../components/EditProfilePopup'
-import { useRouter} from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import NavMenu from "@/components/nav-org-profile"
 import { GetOrganisationInfoResponse, Organization } from '@/types/org'
 import { orgService } from "@/lib/services/api"
@@ -36,7 +36,6 @@ export default function OrganizationPage({ params }: { params: { id: number } })
   const [error, setError] = useState<string | null>(null)
   const [mapImageUrl, setMapImageUrl] = useState<string | null>(null)
 
-  // Create map URL from location
   const createMapUrl = useCallback((location: string) => {
     const locationEncoded = encodeURIComponent(location)
     return `https://maps.googleapis.com/maps/api/staticmap?center=${locationEncoded}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${locationEncoded}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
@@ -120,29 +119,29 @@ export default function OrganizationPage({ params }: { params: { id: number } })
               <p><strong>Email:</strong> {orgInfo.contactEmail}</p>
               <p><strong>Telefon:</strong> {orgInfo.contactPhoneNumber}</p>
             </div>
-            <div className="flex space-x-4">
+            <div>
+              <p><strong>Lokacija:</strong> {orgInfo.location}</p>
+            </div>
+            {/* <div className="flex space-x-4" >
               <a href="#" className="text-blue-600 hover:underline">Facebook</a>
               <a href="#" className="text-blue-400 hover:underline">Twitter</a>
               <a href="#" className="text-pink-600 hover:underline">Instagram</a>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Lokacija</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">{orgInfo.location}</p>
+          <CardContent className="p-4"> 
             {mapImageUrl && (
-              <div className="mt-4">
+              <div className="w-full h-full p-4"> 
                 <Image 
                   src={mapImageUrl}
                   alt="Map Preview"
-                  width={300}
-                  height={200}
-                  className="w-300px h-200px"
-                  unoptimized // Since this is a dynamic map URL
+                  layout="responsive"
+                  width={600} 
+                  height={300} 
+                  className="object-cover w-full h-full rounded-md"  
+                  unoptimized
                 />
               </div>
             )}

@@ -8,9 +8,9 @@ namespace SportLink.API.Services.SportCourt
 {
     public interface ISportCourtService
     {
-        Task<bool> AddSportObject(int id, SportObjectDto sportObject);
+        Task<bool> AddSportObject(int organizationId, SportObjectDto sportObject);
         Task<bool> DeleteSportObject(int sportObjectId);
         Task<bool> UpdateSportObject(SportObjectDto sportObject, int idSportObject);
-        Task<List<SportObjectDto>> GetSportObjects(int id);
+        Task<List<SportObjectDto>> GetSportObjects(int organizationId);
     }
 }

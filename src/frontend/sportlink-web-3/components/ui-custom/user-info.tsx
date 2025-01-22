@@ -13,14 +13,16 @@ import {
     }
     className?: string
     avatarClassName?: string
-    size?: 'sm' | 'md' | 'lg'
+    size?: 'sm' | 'md' | 'lg',
+    showAvatar?: boolean
   }
   
   export function UserInfo({ 
     user, 
     className = "", 
     avatarClassName = "h-8 w-8",
-    size = 'md'
+    size = 'md',
+    showAvatar = true
   }: UserInfoProps) {
     const textSizes = {
       sm: 'text-xs',
@@ -30,12 +32,15 @@ import {
   
     return (
       <div className={`flex items-center gap-2 ${className}`}>
-        <Avatar className={`rounded-lg ${avatarClassName}`}>
-          <AvatarImage src={user.avatar} alt={`${user.firstName} ${user.lastName}`} />
-          <AvatarFallback className="rounded-lg">
-            {user.firstName.charAt(0) + user.lastName.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
+        {showAvatar && (
+          <Avatar className={`rounded-lg ${avatarClassName}`}>
+            <AvatarImage src={user.avatar} alt={`${user.firstName} ${user.lastName}`} />
+            <AvatarFallback className="rounded-lg">
+              {user.firstName.charAt(0) + user.lastName.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+        )}
+        
         <div className={`grid flex-1 text-left leading-tight ${textSizes[size]}`}>
           <span className="truncate font-semibold">
             {user.firstName} {user.lastName}
