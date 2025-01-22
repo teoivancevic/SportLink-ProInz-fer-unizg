@@ -192,7 +192,7 @@ return (
 
       <div className="space-y-4">
           {searchResults.map((tournament) => (
-          <Link href={`/organization/${tournament.organizationId}/tournaments`}>
+          <Link key={tournament.id} href={`/organization/${tournament.organizationId}/tournaments`}>
             <Card className="cursor-pointer bg-blue-100 hover:bg-blue-200 border border-blue-300 hover:shadow-md transition-shadow my-4">
             <CardContent className="p-4">
               <h3 className="text-lg font-semibold">{tournament.name}</h3>
