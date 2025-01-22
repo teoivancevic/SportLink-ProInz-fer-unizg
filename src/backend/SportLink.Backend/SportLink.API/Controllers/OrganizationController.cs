@@ -65,7 +65,7 @@ namespace SportLink.API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("")]
+        [Route("{id}")]
         public async Task<ActionResult<OrganizationDetailedDto>> GetSingleOrganization(int id)
         {
             var organization = await _organizationService.GetSingleOrganization(id);

@@ -65,9 +65,8 @@ namespace SportLink.API.Services.SportCourt
 
         public async Task<bool> AddSportObject(int organizationId, SportObjectDto sportObjectDto)
         {
-            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var org = await _context.Organizations.FindAsync(organizationId);
-            if (org is null || org.OwnerId != int.Parse(ownerId!))
+            if (org is null)
             {
                 return false;
             }

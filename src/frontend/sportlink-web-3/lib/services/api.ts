@@ -281,16 +281,16 @@ export const sportsObjectService  = {
   },
   
   getSportObjectDetailedById: (organizationId: number) =>
-    ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportCourt/organization/${organizationId}`),
+    ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportsObject/organization/${organizationId}`),
 
   createSportObjectDetailed: (data: SportObject, organizationId: number) =>
-    ApiClient.post<boolean>(`/api/SportCourt?id=${organizationId}`, data),
+    ApiClient.post<boolean>(`/api/SportsObject?id=${organizationId}`, data),
 
   updateSportObjectDetailed: (data: SportObject) => // create je org id, al tu je spobj id u queryju??
-    ApiClient.put<boolean>(`/api/SportCourt?idSportObject=${data.id}`, data),
+    ApiClient.put<boolean>(`/api/SportsObject?idSportObject=${data.id}`, data),
   
   deleteSportObjectDetailed: (idSportObject: number) => // create je org id, al tu je spobj id u queryju??
-    ApiClient.delete<boolean>(`/api/SportCourt?idSportObject=${idSportObject}`),
+    ApiClient.delete<boolean>(`/api/SportsObject?idSportObject=${idSportObject}`),
 }
 
 export const trainingGroupService = {
