@@ -1,22 +1,18 @@
-// components/auth/unauthorized-element.tsx
 'use client'
-import { useEffect, useState } from 'react'
+
+import { useAuth } from './auth-context'
 
 export default function UnauthorizedElement({ 
   children 
 }: { 
   children: React.ReactNode 
 }) {
-  const [isUnauthorized, setIsUnauthorized] = useState(false)
+  const { userData, isLoading } = useAuth()
 
-  useEffect(() => {
-    setIsUnauthorized(!localStorage.getItem('authToken'))
-  }, [])
-
-  // Server-side rendering safety
-  if (typeof window === 'undefined') {
+  // Don't render anything while authentication is being initialized
+  if (isLoading) {
     return null
   }
 
-  return isUnauthorized ? <>{children}</> : null
+  return !userData ? <>{children}</> : null
 }

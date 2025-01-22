@@ -53,6 +53,6 @@ public class TournamentConfigurationBuilder : IEntityTypeConfiguration<Tournamen
         builder.HasOne(x => x.Organization)
             .WithMany(o => o.Tournaments)
             .HasForeignKey(x => x.OrganizationId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

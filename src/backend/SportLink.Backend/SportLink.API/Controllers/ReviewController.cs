@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using SportLink.API.Services.Review;
 using SportLink.Core.Enums;
 using SportLink.Core.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SportLink.API.Controllers;
 [ApiController]
@@ -18,7 +19,7 @@ public class ReviewController : ControllerBase
     {
         _reviewService = reviewService;
     }
-
+    
     [HttpPost, Authorize(Roles = "OrganizationOwner,User", Policy = "jwt_policy")]
     [Route("")]
     public async Task<ActionResult<GetReviewDto>> CreateReview([FromBody] CreateReviewDto createReviewDto)
@@ -37,7 +38,11 @@ public class ReviewController : ControllerBase
 
         return BadRequest(ModelState);
     }
-    
+    /// <summary>
+    /// User deletes review on an organization
+    /// </summary>
+    /// <param name="organizationId"></param>
+    /// <returns></returns>
     [HttpDelete, Authorize(Roles = "User,OrganizationOwner", Policy = "jwt_policy")]
     [Route("")]
     public async Task<ActionResult> DeleteReview(int organizationId)
@@ -51,10 +56,18 @@ public class ReviewController : ControllerBase
 
         return Ok(result);
     }
-
+    
+    /// <summary>
+    /// Get organization reviews in certain order
+    /// </summary>
+    /// <param name="organizationId"></param>
+    /// <param name="sortOption"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("organization/{organizationId}")]
-    public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId, [FromQuery] SortOptionEnum sortOption = SortOptionEnum.UpdatedAtDescending)
+    public async Task<ActionResult<List<GetReviewDto>>> GetOrganizationReviews(int organizationId, 
+        [SwaggerParameter(Description = "0 - UpdatedAtDesc, 1 - UpdatedAtAsc, 2 - RatingDesc, 3 - RatingAsc")]
+        [FromQuery] SortOptionEnum sortOption = SortOptionEnum.UpdatedAtDescending)
     {
         var result = await _reviewService.GetOrganizationReviews(organizationId, sortOption);
         if (result == null)
@@ -63,7 +76,15 @@ public class ReviewController : ControllerBase
         }
         return Ok(result);
     }
-
+    
+    
+    /// <summary>
+    /// Organization owner responds to a review by user of userId
+    /// </summary>
+    /// <param name="organizationId"></param>
+    /// <param name="userId"></param>
+    /// <param name="response"></param>
+    /// <returns></returns>
     [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
     [Route("respond")]
     public async Task<ActionResult<GetReviewDto>> RespondReview(int organizationId, int userId, string response)
@@ -80,7 +101,11 @@ public class ReviewController : ControllerBase
 
         return Ok(result);
     }
-
+    /// <summary>
+    /// Gets organization's average rating and number of reviews
+    /// </summary>
+    /// <param name="organizationId"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("organization/{organizationId}/stats")]
 
@@ -97,7 +122,11 @@ public class ReviewController : ControllerBase
 
         return Ok(response);
     }
-
+    /// <summary>
+    /// Gets review rating distribution
+    /// </summary>
+    /// <param name="organizationId"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("organization/{organizationId}/distribution")]
     public async Task<IActionResult> GetRatingDistribution(int organizationId)

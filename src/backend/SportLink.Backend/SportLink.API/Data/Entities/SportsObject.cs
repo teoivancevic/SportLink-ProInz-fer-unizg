@@ -39,9 +39,9 @@ public class SportsObjectConfigurationBuilder : IEntityTypeConfiguration<SportsO
             .IsRequired();
 
         builder.HasOne(x => x.Organization)
-            .WithMany(o => o.SportsObjects) 
+            .WithMany(o => o.SportsObjects)
             .HasForeignKey(x => x.OrganizationId)
-            .OnDelete(DeleteBehavior.Cascade); 
-        
+            .OnDelete(DeleteBehavior.Cascade);
+
     }
 }

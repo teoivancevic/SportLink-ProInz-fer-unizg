@@ -1,4 +1,4 @@
-# SportLink.Backend (.NET + ?)
+# SportLink.Backend (.NET)
 
 ## Instructions for local development
 ### Secrets for appsettings
@@ -6,31 +6,31 @@ You must create a file `appsettings.Development.json` in the `Backend.API/` fold
 
 The format of the file is at the bottom of this README.
 
-### Database
+### Database information
 
-This is the database setup:
+Info: This is the database setup:
 ```
-Development Database (for local development):
-Server: sqlserver-sportlink-test.database.windows.net
-Database: db-sportlink-dev
+**Development Database** (for local development):
+Server: sql-sportlink-test-03.database.windows.net
+Database: db-sportlink-dev-03
 
-Test Database:
-Server: sqlserver-sportlink-test.database.windows.net
-Database: db-sportlink-test
+**Test Database**:
+Server: sql-sportlink-test-03.database.windows.net
+Database: db-sportlink-test-03
 ```
 
 > [!NOTE]  
 > Ask project lead for connection credentials.
-> YOU need to send your public ip to be put on the whitelisted IPs
+> For the Production db, YOU need to send your public ip to be put on the whitelisted IPs
 > - https://www.whatismyip.com/
 
 #### Connect to the database with DataGrip
    - Set username and password (Given by project lead as stated above)
-   - Test database: jdbc:sqlserver://sqlserver-sportlink-test.database.windows.net:1433;database=db-sportlink-test;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
-   - Dev database: jdbc:sqlserver://sqlserver-sportlink-test.database.windows.net:1433;database=db-sportlink-dev;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+   - **Dev database:** jdbc:sqlserver://sql-sportlink-test-03.database.windows.net:1433;database=db-sportlink-dev-03;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+   - **Test database:** jdbc:sqlserver://sql-sportlink-test-03.database.windows.net:1433;database=db-sportlink-test-03;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
 
 ### Apply DB migrations from backend code
-ALL migrations are executed autimatically when running code, so manual running of database update is NOT NECESSARY anymore.
+ALL migrations are executed autimatically when running code, so manual running of database update is **NOT NECESSARY anymore**.
 
 For manual application of migrations (if needed for some reason):
 #### Visual Studio
@@ -57,25 +57,30 @@ dotnet ef database update
 
 
 ## Instructions for project lead to send credentials
-1. In Azure add whitelisted IP to SQL server
+1. In Azure add whitelisted IP to SQL server for Production db
 2. Send database credentials messaage format:
    ```
    Username:
    {username}
-   Password;
+   Password:
    {password}
    ```
 3. Send `appsettings.Development.json` file content:
    ```
    {
-   "ConnectionStrings": {
-      "DefaultConnection": ""
-   },
-   "EmailSettings": {
-      "AppPassword": ""
-   },
-   "Jwt": {
-      "Key": ""
+      {
+      "ConnectionStrings": {
+         "DefaultConnection": "..."
+      },
+      "EmailSettings": {
+         "AppPassword": "..."
+      },
+      "Jwt": {
+         "Key": "..."
+      },
+      "Google": {
+         "ClientId": "...",
+         "ClientSecret": "..."
+      }
    }
-   }
-```
+   ```

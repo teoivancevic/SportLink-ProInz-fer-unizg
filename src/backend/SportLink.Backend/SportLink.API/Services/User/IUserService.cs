@@ -7,11 +7,9 @@ public interface IUserService
 {
 
 
-    Task<UserDto> GetUserById(int id);
-    Task<UserDto> GetUserByEmail(string email);
-    Task<List<UserDto>> GetAllUsers();
-
-
-    Task<UserDto> CreateUnverifiedUser(RegisterUserDto createUserDto, RolesEnum role);
-    Task<UserDto> CreateExternalUser(string email, string externalId, string firstName, string lastName, string roleName);
+    Task<UserDetailedDto> GetUserById(int id);
+    Task<UserDetailedDto> GetUserByEmail(string email);
+    Task<List<UserDetailedDto>> GetAllUsers();
+    Task<UserDetailedDto> CreateUnverifiedUser(RegisterUserDto createUserDto, RolesEnum role);
+    Task<UserDetailedDto> CreateExternalUser(string email, string externalId, string firstName, string lastName, string roleName);
 }

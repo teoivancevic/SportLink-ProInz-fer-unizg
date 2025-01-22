@@ -2,6 +2,7 @@
 
 import {
   ChevronsUpDown,
+  FileUser,
   LogOut,
   UserCircle,
 } from "lucide-react"
@@ -24,9 +25,11 @@ import {
 } from "@/components/ui/sidebar"
 import { UserInfo } from "./ui-custom/user-info";
 import AuthorizedElement from "./auth/authorized-element";
+import { useAuth } from "./auth/auth-context";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 export function NavUser({
-  user,
+  user
 }: {
   user: {
     firstName: string
@@ -37,6 +40,12 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const router = useRouter();
+  const { logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    router.push('/')
+  }
 
 
   return (
@@ -66,48 +75,26 @@ export function NavUser({
                 user={user}
                 className="px-1 py-1.5"
               />
+              
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <AuthorizedElement>
                 {({ userData }) => (
                   <>
-                  
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground flex">
-                      <UserCircle className="size-3 text-muted-foreground mr-1" />
-                      Role
-                    </span>
-                    <span className="font-medium">{userData.role}</span>
-                  </div>
-                </>
+                    <div className="flex aspect-square size-6 shrink-0 items-center justify-center rounded-sm border text-xs font-medium">
+                      <FileUser className="size-4 shrink-0" />
+                    </div>
+                    <span className="flex-1 ml-2">{userData.role}</span>
+                  </>
                 )}
               </AuthorizedElement>
             </DropdownMenuItem>
-            {/* <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            <div className="px-2 py-1.5">
+              <ThemeSwitcher />
+            </div>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup> */}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push('/logout')}>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

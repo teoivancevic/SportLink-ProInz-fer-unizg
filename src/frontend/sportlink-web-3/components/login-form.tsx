@@ -16,8 +16,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '@/lib/services/api'
-// import type { LoginRequest } from '@/types/auth'
 import { Eye, EyeOff } from "lucide-react"
+import { useAuth } from '@/components/auth/auth-context'
+import { jwtDecode } from 'jwt-decode'
+import { JWTPayload, UserData } from '@/types/auth'
 
 export function LoginForm({
   className,
@@ -29,6 +31,7 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
+  const { setUserData } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,16 +40,29 @@ export function LoginForm({
 
     try {
       const response = await authService.login({ email, password })
-      // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
+      // @ts-expect-error unsure if response will be changed in api controller
       if (response?.data && typeof response.data === 'string') {
-        // @ts-expect-error unsure if response will be changed in api controller, stays like this for now. todo change in backend
+        // @ts-expect-error unsure if response will be changed in api controller
         const token = response.data
-        console.log('Received token type:', typeof token)
-        console.log('Token format:', token.substring(0, 10) + '...')
         
+        // Store token
         localStorage.setItem('authToken', token)
+        
+        // Decode token and update user data in context
+        const decodedToken = jwtDecode<JWTPayload>(token)
+        const userData: UserData = {
+          id: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
+          email: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'],
+          role: decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+          firstName: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'],
+          lastName: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'],
+        }
+        
+        // Update auth context
+        setUserData(userData)
+        
+        // Navigate home
         router.push('/')
-        router.refresh()
       } else {
         throw new Error('Invalid token received')
       }
@@ -71,9 +87,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Prijavi se</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Unesi podatke svog SportLink računa
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -84,7 +100,7 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value)
@@ -95,18 +111,20 @@ export function LoginForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Lozinka</Label>
                 </div>
                 <div className="relative">
                   <Input 
                     id="password" 
                     type={showPassword ? "text" : "password"}
+                    placeholder="Lozinka"
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value)
                       setError(null)
                     }}
                     required 
+                    className='pr-8'
                   />
                   <Button
                     type="button"
@@ -133,7 +151,7 @@ export function LoginForm({
                 className="w-full"
                 disabled={isLoading}
               >
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? "Prijava..." : "Prijavi se"}
               </Button>
               <Button 
                 type="button"
@@ -143,13 +161,13 @@ export function LoginForm({
                 disabled={isLoading}
               >
                 <FcGoogle className="mr-2" />
-                <span>Login with Google</span>
+                <span>Prijava Google računom</span>
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
+              Nemaš račun?{" "}
               <Link href="/signup" className="underline underline-offset-4">
-                Sign up
+                Registriraj se
               </Link>
             </div>
           </form>
