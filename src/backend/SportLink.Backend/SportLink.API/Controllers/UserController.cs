@@ -16,6 +16,11 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
+    /// <summary>
+    /// Return single user (Admin only)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
     [Route("{id}")]
     public async Task<ActionResult<UserDto>> GetUser(int id)
@@ -27,6 +32,10 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Return all users (Admin only)
+    /// </summary>
+    /// <returns></returns>
     [HttpGet, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
