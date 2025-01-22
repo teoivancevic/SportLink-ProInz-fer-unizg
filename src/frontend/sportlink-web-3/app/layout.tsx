@@ -55,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
-          className="h-full overflow-hidden"
+          // className="h-full overflow-hidden"
         >
           {isAuthPage ? (
             <AuthProvider>

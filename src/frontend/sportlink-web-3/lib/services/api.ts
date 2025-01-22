@@ -46,7 +46,7 @@ import {
 
 import { getSportsResponse } from '@/types/sport'
 import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
-import { User } from '@/types'
+import { getAllUsersResponse } from '@/types'
 
 type _ApiResponse<T> = {
   data: T;
@@ -281,5 +281,6 @@ export const trainingGroupService = {
 
 export const userService ={
   getAllUsers: () =>
-    ApiClient.get<User[]>(`/api/User`),
+    ApiClient.get<getAllUsersResponse>(`/api/User`),
+
 }

@@ -1,8 +1,8 @@
-import type { User } from "@/types"
+import type { UserDetailed } from "@/types"
 import UserRow from "./UserRow"
 
 interface UserListProps {
-  users: User[]
+  users: UserDetailed[]
 }
 
 export default function UserList({ users }: UserListProps) {

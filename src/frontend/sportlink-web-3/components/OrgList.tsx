@@ -1,10 +1,10 @@
-import type { Organization } from "@/types/index"
+import type { OrganizationForAdmin } from "@/types/index"
 import { VerificationStatusEnum } from "@/types/index"
 import { Badge } from "./ui/badge";
 
 
 interface OrgListProps {
-  organizations: Organization[]
+  organizations: OrganizationForAdmin[]
 }
 
 function getStatusBadge(status: VerificationStatusEnum) {

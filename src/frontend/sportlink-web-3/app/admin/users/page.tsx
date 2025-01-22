@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Search, UserPlus } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { userService } from "@/lib/services/api"
+import { UserDetailed } from "@/types"
 
 // Define types based on C# entities
 interface User {
@@ -32,7 +33,7 @@ interface Organization {
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<UserDetailed[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -47,10 +48,7 @@ export default function AdminUsersPage() {
       setIsLoading(true)
       setError(null)
       const response = await userService.getAllUsers();
-      console.log(response);
-      if (!response.ok) {
-        throw new Error('Failed to fetch users')
-      }
+
       const data = await response.data;
       setUsers(data)
     } catch (err) {

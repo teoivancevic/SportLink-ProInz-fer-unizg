@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { User } from "@/types/index"
+import type { UserDetailed } from "@/types/index"
 import OrgList from "./OrgList"
 import { ChevronDown, ChevronRight, CheckCircle, AlertCircle, Mail } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -10,7 +10,7 @@ import { NavUser } from "./nav-user"
 import { UserInfo } from "./ui-custom/user-info"
 
 interface UserRowProps {
-  user: User
+  user: UserDetailed
 }
 
 function formatDateToGerman(dateString: string) {
@@ -30,7 +30,7 @@ export default function UserRow({ user }: UserRowProps) {
 
   const toggleExpand = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (getRoleName(user.roleId) === "OrgOwner" || user.organizations.length > 0) {
+    if (getRoleName(user.roleId) === "OrgOwner" || (user.organizations && user.organizations.length > 0)) {
       setExpanded(!expanded)
     }
   }
@@ -106,7 +106,7 @@ export default function UserRow({ user }: UserRowProps) {
     <>
       <tr className="hover:bg-gray-50">
         <td className="px-6 py-4 whitespace-nowrap">
-          {(getRoleName(user.roleId) === "OrgOwner" || user.organizations.length > 0) && (
+          {(getRoleName(user.roleId) === "OrgOwner" || (user.organizations && user.organizations.length > 0)) && (
             <button onClick={toggleExpand} className="focus:outline-none">
               {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </button>
@@ -138,7 +138,7 @@ export default function UserRow({ user }: UserRowProps) {
         <td className="px-6 py-4 whitespace-nowrap">{formatDateToGerman(user.createdAt)}</td>
         <td className="px-6 py-4 whitespace-nowrap">{formatDateToGerman(user.lastLoginAt)}</td>
       </tr>
-      {expanded && (getRoleName(user.roleId) === "OrgOwner" || user.organizations) && (
+      {expanded && (getRoleName(user.roleId) === "OrgOwner" || (user.organizations && user.organizations.length > 0)) && (
         <tr>
           <td colSpan={9} className="px-6 py-4 bg-gray-50">
             <OrgList organizations={user.organizations} />

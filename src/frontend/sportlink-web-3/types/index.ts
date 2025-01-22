@@ -1,3 +1,5 @@
+
+
 export interface UserDetailed {
   id: number;
   firstName: string;
@@ -25,4 +27,8 @@ export enum VerificationStatusEnum
     Unverified = 0,
     Accepted = 1,
     Rejected = 2
+}
+
+export interface getAllUsersResponse {
+  data: UserDetailed[]
 }
