@@ -225,7 +225,7 @@ export function AddTrainingGroup({ loading, group, onSubmit, onCancel }: AddTrai
               type="button"
               variant="default"
               size="sm"
-              className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
+              className="mt-2 bg-[#228be6] hover:bg-[#1c7ed6] text-white"
               onClick={() => setFormData(prev => ({ ...prev, trainingSchedules: [...prev.trainingSchedules, { id: 0, dayOfWeek: 1, startTime: '', endTime: '', trainingGroupId: 0}] }))}
             >
               Dodaj termin
@@ -234,7 +234,13 @@ export function AddTrainingGroup({ loading, group, onSubmit, onCancel }: AddTrai
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</Button>
+            <Button
+              type="submit"
+              disabled={loading}
+              className={`${loading ? 'bg-gray-400' : 'bg-[#228be6] hover:bg-[#1c7ed6]'} text-white`}
+            >
+              {loading ? "Submitting..." : "Submit"}
+            </Button>
           </div>
         </form>
       </CardContent>

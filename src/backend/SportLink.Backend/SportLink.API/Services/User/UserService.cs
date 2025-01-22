@@ -44,7 +44,9 @@ public class UserService : IUserService
 
     public async Task<List<UserDetailedDto>> GetAllUsers()
     {
-        var users = await _context.Users.ToListAsync();
+        var users = await _context.Users
+            .Include(u => u.Organizations)
+            .ToListAsync();
         var usersDto = _mapper.Map<List<UserDetailedDto>>(users);
         return usersDto;
     }

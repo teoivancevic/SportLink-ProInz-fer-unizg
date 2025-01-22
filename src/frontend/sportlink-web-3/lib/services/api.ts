@@ -23,6 +23,7 @@ import type {
   GetOrganisationInfoResponse,
   Organization
 } from '@/types/org'
+import { arrayOutputType } from 'zod'
 
 import {
   CreateReviewRequest,
@@ -41,11 +42,18 @@ import {
 
 import {
   getTrainingGroupsResponse,
-  TrainingGroup
+  TrainingGroup,
+  trainingGroupSearchResponse
 } from '@/types/training-groups'
 
 import { getSportsResponse } from '@/types/sport'
 import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
+import { getAllUsersResponse } from '@/types'
+
+import type {
+  searchSportsObjectsResponse,
+  SportsObject
+} from '@/types/sportObject'
 
 type _ApiResponse<T> = {
   data: T;
@@ -201,7 +209,7 @@ export const orgService = {
     ApiClient.get<GetOrganisationInfoResponse>(`/api/Organization/${id}`),
 
   updateOrganization: (data: Organization) =>
-    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization/${data.id}/update`, data),
+    ApiClient.put<GetOrganisationInfoResponse>(`/api/Organization?id=${data.id}`, data),
 
   acceptOrganization: (id: number) => 
     ApiClient.put(`/api/Organization/${id}/verify/`, undefined),
@@ -241,6 +249,18 @@ export const tournamentService = {
 
   deleteTournament: (tournamentId: number) =>
     ApiClient.delete<boolean>(`/api/Tournament?idTournament=${tournamentId}`),
+
+  searchTournaments: (startDate: string, endDate: string, sportsTerm: string, sportIds: number[], maxPrice?: number) => {
+    const params = new URLSearchParams();
+  
+    if (startDate) params.append("StartDate", startDate);
+    if (endDate) params.append("EndDate", endDate);
+    if (sportsTerm) params.append("SearchTerm", sportsTerm);
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
+  
+    return ApiClient.get<getTournamentsResponse>(`/api/Tournament/search?${params.toString()}`);
+  }
 }
 
 export const SportService  = {
@@ -250,6 +270,15 @@ export const SportService  = {
 
 // TODO Teo, na backendu promijenit ovo da bude SportsObject controller
 export const sportsObjectService  = {
+  searchSportsObjects: (sportsTerm: string, sportIds: number[], maxPrice?: number) => {
+    const params = new URLSearchParams();
+
+    if (sportsTerm) params.append("SearchTerm", sportsTerm);
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
+
+    return ApiClient.get<searchSportsObjectsResponse>(`/api/SportsObject/search?${params.toString()}`);
+  },
   
   getSportObjectDetailedById: (organizationId: number) =>
     ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportCourt/organization/${organizationId}`),
@@ -276,4 +305,33 @@ export const trainingGroupService = {
 
   deleteTrainingGroup: (idGroup: number) =>
     ApiClient.delete<boolean>(`/api/TrainingGroup?idTrainingGroup=${idGroup}`),
+
+
+  searchTrainingGroups: (
+    sex: string[],
+    minAge: number | undefined,
+    maxAge: number | undefined,
+    sportsTerm: string,
+    sportIds: number[],
+    maxPrice: number | undefined,
+  ) => {
+    const params = new URLSearchParams()
+
+    if (sex.length > 0) params.append("Sex", sex.join(","))
+    if (minAge !== undefined) params.append("MinAge", minAge.toString())
+    if (maxAge !== undefined) params.append("MaxAge", maxAge.toString())
+    if (sportsTerm) params.append("SearchTerm", sportsTerm)
+    if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
+    if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString())
+
+    return ApiClient.get<trainingGroupSearchResponse>(`/api/TrainingGroup/search?${params.toString()}`)
+  },
 }
+
+
+export const userService ={
+  getAllUsers: () =>
+    ApiClient.get<getAllUsersResponse>(`/api/User`),
+
+}
+

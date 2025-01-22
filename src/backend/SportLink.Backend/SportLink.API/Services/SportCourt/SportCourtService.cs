@@ -8,6 +8,8 @@ using SportLink.API.Data;
 using SportLink.API.Data.Entities;
 using SportLink.Core.Models;
 using SportLink.API.Data.Entities;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace SportLink.API.Services.SportCourt
 {
@@ -15,10 +17,12 @@ namespace SportLink.API.Services.SportCourt
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public SportCourtService(DataContext context, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public SportCourtService(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<List<SportObjectDto>> GetSportObjects(int organizationId)
@@ -61,8 +65,9 @@ namespace SportLink.API.Services.SportCourt
 
         public async Task<bool> AddSportObject(int organizationId, SportObjectDto sportObjectDto)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var org = await _context.Organizations.FindAsync(organizationId);
-            if (org is null)
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
             {
                 return false;
             }
@@ -140,6 +145,12 @@ namespace SportLink.API.Services.SportCourt
 
         public async Task<bool> UpdateSportObject(SportObjectDto sportObject, int sportObjectId)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var org = await _context.Organizations.FindAsync(sportObject.OrganizationId);
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
+            {
+                return false;
+            }
             var sportObjectToUpdate = await _context.SportsObjects.FindAsync(sportObjectId);
             if (sportObjectToUpdate is null)
             {
@@ -243,8 +254,14 @@ namespace SportLink.API.Services.SportCourt
 
         public async Task<bool> DeleteSportObject(int sportObjectId)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var sportObjectToDelete = await _context.SportsObjects.FindAsync(sportObjectId);
             if (sportObjectToDelete is null)
+            {
+                return false;
+            }
+            var org = await _context.Organizations.FindAsync(sportObjectToDelete.OrganizationId);
+            if (org is null || org.OwnerId != int.Parse(ownerId!))
             {
                 return false;
             }
