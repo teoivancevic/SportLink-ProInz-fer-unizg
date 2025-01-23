@@ -173,7 +173,7 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
         {({ userData }) => (
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Dodajte Vašu Recenziju</CardTitle>
+            <CardTitle>Dodajte svoju recenziju</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center mb-4">
@@ -187,7 +187,7 @@ export default function OrganizationReviewsPage({ params }: { params: { id: numb
               ))}
             </div>
             <Textarea
-              placeholder="Napišite vašu recenziju ovdje..."
+              placeholder="Napišite svoju recenziju ovdje..."
               className="mb-4"
               value={newReview.comment}
               onChange={handleCommentChange}
