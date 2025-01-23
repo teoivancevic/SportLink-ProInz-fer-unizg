@@ -61,21 +61,21 @@ def test_termini(driver):
 
    form = driver.find_elements(By.XPATH, "//form[@class='space-y-4']/div")
    
-   form[0].find_element(By.XPATH, "./input").send_keys("Grupacija")
+   WebDriverWait(form[0], 15).until(EC.element_to_be_clickable((By.XPATH, "./input"))).send_keys("Grupacija")
 
-   form[1].find_element(By.XPATH, "./button").click()
-   WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//div[text()='Hokej na travi']"))).click()
+   WebDriverWait(form[1], 15).until(EC.element_to_be_clickable((By.XPATH, "./button"))).click()
+   WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[text()='Hokej na travi']"))).click()
 
    dobne_granice = form[2].find_elements(By.XPATH, "./div")
-   dobne_granice[0].find_element(By.XPATH, "./input").send_keys(Keys.BACK_SPACE)
+   WebDriverWait(dobne_granice[0], 15).until(EC.element_to_be_clickable((By.XPATH, "./input"))).send_keys(Keys.BACK_SPACE)
    dobne_granice[0].find_element(By.XPATH, "./input").send_keys("17")
    dobne_granice[1].find_element(By.XPATH, "./input").send_keys(Keys.BACK_SPACE)
    dobne_granice[1].find_element(By.XPATH, "./input").send_keys("34")
 
-   form[4].find_element(By.XPATH, "./input").send_keys(Keys.BACK_SPACE)
+   WebDriverWait(form[4], 15).until(EC.element_to_be_clickable((By.XPATH, "./input"))).send_keys(Keys.BACK_SPACE)
    form[4].find_element(By.XPATH, "./input").send_keys("234")
 
-   form[5].find_element(By.XPATH, "./textarea").send_keys("Blablablablabla. Bla?")
+   WebDriverWait(form[5], 15).until(EC.element_to_be_clickable((By.XPATH, "./textarea"))).send_keys("Blablablablabla. Bla?")
 
    driver.find_element(By.XPATH, "//button[text()='Dodaj termin']").click()
    driver.find_element(By.XPATH, "//button[text()='Dodaj termin']").click()
