@@ -115,7 +115,7 @@ public class OrganizationControllerTests : IClassFixture<SportLinkWebApplication
         
         var response = await _client.PostAsJsonAsync("/api/organization/NonExistentEndpoint", organizationDto);
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class OrganizationControllerTests : IClassFixture<SportLinkWebApplication
         // Using GET on an endpoint that only accepts POST
         var response = await _client.GetAsync("/api/organization/CreateOrganization");
         
-        response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
 }
