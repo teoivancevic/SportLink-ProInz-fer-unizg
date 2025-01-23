@@ -132,12 +132,16 @@ namespace SportLink.API.Services.Organization
         {
             if (isVerified)
             {
-                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Accepted).ToListAsync();
+                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Accepted)
+                    .Include(org => org.Owner)
+                    .ToListAsync();
                 return _mapper.Map<List<OrganizationDto>>(organizations);
             }
             else
             {
-                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Unverified).ToListAsync();
+                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Unverified)
+                    .Include(org => org.Owner)
+                    .ToListAsync();
                 return _mapper.Map<List<OrganizationDto>>(organizations);
             }
         }
@@ -145,7 +149,7 @@ namespace SportLink.API.Services.Organization
         public async Task<bool> VerifyOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
-            var organizationOwner = await _context.Users.FindAsync(organization?.Owner.Id);
+            var organizationOwner = await _context.Users.FindAsync(organization?.OwnerId);
             if (organizationOwner is not null && organization?.VerificationStatus == VerificationStatusEnum.Unverified)
             {
                 organizationOwner.RoleId = (int)RolesEnum.OrganizationOwner;
