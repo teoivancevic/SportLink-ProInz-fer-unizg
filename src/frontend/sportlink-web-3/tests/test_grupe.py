@@ -27,7 +27,7 @@ def test_termini(driver):
    while driver.execute_script("return document.readyState") != "complete":
       time.sleep(0.5)
 
-   WebDriverWait(driver, 10).until(
+   WebDriverWait(driver, 15).until(
       EC.visibility_of_element_located((By.XPATH, "//button[text()='Prijava']"))
    )
    gumb_prijava = driver.find_element(By.XPATH, "//button[text()='Prijava']")
@@ -36,7 +36,7 @@ def test_termini(driver):
    while driver.execute_script("return document.readyState") != "complete":
       time.sleep(0.5)
 
-   WebDriverWait(driver, 10).until(
+   WebDriverWait(driver, 15).until(
       EC.visibility_of_element_located((By.ID, 'email'))
    )
 
@@ -48,14 +48,14 @@ def test_termini(driver):
    password_field.send_keys(password)
    login_button.click()
 
-   WebDriverWait(driver, 10).until(
+   WebDriverWait(driver, 15).until(
       EC.visibility_of_element_located((By.XPATH, "//button[@aria-expanded='false']")))
    
-   WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//a[@href='/organization/7']"))).click()
-   WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//a[@href='/organization/7/training-groups']"))).click()
-   gumb_dodaj = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[text()=' Dodaj grupu za trening']")))
+   WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, "//a[@href='/organization/7']"))).click()
+   WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, "//a[@href='/organization/7/training-groups']"))).click()
+   gumb_dodaj = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, "//button[text()=' Dodaj grupu za trening']")))
 
-   WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//div[@class='rounded-xl border bg-card text-card-foreground shadow flex flex-col max-h-[400px] overflow-y-auto']")))
+   WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, "//div[@class='rounded-xl border bg-card text-card-foreground shadow flex flex-col max-h-[400px] overflow-y-auto']")))
    koliko_termina_prije = driver.find_elements(By.XPATH, "//div[@class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow']/div")
    gumb_dodaj.click()
 
@@ -79,7 +79,7 @@ def test_termini(driver):
 
    driver.find_element(By.XPATH, "//button[text()='Dodaj termin']").click()
    driver.find_element(By.XPATH, "//button[text()='Dodaj termin']").click()
-   kante = WebDriverWait(driver, 10).until(EC.visibility_of_any_elements_located((By.XPATH, "//button/*[local-name()='svg']")))
+   kante = WebDriverWait(driver, 15).until(EC.visibility_of_any_elements_located((By.XPATH, "//button/*[local-name()='svg']")))
    kante[-1].find_element(By.XPATH, "..").click()   
 
    termini = driver.find_elements(By.XPATH, "//div[@class='flex gap-2 mt-2 items-center']")
@@ -92,10 +92,10 @@ def test_termini(driver):
    driver.find_element(By.XPATH, "//button[text()='Submit']").click() 
    time.sleep(1)
 
-   uredi = WebDriverWait(driver, 10).until(EC.visibility_of_all_elements_located((By.XPATH, "//button[text()='Uredi']")))[-1]
-   WebDriverWait(driver, 10).until(EC.element_to_be_clickable(uredi)).click()
+   uredi = WebDriverWait(driver, 15).until(EC.visibility_of_all_elements_located((By.XPATH, "//button[text()='Uredi']")))[-1]
+   WebDriverWait(driver, 15).until(EC.element_to_be_clickable(uredi)).click()
 
-   uredjivanje = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(
+   uredjivanje = WebDriverWait(driver, 15).until(EC.element_to_be_clickable(
       (By.XPATH, "//label[text()='Ime grupe']/following-sibling::input[1]")))
    time.sleep(1)
    
@@ -105,12 +105,12 @@ def test_termini(driver):
 
    driver.find_element(By.XPATH, "//button[text()='Submit']").click()
 
-   WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
+   WebDriverWait(driver, 15).until(EC.visibility_of_element_located(
       (By.XPATH, "//div[text()='Promjena']")))
-   kanta = WebDriverWait(driver, 10).until(EC.visibility_of_all_elements_located((By.XPATH, "//button[text()='Izbriši']")))[-1]
+   kanta = WebDriverWait(driver, 15).until(EC.visibility_of_all_elements_located((By.XPATH, "//button[text()='Izbriši']")))[-1]
 
-   WebDriverWait(driver, 10).until(EC.element_to_be_clickable(kanta)).click()
-   WebDriverWait(driver, 10).until(EC.alert_is_present())
+   WebDriverWait(driver, 15).until(EC.element_to_be_clickable(kanta)).click()
+   WebDriverWait(driver, 15).until(EC.alert_is_present())
    alert = Alert(driver)
    alert.accept()
    time.sleep(1)

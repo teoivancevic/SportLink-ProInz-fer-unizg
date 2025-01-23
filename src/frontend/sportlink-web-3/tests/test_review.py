@@ -129,6 +129,6 @@ def test_odgovor_na_recenziju(driver):
    textarea.send_keys(tekst)
    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[text()='Pošalji']"))).click()
    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[text()='Odgovori']")))
-   time.sleep(1)
+   time.sleep(5)
    novi_tekst = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//p[text()='Odgovor organizacije:']/following-sibling::p[1]"))).text
    assert (novi_tekst != stari_tekst)

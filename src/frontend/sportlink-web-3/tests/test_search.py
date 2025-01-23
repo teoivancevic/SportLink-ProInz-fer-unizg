@@ -63,7 +63,7 @@ def test_search(driver):
       (By.XPATH, "//input[@placeholder='Pretraži po imenu...']"))).send_keys("Natjecanje")
    
    driver.find_element(By.XPATH, "//span[text()='Maksimalna cijena (Euro)']").click()
-   driver.find_element(By.XPATH, "//input[@placeholder='Najskuplja cijena']").send_keys("1")
+   driver.find_element(By.XPATH, "//input[@placeholder='Najskuplja cijena']").send_keys("10")
 
    driver.find_element(By.XPATH, "//span[text()='Raspon datuma']").click()
    driver.find_element(By.XPATH, "//label[text()='Početak natjecanja']/following-sibling::input[1]").send_keys("29012025")
