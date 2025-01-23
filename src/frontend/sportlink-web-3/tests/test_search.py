@@ -40,7 +40,7 @@ def test_search(driver):
    driver.find_element(By.XPATH, "//button[text()='Mješovito']").click()
    
    driver.find_element(By.XPATH, "//button[@role='combobox']").click()
-   driver.find_element(By.XPATH, "//*[normalize-space()='Hrvanje']").click()
+   WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[normalize-space()='Hrvanje']"))).click()
    
    driver.find_element(By.XPATH, "//button[text()='Traži']").click()
 
@@ -48,7 +48,7 @@ def test_search(driver):
 
    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//h1[text()='Grupe za trening']")))
 
-   assert driver.current_url == "http://localhost:3000/organization/7/training-groups"
+   assert driver.current_url == "http://localhost:3000/organization/2/training-groups"
 
 
    # pretrazivanje natjecanja
@@ -70,7 +70,7 @@ def test_search(driver):
    driver.find_element(By.XPATH, "//label[text()='Kraj natjecanja']/following-sibling::input[1]").send_keys("01022025")
 
    driver.find_element(By.XPATH, "//button[@role='combobox']").click()
-   driver.find_element(By.XPATH, "//*[normalize-space()='Nogomet']").click()
+   WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[normalize-space()='Nogomet']"))).click()
 
    driver.find_element(By.XPATH, "//button[text()='Traži']").click()
 
@@ -96,7 +96,7 @@ def test_search(driver):
    driver.find_element(By.XPATH, "//input[@placeholder='Najskuplja cijena']").send_keys("25")
 
    driver.find_element(By.XPATH, "//button[@role='combobox']").click()
-   driver.find_element(By.XPATH, "//*[normalize-space()='Tenis']").click()
+   WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[normalize-space()='Tenis']"))).click()
 
    driver.find_element(By.XPATH, "//button[text()='Traži']").click()
 

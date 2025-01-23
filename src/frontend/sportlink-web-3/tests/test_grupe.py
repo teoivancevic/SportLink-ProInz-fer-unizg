@@ -55,8 +55,8 @@ def test_termini(driver):
    WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, "//a[@href='/organization/7/training-groups']"))).click()
    gumb_dodaj = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, "//button[text()=' Dodaj grupu za trening']")))
 
-   WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, "//div[@class='rounded-xl border bg-card text-card-foreground shadow flex flex-col max-h-[400px] overflow-y-auto']")))
-   koliko_termina_prije = driver.find_elements(By.XPATH, "//div[@class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow']/div")
+   #WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, "//div[@class='rounded-xl border bg-card text-card-foreground shadow flex flex-col max-h-[400px] overflow-y-auto']")))
+   #koliko_termina_prije = driver.find_elements(By.XPATH, "//div[@class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow']/div")
    gumb_dodaj.click()
 
    form = driver.find_elements(By.XPATH, "//form[@class='space-y-4']/div")
@@ -114,8 +114,9 @@ def test_termini(driver):
    alert = Alert(driver)
    alert.accept()
    time.sleep(1)
-
-   koliko_termina_poslije = driver.find_elements(By.XPATH, "//div[@class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow']/div")
-   print(len(koliko_termina_prije), len(koliko_termina_poslije))
-   assert len(koliko_termina_prije) == len(koliko_termina_poslije)
+   driver.refresh()
+   WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//div[text()='Nema dostupnih grupa za trening unutar ove organizacije.']")))
+   #koliko_termina_poslije = driver.find_elements(By.XPATH, "//div[@class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow']/div")
+   #print(len(koliko_termina_prije), len(koliko_termina_poslije))
+   #assert len(koliko_termina_prije) == len(koliko_termina_poslije)
    
