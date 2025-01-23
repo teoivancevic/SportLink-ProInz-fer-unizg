@@ -85,7 +85,14 @@ namespace SportLink.API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState
+                .Where(m => m.Value.Errors.Count > 0)
+                .Select(m => new
+                {
+                    Field = m.Key,
+                    Messages = m.Value.Errors.Select(e => e.ErrorMessage)
+                });
+                return BadRequest(new { errors });
             }
             var result = await _tournamentService.AddTournament(tournament, organizationId);
             if (!result)
@@ -107,7 +114,14 @@ namespace SportLink.API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState
+                .Where(m => m.Value.Errors.Count > 0)
+                .Select(m => new
+                {
+                    Field = m.Key,
+                    Messages = m.Value.Errors.Select(e => e.ErrorMessage)
+                });
+                return BadRequest(new { errors });
             }
             var result = await _tournamentService.UpdateTournament(tournament, idTournament);
             if (!result)

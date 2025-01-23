@@ -24,7 +24,6 @@ namespace SportLink.Core.Models
             RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.");
             RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required.");
             RuleFor(x => x.Location).NotEmpty().WithMessage("Location is required.");
-            //RuleFor(x => x.SportCourts).NotEmpty().WithMessage("Sport courts are required.");
             RuleFor(x => x.WorkTimes).NotEmpty().WithMessage("Work times are required.");
         }
     }
