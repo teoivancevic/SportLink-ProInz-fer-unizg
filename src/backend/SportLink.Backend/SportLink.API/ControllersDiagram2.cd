@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SportLink.API.Controllers.SportsObjectController">
+    <Position X="5.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAAAAABAAAAAAAAAABAAAAACAAAAAEAAAAwAA=</HashCode>
+      <FileName>Controllers\SportsObjectController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_organizationService" />
+      <Field Name="_searchService" />
+      <Field Name="_sportCourtService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Controllers.TournamentController">
+    <Position X="7.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAQAAAAAAAAABAAAAAAAAgAIAAAAAAEAAAAAAAAAkAA=</HashCode>
+      <FileName>Controllers\TournamentController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_organizationService" />
+      <Field Name="_searchService" />
+      <Field Name="_tournamentService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SportLink.API.Controllers.TrainingGroupController">
+    <Position X="3.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BARAAAAAAAAgBCAAAAAAAAAAAAAAAAAAAACAAAAAgAA=</HashCode>
+      <FileName>Controllers\TrainingGroupController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_organizationService" />
+      <Field Name="_searchService" />
+      <Field Name="_trainingGroupService" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="SportLink.API.Services.Organization.IOrganizationService">
+    <Position X="6.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABEAAAAEAAAAQAAAQAAAAAAAggAAAAAAAAAAIAA=</HashCode>
+      <FileName>Services\Organization\IOrganizationService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.Search.ISearchService&lt;T, TParameters&gt;">
+    <Position X="4.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Search\ISearchService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.SportCourt.ISportCourtService">
+    <Position X="5.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAABAAAAACAAAAAAAAAAQAA=</HashCode>
+      <FileName>Services\SportCourt\ISportCourtService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.Tournament.ITournamentService">
+    <Position X="7.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAIAAAAAAEAAAAAAAAAEAA=</HashCode>
+      <FileName>Services\Tournament\ITournamentService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SportLink.API.Services.TrainingGroup.ITrainingGroupService">
+    <Position X="3.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BABAAAAAAAAAACAAAAAAAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Services\TrainingGroup\ITrainingGroupService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
