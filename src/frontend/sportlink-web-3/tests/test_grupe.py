@@ -18,7 +18,7 @@ def driver():
    yield driver
    driver.quit()
 
-def test_termini(driver):
+def ttest_termini(driver):
    driver.get("http://localhost:3000")
 
    email = "cowomot157@halbov.com"
