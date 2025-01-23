@@ -48,6 +48,28 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData, load
         }
     );
 
+    const validateTournament = () => {
+        const errors: { [key: string]: string } = {};
+        const now = new Date();
+        const timeFromDate = new Date(formData.timeFrom);
+        const timeToDate = new Date(formData.timeTo);
+        console.log(timeFromDate)
+        console.log(timeToDate)
+        if (timeFromDate <= now) {
+            errors.timeFrom = "Početak natjecanja mora biti u budućnosti.";
+        }
+        if (timeFromDate >= timeToDate) {
+            errors.timeTo = "Završetak natjecanja mora biti nakon početka natjecanja.";
+        }
+        if (timeToDate <= now) {
+            errors.timeTo = "Završetak natjecanja mora biti u budućnosti.";
+        }
+        if (formData.entryFee <= 0) {
+            errors.entryFee = "Kotizacija mora biti veca od nula eura";
+        }
+        return errors;
+    };
+
     const handleLocationChange = (value: string) => {
         setFormData(prevData => ({ ...prevData, location: value }));
     };
@@ -87,6 +109,12 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData, load
 
         if (!formData.sportId) {
             alert("Molimo odaberite sport prije dodavanja natjecanja");
+            return;
+        }
+
+        const validationErrors = validateTournament();
+        if (Object.keys(validationErrors).length > 0) {
+            alert(Object.values(validationErrors).join('\n')); 
             return;
         }
     

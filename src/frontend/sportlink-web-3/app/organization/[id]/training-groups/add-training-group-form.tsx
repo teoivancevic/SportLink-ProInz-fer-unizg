@@ -95,12 +95,18 @@ export function AddTrainingGroup({ loading, group, onSubmit, onCancel }: AddTrai
   }
 
   const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
     if (!formData.sportId) {
       alert("Molimo odaberite sport prije dodavanja grupe za trening");
       return;
-  }
+    }
 
-    e.preventDefault()
+    if(formData.ageFrom >= formData.ageTo){
+      alert("Molimo da gornja dobna granica bude veca od donje");
+      return;
+    }
+
+    
     onSubmit(formData)
   }
   
