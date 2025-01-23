@@ -59,7 +59,7 @@ def test_termini(driver):
    #koliko_termina_prije = driver.find_elements(By.XPATH, "//div[@class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow']/div")
    gumb_dodaj.click()
 
-   form = driver.find_elements(By.XPATH, "//form[@class='space-y-4']/div")
+   form = WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//form[@class='space-y-4']/div")))
    
    WebDriverWait(form[0], 15).until(EC.element_to_be_clickable((By.XPATH, "./input"))).send_keys("Grupacija")
 

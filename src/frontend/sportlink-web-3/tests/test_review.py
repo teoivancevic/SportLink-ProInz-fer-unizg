@@ -73,7 +73,7 @@ def test_ostavljanje_recenzije(driver):
    tekst_rec = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, f"//blockquote[contains(., '{tekst_recenzije}')]")))
 
    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[text()='Izbriši']"))).click()
-   time.sleep(0.5)
+   time.sleep(5)
    driver.implicitly_wait(0)
    try:
       WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, f"//blockquote[contains(., '{tekst_recenzije}')]")))
