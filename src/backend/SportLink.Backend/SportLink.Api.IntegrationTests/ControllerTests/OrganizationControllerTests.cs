@@ -101,7 +101,7 @@ public class OrganizationControllerTests : IClassFixture<SportLinkWebApplication
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     [Fact]
-    public async Task CallNonExistentEndpoint_ReturnsMethodNotAllowed()
+    public async Task CallNonExistentEndpoint_ReturnsNotFound()
     {
 
         var organizationDto = new OrganizationDto
@@ -113,14 +113,13 @@ public class OrganizationControllerTests : IClassFixture<SportLinkWebApplication
             Location = "Test Location"
         };
         
-        // Using a non-existent endpoint
         var response = await _client.PostAsJsonAsync("/api/organization/NonExistentEndpoint", organizationDto);
 
-        response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
-    public async Task CallEndpointWithInvalidMethod_ReturnsBadRequest()
+    public async Task CallEndpointWithInvalidMethod_ReturnsMethodNotAllowed()
     {
         var token = TestAuthHandler.GenerateTestToken("1", "test@example.com", "User", "John", "Doe");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -128,7 +127,7 @@ public class OrganizationControllerTests : IClassFixture<SportLinkWebApplication
         // Using GET on an endpoint that only accepts POST
         var response = await _client.GetAsync("/api/organization/CreateOrganization");
         
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
     }
 
 }
