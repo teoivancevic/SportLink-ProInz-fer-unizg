@@ -101,7 +101,7 @@ public class OrganizationControllerTests : IClassFixture<SportLinkWebApplication
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     [Fact]
-    public async Task CallNonExistentEndpoint_ReturnsNotFound()
+    public async Task CallNonExistentEndpoint_ReturnsMethodNotAllowed()
     {
 
         var organizationDto = new OrganizationDto
@@ -119,7 +119,7 @@ public class OrganizationControllerTests : IClassFixture<SportLinkWebApplication
     }
 
     [Fact]
-    public async Task CallEndpointWithInvalidMethod_ReturnsMethodNotAllowed()
+    public async Task CallEndpointWithInvalidMethod_ReturnsBadRequest()
     {
         var token = TestAuthHandler.GenerateTestToken("1", "test@example.com", "User", "John", "Doe");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
