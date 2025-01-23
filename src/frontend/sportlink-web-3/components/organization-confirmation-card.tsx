@@ -6,15 +6,9 @@ import { MapPin, Mail, Phone } from 'lucide-react'
 import { orgService } from "@/lib/services/api"
 import { useRouter } from 'next/navigation'
 import { UserInfo, UserInfoProps } from "@/components/ui-custom/user-info" // Updated import
+import { Organization } from "@/types/org"
 
-interface Organization {
-  id: number
-  name: string
-  description: string
-  location: string
-  contactEmail: string
-  contactPhoneNumber: string
-}
+
 
 interface OrganizationCardProps {
   organization: Organization
@@ -89,7 +83,7 @@ export function OrganizationCard({
   }
 
   const handleViewDetails = () => {
-    router.push(`/organizations/${organization.id}`)
+    router.push(`/organization/${organization.id}`)
   }
 
   return (
@@ -97,9 +91,9 @@ export function OrganizationCard({
       <div className="absolute top-2 right-2 z-10">
         <UserInfo 
           user={{
-            firstName: "ime",
-            lastName: "vlasnika",
-            email: "mail vlasnika org.",
+            firstName: `${organization.owner.firstName}`,
+            lastName: `${organization.owner.lastName}`,
+            email: `${organization.owner.email}`,
             avatar: ""
           }} 
           className="bg-background/80 backdrop-blur-sm rounded-lg shadow-sm"

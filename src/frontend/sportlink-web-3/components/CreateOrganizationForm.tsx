@@ -102,7 +102,7 @@ export function CreateOrganizationForm() {
     // Your existing JSX remains the same
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Create a New Organization</CardTitle>
+        <CardTitle>Kreiraj novu sportsku organizaciju</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -112,9 +112,9 @@ export function CreateOrganizationForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization Name</FormLabel>
+                  <FormLabel>Naziv organizacije</FormLabel>
                   <FormControl>
-                    <Input placeholder="Acme Corp" {...field} />
+                    <Input placeholder="npr. KK Sesvete" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -125,10 +125,10 @@ export function CreateOrganizationForm() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Opis</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Tell us about your organization"
+                      placeholder="Opisite svoju organizaciju"
                       className="resize-none"
                       {...field}
                     />
@@ -145,10 +145,10 @@ export function CreateOrganizationForm() {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
-                      Contact Email
+                      Kontakt Email
                     </FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="contact@acmecorp.com" {...field} />
+                      <Input type="email" placeholder="npr. kontakt@organizacija.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -161,7 +161,7 @@ export function CreateOrganizationForm() {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Phone className="h-4 w-4" />
-                      Contact Phone
+                      Kontakt broj mobitela
                     </FormLabel>
                     <FormControl>
                       <PhoneInput
@@ -190,7 +190,7 @@ export function CreateOrganizationForm() {
               )}
             />
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Create Organization'}
+              {isSubmitting ? 'Creating...' : 'Kreiraj organizaciju'}
             </Button>
           </form>
         </Form>
