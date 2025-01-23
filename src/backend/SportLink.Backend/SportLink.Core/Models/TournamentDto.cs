@@ -35,9 +35,6 @@ namespace SportLink.Core.Models
             RuleFor(x => x.TimeFrom).LessThan(x => x.TimeTo).WithMessage("TimeTo must be later than TimeFrom.");
             RuleFor(x => x.TimeFrom).GreaterThan(DateTime.Now).WithMessage("TimeFrom must be later than current time.");
             RuleFor(x => x.TimeTo).GreaterThan(DateTime.Now).WithMessage("TimeTo must be later than current time.");
-            // RuleFor(x => x)
-            //         .Must(x => IsTimeRangeValid(x.TimeFrom, x.TimeTo))
-            //         .WithMessage("TimeTo must be later than TimeFrom.");
         }
 
         // private static bool IsTimeRangeValid(DateTime? timeFrom, DateTime? timeTo)
