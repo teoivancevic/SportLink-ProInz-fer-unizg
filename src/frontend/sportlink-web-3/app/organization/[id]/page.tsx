@@ -13,7 +13,7 @@ import AuthorizedElement from '@/components/auth/authorized-element'
 import { UserRole } from '@/types/roles'
 import Image from 'next/image'
 import { reviewService } from '@/lib/services/api'
-import { Review, Stats } from '@/types/review'
+import { Review } from '@/types/review'
 
 export default function OrganizationPage({ params }: { params: { id: number } }) {
   const initialData: Organization = {

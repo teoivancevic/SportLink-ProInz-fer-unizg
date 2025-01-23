@@ -11,6 +11,7 @@ import { trainingGroupService } from '@/lib/services/api'
 import { useEffect, useState } from "react"
 import AuthorizedElement from "@/components/auth/authorized-element"
 import { UserRole } from "@/types/roles"
+import { useToast } from "@/hooks/use-toast"
 
 
 const initialTrainingGroups: TrainingGroup[] = []
@@ -20,6 +21,7 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
   const [showForm, setShowForm] = useState(false)
   const [editingGroup, setEditingGroup] = useState<TrainingGroup | undefined>(undefined)
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast()
 
   const fetchTrainingGroups = async () => {
       try {
@@ -43,6 +45,11 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
         setGroups(groups.data)
       } catch (error){
         console.error('Error updating group:', error)
+        toast({
+          title: "Error",
+          description: `Došlo je do greške prilikom ažuriranja grupa`,
+          variant: "destructive",
+        });
       }
     } else {
       try {
@@ -53,7 +60,11 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
         console.log(groups)
         setGroups(groups.data)
       } catch (error){
-        console.error('Error adding new group:', error)
+        toast({
+          title: "Error",
+          description: `Došlo je do greške prilikom dodavanja grupa`,
+          variant: "destructive",
+        });
       }
     }
     setShowForm(false)

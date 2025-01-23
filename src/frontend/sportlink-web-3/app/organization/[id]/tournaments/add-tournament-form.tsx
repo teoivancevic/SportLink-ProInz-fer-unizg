@@ -84,6 +84,11 @@ export default function AddTournamentForm({ onClose, onSubmit, initialData, load
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!formData.sportId) {
+            alert("Molimo odaberite sport prije dodavanja natjecanja");
+            return;
+        }
     
         const formatToISOString = (date: string) => {
             const parsedDate = new Date(date);

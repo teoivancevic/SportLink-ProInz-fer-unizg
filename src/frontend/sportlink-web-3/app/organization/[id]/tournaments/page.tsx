@@ -10,6 +10,8 @@ import { getTournamentsResponse, Tournament} from "@/types/tournaments"
 import { tournamentService } from '@/lib/services/api'
 import AuthorizedElement from '@/components/auth/authorized-element'
 import { UserRole } from '@/types/roles'
+import { useToast } from "@/hooks/use-toast"
+import { boolean } from 'zod'
 
 // Mock data for competitions
 const initialCompetitions: Tournament[] = [];
@@ -80,6 +82,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
   const [competitions, setCompetitions] = useState<Tournament[]>(initialCompetitions)
   const [editingTournament, setEditingTournament] = useState<Tournament | null>(null)  
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast()
 
   const fetchTournaments = async () => {
       try {
@@ -124,9 +127,22 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         const tournaments: getTournamentsResponse = await tournamentService.getTournaments(params.id)
         console.log(tournaments)
         setCompetitions(tournaments.data)
-      } catch (error){
-        console.error('Error adding new tournament:', error)
-        console.log('Adding failed')
+      } catch (error: any) {
+        if (error.errors) {
+          const errorMessages = Object.values(error.errors).flat().join(", ")
+      
+          toast({
+            title: "Validation Error",
+            description: errorMessages,
+            variant: "destructive",
+          })
+        } else {
+          toast({
+            title: "Error",
+            description: "Došlo je do greške prilikom ažuriranja natjecanja",
+            variant: "destructive",
+          })
+        }
       }
     } else {
       try {
@@ -136,9 +152,22 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         const tournaments: getTournamentsResponse = await tournamentService.getTournaments(params.id)
         console.log(tournaments)
         setCompetitions(tournaments.data)
-      } catch (error){
-        console.error('Error adding new tournament:', error)
-        console.log('Adding failed')
+      } catch (error: any) {
+        if (error.errors) {
+          const errorMessages = Object.values(error.errors).flat().join(", ")
+      
+          toast({
+            title: "Validation Error",
+            description: errorMessages,
+            variant: "destructive",
+          })
+        } else {
+          toast({
+            title: "Error",
+            description: "Došlo je do greške prilikom ažuriranja natjecanja",
+            variant: "destructive",
+          })
+        }
       }
     }
     toggleAddTournament()

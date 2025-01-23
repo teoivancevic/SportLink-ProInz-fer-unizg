@@ -120,6 +120,11 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
   };
 
   const addSportCourt = () => {
+    if (!currentSportCourt.sportId || !currentSportCourt.sportName) {
+      alert('Molimo odaberite sport prije dodavanja sportskog terena');
+      return;
+    }
+
     setFormData(prevData => {
       if (editingSportCourtId) {
         return {
@@ -259,12 +264,8 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
                   placeholder="Ime terena"
                   value={currentSportCourt.name} 
                   onChange={(e) => handleSportCourtChange('name', e.target.value)} 
+                  required
                 />
-                {/* <Input 
-                  placeholder="Sport"
-                  value={currentSportCourt.sportName} 
-                  onChange={(e) => handleSportCourtChange('sportName', e.target.value)} 
-                /> */}
                 <div>
                   <Label htmlFor="sport">Sport</Label>
                   <DropdownMenu>
@@ -294,6 +295,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
                     type="number" 
                     value={currentSportCourt.maxHourlyPrice} 
                     onChange={(e) => handleSportCourtChange('maxHourlyPrice', e.target.value)} 
+                    required
                   />
                 </div>
                 <div>
@@ -303,6 +305,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
                     type="number" 
                     value={currentSportCourt.availableCourts} 
                     onChange={(e) => handleSportCourtChange('availableCourts', e.target.value)} 
+                    required
                   />
                 </div>
                 <Button type="button" onClick={addSportCourt}>

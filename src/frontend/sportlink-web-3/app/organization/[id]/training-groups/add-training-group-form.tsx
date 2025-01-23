@@ -95,6 +95,11 @@ export function AddTrainingGroup({ loading, group, onSubmit, onCancel }: AddTrai
   }
 
   const handleSubmit = (e: React.FormEvent) => {
+    if (!formData.sportId) {
+      alert("Molimo odaberite sport prije dodavanja grupe za trening");
+      return;
+  }
+
     e.preventDefault()
     onSubmit(formData)
   }
