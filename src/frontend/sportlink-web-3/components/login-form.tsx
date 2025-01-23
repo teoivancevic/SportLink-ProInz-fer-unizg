@@ -166,7 +166,7 @@ export function LoginForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Nemaš račun?{" "}
-              <Link href="/signup" className="underline underline-offset-4">
+              <Link href="/signup" className="hover:underline text-blue-500">
                 Registriraj se
               </Link>
             </div>

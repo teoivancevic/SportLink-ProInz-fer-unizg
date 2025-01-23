@@ -32,12 +32,59 @@ export default function SignupForm() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState<string[]>([])
   const router = useRouter()
   const { toast } = useToast()
+
+  const validateForm = (): string[] => {
+    const validationErrors: string[] = [];
+
+    if (!firstName.trim() || firstName.length < 3 || firstName.length > 100) {
+      validationErrors.push('Ime mora imati između 3 i 100 znakova.');
+    }
+
+    if (!lastName.trim() || lastName.length < 3 || lastName.length > 100) {
+      validationErrors.push('Prezime mora imati između 3 i 100 znakova.');
+    }
+
+    if (!email.trim() || email.length < 3 || email.length > 100 || !/\S+@\S+\.\S+/.test(email)) {
+      validationErrors.push('Unesite valjanu email adresu između 3 i 100 znakova.');
+    }
+
+    if (!password || password.length < 8 || password.length > 100) {
+      validationErrors.push('Lozinka mora imati između 8 i 100 znakova.');
+    }
+    if (!/[A-Z]/.test(password)) {
+      validationErrors.push('Lozinka mora sadržavati barem jedno veliko slovo.');
+    }
+    if (!/[a-z]/.test(password)) {
+      validationErrors.push('Lozinka mora sadržavati barem jedno malo slovo.');
+    }
+    if (!/\d/.test(password)) {
+      validationErrors.push('Lozinka mora sadržavati barem jedan broj.');
+    }
+    if (!/[!@#$%^&*()_+=[\]{}|:;"'<>,.?/-]/.test(password)) {
+      validationErrors.push('Lozinka mora sadržavati barem jedan poseban znak.');
+    }
+
+    return validationErrors;
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsLoading(true)
+
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors); 
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: validationErrors[0],
+      });
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const registrationData: RegistrationRequest = {

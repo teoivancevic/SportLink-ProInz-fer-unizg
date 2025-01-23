@@ -222,7 +222,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
     type="button"
     variant="default"
     size="sm"
-    className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
+    className="mt-2 bg-[#228be6] hover:bg-[#1e7bbf] text-white"
     onClick={() => {
       const availableId = Object.keys(allDaysOfWeek).find(
         id => !formData.workTimes.some(wt => wt.dayOfWeek === Number(id))
@@ -310,7 +310,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
                 </Button>
               </div>
             ) : (
-              <Button type="button" onClick={() => setShowSportCourtForm(true)} className="mt-2">
+              <Button type="button" onClick={() => setShowSportCourtForm(true)} className="mt-2 bg-[#228be6] hover:bg-[#1e7bbf] text-white">
                 Dodaj sportski teren
               </Button>
             )}
@@ -320,7 +320,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
             <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
               Odustani
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="bg-[#228be6] hover:bg-[#1e7bbf] text-white">
               {isLoading ? 'Spremanje...' : (initialData ? 'Spremi promjene' : 'Dodaj sportski objekt')}
             </Button>
           </div>

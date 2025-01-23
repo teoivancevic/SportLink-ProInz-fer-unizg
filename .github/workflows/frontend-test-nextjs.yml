@@ -58,6 +58,8 @@ jobs:
         run: pip install pytest selenium undetected-chromedriver
 
       - name: Run Python tests
+        env: 
+          TEMPMAIL_RAPIDAPI_KEY: ${{ secrets.TEMPMAIL_RAPIDAPI_KEY }}
         run: |
           pytest src/frontend/sportlink-web-3/tests/
 

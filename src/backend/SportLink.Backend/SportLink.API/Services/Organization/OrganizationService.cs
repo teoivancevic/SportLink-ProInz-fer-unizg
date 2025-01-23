@@ -132,12 +132,16 @@ namespace SportLink.API.Services.Organization
         {
             if (isVerified)
             {
-                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Accepted).ToListAsync();
+                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Accepted)
+                    .Include(org => org.Owner)
+                    .ToListAsync();
                 return _mapper.Map<List<OrganizationDto>>(organizations);
             }
             else
             {
-                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Unverified).ToListAsync();
+                var organizations = await _context.Organizations.Where(x => x.VerificationStatus == VerificationStatusEnum.Unverified)
+                    .Include(org => org.Owner)
+                    .ToListAsync();
                 return _mapper.Map<List<OrganizationDto>>(organizations);
             }
         }
@@ -145,7 +149,7 @@ namespace SportLink.API.Services.Organization
         public async Task<bool> VerifyOrganization(int id)
         {
             var organization = await _context.Organizations.FindAsync(id);
-            var organizationOwner = await _context.Users.FindAsync(organization?.Owner.Id);
+            var organizationOwner = await _context.Users.FindAsync(organization?.OwnerId);
             if (organizationOwner is not null && organization?.VerificationStatus == VerificationStatusEnum.Unverified)
             {
                 organizationOwner.RoleId = (int)RolesEnum.OrganizationOwner;
@@ -189,7 +193,13 @@ namespace SportLink.API.Services.Organization
 
         public async Task<ActionResult<OrganizationDetailedDto>> UpdateProfile(int id, OrganizationDetailedDto organizationDetailedDto)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var organization = await _context.Organizations.FindAsync(id);
+            if (organization is null || organization.OwnerId != int.Parse(ownerId!))
+            {
+                return new BadRequestResult();
+            }
+
             var existingSocialNetworks = await _context.SocialNetworks.Where(x => x.OrganizationId == id).ToListAsync();
             if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
             {
@@ -239,7 +249,12 @@ namespace SportLink.API.Services.Organization
 
         public async Task<bool> DeleteOrganization(int id)
         {
+            var ownerId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var organization = await _context.Organizations.FindAsync(id);
+            if (organization is null || organization.OwnerId != int.Parse(ownerId!))
+            {
+                return false;
+            }
             if (organization is not null && organization.VerificationStatus == VerificationStatusEnum.Accepted)
             {
                 _context.Organizations.Remove(organization);

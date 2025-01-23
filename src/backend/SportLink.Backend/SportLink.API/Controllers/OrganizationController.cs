@@ -24,6 +24,11 @@ namespace SportLink.API.Controllers
             _organizationService = organizationService;
         }
 
+        /// <summary>
+        /// Create a new organization
+        /// </summary>
+        /// <param name="organization"></param>
+        /// <returns></returns>
         [HttpPost, Authorize(Roles = "OrganizationOwner,User", Policy = "jwt_policy")]
         [Route("CreateOrganization")]
         public async Task<ActionResult<OrganizationDto>> CreateOrganization([FromBody] OrganizationDto organization)
@@ -41,25 +46,24 @@ namespace SportLink.API.Controllers
             return BadRequest(ModelState);
         }
 
+        /// <summary>
+        /// Return all verified/unverified organizations (Admin only)
+        /// </summary>
+        /// <param name="isVerified"></param>
+        /// <returns></returns>
         [HttpGet, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
         [Route("Organizations")]
         public async Task<ActionResult<List<OrganizationDto>>> GetOrganizations([FromQuery] bool isVerified)
         {
             var result = await _organizationService.GetOrganizations(isVerified);
-            if (result is null && isVerified)
-            {
-                return NotFound("Nema potvrđenih organizacija.");
-            }
-            else if (result is null && !isVerified)
-            {
-                return NotFound("Nema organizacija koje čekaju potvrdu.");
-            }
-            else
-            {
-                return Ok(result);
-            }
+            return Ok(result);
         }
 
+        /// <summary>
+        /// Return single organization profile
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<OrganizationDetailedDto>> GetSingleOrganization(int id)
@@ -72,22 +76,23 @@ namespace SportLink.API.Controllers
             return Ok(organization);
         }
 
+        /// <summary>
+        /// Return my organizations
+        /// </summary>
+        /// <returns></returns>
         [HttpGet, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("myOrganizations")]
         public async Task<ActionResult<List<OrganizationDto>>> GetMyOrganizations()
         {
             var organizations = await _organizationService.GetMyOrganizations();
-            if (organizations is null)
-            {
-                return NotFound("Nemate vlastitih organizacija.");
-            }
-            else
-            {
-                return Ok(organizations);
-            }
+            return Ok(organizations);
         }
 
-
+        /// <summary>
+        /// Verify organization (Admin only)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPut, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
         [Route("{id}/verify")]
         public async Task<ActionResult<bool>> VerifyOrganization(int id)
@@ -100,6 +105,12 @@ namespace SportLink.API.Controllers
             return Ok("Organizacija uspješno potvrđena.");
         }
 
+        /// <summary>
+        /// Decline organization (Admin only)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
         [HttpPut, Authorize(Roles = "AppAdmin", Policy = "jwt_policy")]
         [Route("{id}/decline")]
         public async Task<ActionResult<bool>> DeclineOrganization(int id, [FromBody] string reason)
@@ -112,6 +123,12 @@ namespace SportLink.API.Controllers
             return Ok("Organizacija uspješno odbijena.");
         }
 
+        /// <summary>
+        /// Update organization profile
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="profile"></param>
+        /// <returns></returns>
         [HttpPut, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]
         public async Task<ActionResult<bool>> UpdateProfile(int id, [FromBody] OrganizationDetailedDto profile)
@@ -128,6 +145,11 @@ namespace SportLink.API.Controllers
             return BadRequest(ModelState);
         }
 
+        /// <summary>
+        /// Delete organization
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete, Authorize(Roles = "AppAdmin, OrganizationOwner", Policy = "jwt_policy")]
         [Route("")]
         public async Task<ActionResult<bool>> DeleteOrganization(int id)

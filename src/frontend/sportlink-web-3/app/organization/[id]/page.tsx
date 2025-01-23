@@ -3,7 +3,7 @@ import { Star, Edit, AlertCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import EditProfilePopup from '../../../components/EditProfilePopup'
-import { useRouter} from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import NavMenu from "@/components/nav-org-profile"
 import { GetOrganisationInfoResponse, Organization } from '@/types/org'
 import { orgService } from "@/lib/services/api"
@@ -12,6 +12,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import AuthorizedElement from '@/components/auth/authorized-element'
 import { UserRole } from '@/types/roles'
 import Image from 'next/image'
+import { reviewService } from '@/lib/services/api'
+import { Review, Stats } from '@/types/review'
 
 export default function OrganizationPage({ params }: { params: { id: number } }) {
   const initialData: Organization = {
@@ -36,6 +38,10 @@ export default function OrganizationPage({ params }: { params: { id: number } })
   const [error, setError] = useState<string | null>(null)
   const [mapImageUrl, setMapImageUrl] = useState<string | null>(null)
 
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [averageRating, setAverageRating] = useState<number | 0>(0)
+  const [reviewCount, setReviewCount] = useState<number | 0>(0)
+
   const createMapUrl = useCallback((location: string) => {
     const locationEncoded = encodeURIComponent(location)
     return `https://maps.googleapis.com/maps/api/staticmap?center=${locationEncoded}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${locationEncoded}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
@@ -59,6 +65,25 @@ export default function OrganizationPage({ params }: { params: { id: number } })
   useEffect(() => {
     fetchOrganizationData()
   }, [fetchOrganizationData])
+
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const [reviewsResponse, reviewStats] = await Promise.all([
+            reviewService.getAllReviews(params.id, 0),
+            reviewService.getReviewStats(params.id)]);
+          setReviews(reviewsResponse.data);
+          const avgRating = reviewStats.data.averageRating;
+          setAverageRating(avgRating !== undefined ? avgRating : 0);
+          const reviewCounter = reviewStats.data.reviewCount;
+          setReviewCount(reviewCounter !== undefined ? reviewCounter : 0);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          setError('Došlo je do greške prilikom učitavanja podataka.');
+        }
+      };
+      fetchData();
+    }, [params.id]);
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false)
 
@@ -119,6 +144,9 @@ export default function OrganizationPage({ params }: { params: { id: number } })
               <p><strong>Email:</strong> {orgInfo.contactEmail}</p>
               <p><strong>Telefon:</strong> {orgInfo.contactPhoneNumber}</p>
             </div>
+            <div>
+              <p><strong>Lokacija:</strong> {orgInfo.location}</p>
+            </div>
             {/* <div className="flex space-x-4" >
               <a href="#" className="text-blue-600 hover:underline">Facebook</a>
               <a href="#" className="text-blue-400 hover:underline">Twitter</a>
@@ -128,20 +156,17 @@ export default function OrganizationPage({ params }: { params: { id: number } })
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Lokacija</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">{orgInfo.location}</p>
+          <CardContent className="p-4"> 
             {mapImageUrl && (
-              <div className="mt-4">
+              <div className="w-full h-full p-4"> 
                 <Image 
                   src={mapImageUrl}
                   alt="Map Preview"
-                  width={300}
-                  height={200}
-                  className="w-300px h-200px"
-                  unoptimized // Since this is a dynamic map URL
+                  layout="responsive"
+                  width={600} 
+                  height={300} 
+                  className="object-cover w-full h-full rounded-md"  
+                  unoptimized
                 />
               </div>
             )}
@@ -154,20 +179,52 @@ export default function OrganizationPage({ params }: { params: { id: number } })
           <CardHeader>
             <CardTitle>Recenzije</CardTitle>
           </CardHeader>
-          <CardContent>
+          {(reviews.length !== 0) ? (
+            <CardContent>
+              <div className="flex items-center mb-4">
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                    key={star}
+                    className={`w-6 h-6 ${
+                      star <= Math.round(averageRating || 0)
+                        ? 'fill-yellow-400 text-yellow-400'
+                        : 'text-gray-300'
+                    }`}
+                    />
+                  ))}
+                </div>
+                <span className="ml-2 text-lg font-semibold">{averageRating.toFixed(1)} / 5</span>
+                <span className="ml-2 text-lg font-light italic text-gray-400">{reviewCount} ljudi je komentiralo</span>
+              </div>
+              <blockquote className="italic border-l-4 border-gray-300 pl-4 py-2 mb-4">
+                &ldquo;{reviews[0].description}&rdquo;
+              </blockquote>
+              <p className="text-sm text-gray-600">{reviews[0].userFirstName}, član</p>
+            </CardContent>
+           ) : (
+            <CardContent>
             <div className="flex items-center mb-4">
               <div className="flex">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  <Star
+                  key={star}
+                  className={`w-6 h-6 ${
+                    star <= Math.round(0)
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                  />
                 ))}
               </div>
-              <span className="ml-2 text-lg font-semibold">4.8 / 5</span>
+              <span className="ml-2 text-lg font-semibold">0 / 5</span>
             </div>
             <blockquote className="italic border-l-4 border-gray-300 pl-4 py-2 mb-4">
-              &ldquo;Izvrsna organizacija s vrhunskim trenerima i odličnim programima za sve uzraste!&rdquo;
+              Za sada nema recenzija. Budite prvi i ostavite svoju klikom ovdje!
             </blockquote>
-            <p className="text-sm text-gray-600">- Ana K., član 2 godine</p>
           </CardContent>
+           )
+          }
         </Card>
       </div>
               
