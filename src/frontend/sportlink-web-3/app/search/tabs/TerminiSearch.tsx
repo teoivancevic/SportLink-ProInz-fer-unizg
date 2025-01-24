@@ -165,7 +165,7 @@ export default function BookingsSearch() {
                             <li key={court.id} className="text-sm">
                               {court.sportName} ({court.availableCourts} {court.availableCourts === 1 ? "teren" : "terena"})
                               <span className="ml-2">
-                                Cijena: €{court.minHourlyPrice.toFixed(2)} - €{court.maxHourlyPrice.toFixed(2)}/sat
+                                Cijena: €{court.maxHourlyPrice.toFixed(2)}/sat
                               </span>
                             </li>
                           ))}
