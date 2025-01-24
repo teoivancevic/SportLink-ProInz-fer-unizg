@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { PlusIcon, XIcon, PencilIcon, Trash2Icon } from 'lucide-react'
 import AddSportObjectForm from './add-sport-object-form'
-import { sportsObjectService } from '@/lib/services/api'
+import { orgService, sportsObjectService } from '@/lib/services/api'
 import { useToast } from "@/hooks/use-toast"
 import AuthorizedElement from '@/components/auth/authorized-element'
 import { UserRole } from '@/types/roles'
@@ -32,7 +32,16 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
   const [isFetching, setIsFetching] = useState(true)
   const { toast } = useToast()
 
-  
+  const [ownerId, setOwnerId] = useState<number>(0)
+
+  useEffect(() => {
+  const fetchOwnerId = async () => {
+    const response = await orgService.getOrganization(params.id)
+    console.log("OWNER ID: ", response.data.owner.id)
+    setOwnerId(response.data.owner.id)
+  }
+  fetchOwnerId()
+  }, [params.id])
 
   useEffect(() => {
     fetchSportObjects()
@@ -43,7 +52,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
     //setError(null)
 
     // const response = await sportsObjectService.getSportObjectDetailedById(params.id)
-    // console.log(response);
+    console.log(params.id);
     try {
       const response = await sportsObjectService.getSportObjectDetailedById(params.id)
       console.log("fetch sports objects response:", response);
@@ -175,8 +184,8 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
         <h1 className="text-3xl font-bold">Sportski Objekti i Tereni</h1>
         <AuthorizedElement 
               roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-              requireOrganizationEdit={false} 
-              orgOwnerUserId={params.id.toString()}
+              requireOrganizationEdit={true} 
+              orgOwnerUserId={ownerId.toString()}
             >
               {({ userData }) => (
                <>
@@ -243,7 +252,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
 
                     <AuthorizedElement 
                         roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-                        requireOrganizationEdit={false}
+                        requireOrganizationEdit={true}
                         orgOwnerUserId={params.id.toString()}
                       >
                         {({ userData }) => (
