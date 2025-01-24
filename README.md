@@ -63,9 +63,9 @@ NF-5.2. | Aplikacija treba biti responzivna i funkcionalna na računalima i mobi
 # Tehnologije i Alati
 > - Frontend: Next.js, React, TypeScript, Tailwind, shadcn
 > - Backend: .NET, Entity Framework
-> - Dizajn: Figma, Pretine 7 (Mantine UI design base)
+> - Dizajn: Figma, V0
 > - DB: PostgreSQL
-> - QA / test: Selenium, Postman
+> - QA / test: Selenium, InMemory DB
 > - DevOps: Azure, Docker
 
 # Članovi tima
