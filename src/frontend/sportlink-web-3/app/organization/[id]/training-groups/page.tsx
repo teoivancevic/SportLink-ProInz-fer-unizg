@@ -160,9 +160,9 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
                   </div>
                 </CardContent>
                 <AuthorizedElement 
-                  roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-                  requireOrganizationEdit={false}
-                  orgOwnerUserId={params.id.toString()}
+                  roles={[UserRole.OrganizationOwner]}
+                  requireOrganizationEdit={true}
+                  orgOwnerUserId={ownerId.toString()}
                 >
                   {(userData) => (
                     <CardFooter>

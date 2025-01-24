@@ -183,7 +183,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Sportski Objekti i Tereni</h1>
         <AuthorizedElement 
-              roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+              roles={[UserRole.OrganizationOwner]}
               requireOrganizationEdit={true} 
               orgOwnerUserId={ownerId.toString()}
             >
@@ -253,7 +253,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
                     <AuthorizedElement 
                         roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
                         requireOrganizationEdit={true}
-                        orgOwnerUserId={params.id.toString()}
+                        orgOwnerUserId={ownerId.toString()}
                       >
                         {({ userData }) => (
                           <div className="flex justify-end space-x-2 mt-4 w-full">

@@ -16,7 +16,7 @@ import { boolean } from 'zod'
 // Mock data for competitions
 const initialCompetitions: Tournament[] = [];
 
-function CompetitionCard({ orgId, competition, onEdit, onDelete, popupOpened }: { orgId: number; competition: Tournament; onEdit: (tournament: Tournament) => void; onDelete: (id: number) => void, popupOpened : boolean }) {
+function CompetitionCard({ ownerId: ownerId, competition, onEdit, onDelete, popupOpened }: { ownerId: number; competition: Tournament; onEdit: (tournament: Tournament) => void; onDelete: (id: number) => void, popupOpened : boolean }) {
   return (
     <Card className="max-h-[320px] min-w-[200px]">
       <CardHeader>
@@ -47,9 +47,9 @@ function CompetitionCard({ orgId, competition, onEdit, onDelete, popupOpened }: 
         <div className="flex justify-end space-x-2 mt-4">
 
         <AuthorizedElement 
-            roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-            requireOrganizationEdit = {false}
-            orgOwnerUserId={orgId.toString()}
+            roles={[UserRole.OrganizationOwner]}
+            requireOrganizationEdit = {true}
+            orgOwnerUserId={ownerId.toString()}
           >
             {(userData) => (
               <>
@@ -192,7 +192,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         <h1 className="text-3xl font-bold">Natjecanja</h1>
 
         <AuthorizedElement 
-            roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+            roles={[UserRole.OrganizationOwner]}
             requireOrganizationEdit = {true}
             orgOwnerUserId={ownerId.toString()}
           >
@@ -214,7 +214,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
             competitions.map((competition) => (
               <CompetitionCard 
                 key={competition.id} 
-                orgId={params.id}
+                ownerId={ownerId}
                 competition={competition} 
                 onEdit={handleEditTournament}
                 onDelete={handleDeleteTournament}
