@@ -47,7 +47,7 @@ import {
 } from '@/types/training-groups'
 
 import { getSportsResponse } from '@/types/sport'
-import { getSportObjectsResponse, SportObject } from '@/types/sportObject'
+import { getSportObjectsResponse, SportObject, getSportObjectsSearch } from '@/types/sportObject'
 import { getAllUsersResponse } from '@/types'
 
 // import type {
@@ -276,7 +276,7 @@ export const sportsObjectService  = {
     if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
     if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
 
-    return ApiClient.get<getSportObjectsResponse>(`/api/SportsObject/search?${params.toString()}`);
+    return ApiClient.get<getSportObjectsSearch>(`/api/SportsObject/search?${params.toString()}`);
   },
   
   getSportObjectDetailedById: (organizationId: number) =>

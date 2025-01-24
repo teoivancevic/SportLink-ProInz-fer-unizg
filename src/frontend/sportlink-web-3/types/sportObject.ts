@@ -26,10 +26,31 @@ export interface WorkTime {
     sportCourts: SportCourt[];
   }
 
+  export interface SportObjectSearch {
+    id: number,
+    name: string,
+    location: string, 
+    organizationName: string,
+    sportCourtDtos: [
+      {
+        id: number
+        availableCourts: number,
+        sportName: string,
+        minHourlyPrice: number,
+        maxHourlyPrice: number,
+        sportsObjectId: number
+      }
+    ]
+    organizationId: number
+  }
+
   export interface getSportObjectsResponse {
     data: SportObject[];
   }
 
+  export interface getSportObjectsSearch {
+    data: SportObjectSearch[];
+  }
 
   
   
