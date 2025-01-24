@@ -29,7 +29,7 @@ namespace SportLink.Core.Models
         {
             RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.");
             RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required.");
-            RuleFor(x => x.Sex).NotEmpty().WithMessage("Sex is required.");
+            RuleFor(x => x.Sex).NotNull().WithMessage("Sex cannot be null.").NotEmpty().WithMessage("Sex is required.");
             RuleFor(x => x.MonthlyPrice).NotEmpty().WithMessage("Monthly price is required.");
             RuleFor(x => x.SportId).NotEmpty().WithMessage("Sport is required.");
             RuleFor(x => x.TrainingSchedules).NotEmpty().WithMessage("Training schedules are required.");

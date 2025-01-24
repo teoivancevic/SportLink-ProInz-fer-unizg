@@ -68,6 +68,29 @@ public class UserService : IUserService
         return userDto;
     }
 
+    public async Task<UserDetailedDto> UpdateUser(int userId, RegisterUserDto updateUserDto, RolesEnum role)
+    {
+        var userEntity = await _context.Users.FindAsync(userId);
+        if (userEntity is null)
+            return null!;
+
+        userEntity.FirstName = updateUserDto.FirstName;
+        userEntity.LastName = updateUserDto.LastName;
+
+        if (updateUserDto.Password != null)
+        {
+            PasswordHelper.CreatePasswordHash(updateUserDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            userEntity.PasswordHash = passwordHash;
+            userEntity.PasswordSalt = passwordSalt;
+        }
+
+        _context.Users.Update(userEntity);
+        await _context.SaveChangesAsync();
+
+        var userDto = _mapper.Map<UserDetailedDto>(userEntity);
+        return userDto;
+    }
+
     public async Task<UserDetailedDto> CreateExternalUser(string email, string externalId, string firstName, string lastName, string roleName)
     {
         int roleId = 0;
