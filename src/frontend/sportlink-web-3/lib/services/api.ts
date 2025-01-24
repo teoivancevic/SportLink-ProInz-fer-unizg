@@ -47,13 +47,12 @@ import {
 } from '@/types/training-groups'
 
 import { getSportsResponse } from '@/types/sport'
-import { getSportObjectsDetailedResponse, SportObject } from '@/types/sport-courtes'
+import { getSportObjectsResponse, SportObject, getSportObjectsSearch } from '@/types/sportObject'
 import { getAllUsersResponse } from '@/types'
 
-import type {
-  searchSportsObjectsResponse,
-  SportsObject
-} from '@/types/sportObject'
+// import type {
+//   searchSportsObjectsResponse,
+// } from '@/types/sportObject'
 
 type _ApiResponse<T> = {
   data: T;
@@ -277,11 +276,11 @@ export const sportsObjectService  = {
     if (sportIds.length) sportIds.forEach((id) => params.append("SportIds", id.toString()));
     if (maxPrice !== undefined) params.append("MaxPrice", maxPrice.toString());
 
-    return ApiClient.get<searchSportsObjectsResponse>(`/api/SportsObject/search?${params.toString()}`);
+    return ApiClient.get<getSportObjectsSearch>(`/api/SportsObject/search?${params.toString()}`);
   },
   
   getSportObjectDetailedById: (organizationId: number) =>
-    ApiClient.get<getSportObjectsDetailedResponse>(`/api/SportsObject/organization/${organizationId}`),
+    ApiClient.get<getSportObjectsResponse>(`/api/SportsObject/organization/${organizationId}`),
 
   createSportObjectDetailed: (data: SportObject, organizationId: number) =>
     ApiClient.post<boolean>(`/api/SportsObject?id=${organizationId}`, data),

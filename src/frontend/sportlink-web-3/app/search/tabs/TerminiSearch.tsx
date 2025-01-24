@@ -11,7 +11,7 @@ import { SearchIcon, XIcon } from 'lucide-react'
 import Link from 'next/link'
 import { SportService, sportsObjectService } from '@/lib/services/api'
 import { Sport } from '@/types/sport'
-import { SportsObject } from '@/types/sportObject'
+import { SportObjectSearch } from '@/types/sportObject'
 
 export default function BookingsSearch() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -19,7 +19,7 @@ export default function BookingsSearch() {
   const [sportsList, setSportsList] = useState<Sport[]>([])
   const [selectedSports, setSelectedSports] = useState<number[]>([])
   const [useMaxPrice, setUseMaxPrice] = useState(false)
-  const [searchResults, setSearchResults] = useState<SportsObject[]>([])
+  const [searchResults, setSearchResults] = useState<SportObjectSearch[]>([])
   const [noSearchResults, setNoSearchresults] = useState(false)
 
   useEffect(() => {
@@ -165,7 +165,7 @@ export default function BookingsSearch() {
                             <li key={court.id} className="text-sm">
                               {court.sportName} ({court.availableCourts} {court.availableCourts === 1 ? "teren" : "terena"})
                               <span className="ml-2">
-                                Cijena: €{court.minHourlyPrice.toFixed(2)} - €{court.maxHourlyPrice.toFixed(2)}/sat
+                                Cijena: €{court.maxHourlyPrice.toFixed(2)}/sat
                               </span>
                             </li>
                           ))}

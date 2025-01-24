@@ -7,11 +7,11 @@ namespace SportLink.Core.Enums;
 public enum SexEnum
 {
     [Description("Male")]
-    Male = 0,
-    
+    Male = 1,
+
     [Description("Female")]
-    Female = 1,
-    
+    Female = 2,
+
     [Description("Unisex")]
-    Unisex = 2
+    Unisex = 3
 }

@@ -9,6 +9,14 @@ import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from "@/components/auth/auth-context"
 import { ThemeProvider } from "@/components/theme-provider"
 
+import { useRoleCheck } from '@/hooks/useRoleCheck';
+
+function RootLayoutContent({ children }: { children: React.ReactNode }) {
+  useRoleCheck();
+  return children;
+}
+
+
 function DynamicBreadcrumbs() {
   const pathname = usePathname()
   const paths = pathname.split('/').filter(p => p)
@@ -66,22 +74,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </AuthProvider>
           ) : (
             <AuthProvider>
-              <SidebarProvider className="h-full overflow-hidden">
-                <AppSidebar />
-                <SidebarInset className="flex flex-col h-full overflow-hidden">
-                  <header className="flex h-12 shrink-0 items-center border-b">
-                    <div className="flex items-center h-full px-2">
-                      <SidebarTrigger className="h-8" />
-                      <Separator orientation="vertical" className="mx-2 h-4" />
-                      <DynamicBreadcrumbs />
-                    </div>
-                  </header>
-                  <main className="flex-1 overflow-auto p-4">
-                    {children}
-                  </main>
-                  <Toaster />
-                </SidebarInset>
-              </SidebarProvider>
+              <RootLayoutContent>
+                <SidebarProvider className="h-full overflow-hidden">
+                  <AppSidebar />
+                  <SidebarInset className="flex flex-col h-full overflow-hidden">
+                    <header className="flex h-12 shrink-0 items-center border-b">
+                      <div className="flex items-center h-full px-2">
+                        <SidebarTrigger className="h-8" />
+                        <Separator orientation="vertical" className="mx-2 h-4" />
+                        <DynamicBreadcrumbs />
+                      </div>
+                    </header>
+                    <main className="flex-1 overflow-auto p-4">
+                      {children}
+                    </main>
+                    <Toaster />
+                  </SidebarInset>
+                </SidebarProvider>
+              </RootLayoutContent>
             </AuthProvider>
           )}
         </ThemeProvider>

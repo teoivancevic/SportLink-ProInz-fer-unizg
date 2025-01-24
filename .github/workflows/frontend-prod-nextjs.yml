@@ -2,7 +2,9 @@ name: Frontend Production CI/CD (Next.js)
 on:
   push:
     branches: [ "main" ]
-    tags: [ '*' ]
+    paths: [ "src/frontend/sportlink-web-3/**" ]
+  release:
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
@@ -32,6 +34,7 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' }}
     env:
       REGISTRY: acrsportlink02.azurecr.io
       IMAGE_NAME: webapp-prod-nextjs

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using SportLink.API.Data;
 using SportLink.API.Services.Email;
 using SportLink.API.Services.OTPCode;
@@ -33,6 +34,21 @@ public class AuthService : IAuthService
 
     public async Task<UserDetailedDto> RegisterUser(RegisterUserDto registerUserDto, RolesEnum role)
     {
+        var user = await _context.Users.Where(x => x.Email == registerUserDto.Email).FirstOrDefaultAsync();
+        if (user is not null && !user.IsEmailVerified)
+        {
+            var userToUpdate = await _userService.UpdateUser(user.Id, registerUserDto, role);
+            string newOtp6DigitCode = await _otpCodeService.GenerateOTP(userToUpdate.Id, OTPCodeTypeEnum.EmailVerification, 6);
+            if (newOtp6DigitCode is null || newOtp6DigitCode == "")
+            {
+                return null!;
+            }
+
+            await _emailService.SendVerificationEmailAsync(userToUpdate.Email, newOtp6DigitCode);
+
+            return userToUpdate;
+        }
+
         var userDto = await _userService.CreateUnverifiedUser(registerUserDto, role);
 
         string otp6DigitCode = await _otpCodeService.GenerateOTP(userDto.Id, OTPCodeTypeEnum.EmailVerification, 6);

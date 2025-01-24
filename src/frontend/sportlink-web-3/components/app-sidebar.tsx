@@ -43,7 +43,7 @@ import { useAuth } from './auth/auth-context'
 const ACTIVE_ORG_KEY = 'activeOrganizationId'
 const ORG_CACHE_KEY = 'cachedOrganizations'
 const ORG_CACHE_TIMESTAMP_KEY = 'organizationsCacheTimestamp'
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const CACHE_DURATION = 1 * 10 * 1000 // 10 seconds
 
 const data = {
   navMain: [

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import NavMenu from "@/components/nav-org-profile"
-import { SportObject, SportCourt } from "../../../../types/sport-courtes"
+import { SportObject, SportCourt } from "../../../../types/sportObject"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PlusIcon, XIcon, PencilIcon, Trash2Icon } from 'lucide-react'
@@ -61,16 +61,10 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
     }
   }
 
-
   const formatWorkTimes = (workTimes: SportObject['workTimes']) => {
     return workTimes.map((wt, index) => (
-      <p key={index}>{allDaysOfWeek.get(wt.dayOfWeek)}: {formatTime(wt.openFrom)} - {formatTime(wt.openTo)}</p>
+      <p key={index}>{allDaysOfWeek.get(wt.dayOfWeek)}: {wt.openFrom.slice(0, 5)} - {wt.openTo.slice(0, 5)}</p>
     ))
-  }
-
-  const formatTime = (time: string) => {
-    const [hours, minutes] = time.split(':');
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   }
 
   const formatPriceRange = (court: SportCourt) => {
@@ -116,15 +110,6 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
   const handleSubmit = async (sportObjectData: Omit<SportObject, 'id'>) => {
     setIsLoading(true)
     try {
-      // Format the data according to the API requirements
-      const formatTimeForApi = (time: string) => {
-        // If the time already includes seconds/milliseconds, return as is
-        if (time.includes('.')) return time;
-        // If the time already has seconds but no milliseconds, add them
-        if (time.includes(':00')) return `${time}.0000000`;
-        // Otherwise, add both seconds and milliseconds
-        return `${time}:00.0000000`;
-      }
       
       const formattedObject: SportObject = {
         ...sportObjectData,
@@ -136,8 +121,8 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
           dayOfWeek: Number(wt.dayOfWeek),
           isWorking: true,
           sportsObjectId: editingSportObject?.id || 0,
-          openFrom: formatTimeForApi(wt.openFrom),
-          openTo: formatTimeForApi(wt.openTo)
+          openFrom: wt.openFrom,
+          openTo: wt.openTo,
         })),
         sportCourts: sportObjectData.sportCourts.map(sc => ({
           ...sc,
@@ -147,7 +132,6 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
   
       let response;
       if (editingSportObject) {
-        // Update existing sport object
         console.log("update object:", formattedObject);
         response = await sportsObjectService.updateSportObjectDetailed(formattedObject)
         if (response) {
@@ -155,13 +139,11 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
             title: "Success",
             description: "Sportski objekt uspješno ažuriran",
           })
-          // Update the local state by replacing the edited object
           setSportObjects(prev => prev.map(obj => 
             obj.id === editingSportObject.id ? formattedObject : obj
           ))
         }
       } else {
-        // Create new sport object
         response = await sportsObjectService.createSportObjectDetailed(formattedObject, params.id)
         if (response) {
           toast({
@@ -172,8 +154,8 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
         }
       }
       
-      toggleAddOrEdit() // Close the form
-      await fetchSportObjects() // Refresh the list to get updated data from server
+      toggleAddOrEdit() 
+      await fetchSportObjects() 
     } catch (error) {
       console.error('Error saving sport object:', error)
       toast({
@@ -193,12 +175,11 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
         <h1 className="text-3xl font-bold">Sportski Objekti i Tereni</h1>
         <AuthorizedElement 
               roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-              requireOrganizationEdit={false} // teo: wtf tu false a na org profile page stranici je true???
+              requireOrganizationEdit={false} 
               orgOwnerUserId={params.id.toString()}
             >
               {({ userData }) => (
                <>
-               {/* <p>{params.id}</p> */}
                <Button
                   onClick={toggleAddOrEdit}
                   disabled={isLoading}
@@ -245,7 +226,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
                       <ul className="space-y-2 w-full">
                         {object.sportCourts.map((court) => (
                           <li key={court.id} className="flex justify-between items-center">
-                            <span>{court.name} ({court.availableCourts}x)</span>
+                            <span>Tereni ({court.availableCourts}x)</span>
                             <div className="text-sm">
                               <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full mr-2">
                                 {court.sportName ? court.sportName : "placeholderSportName"}
@@ -259,27 +240,35 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
                       </ul>
                     </>
                   ) : null}
-                  
-                  <div className="flex justify-end space-x-2 mt-4 w-full">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleEdit(object)} 
-                      disabled={isLoading || isAddingOrEditing}
-                    >
-                      <PencilIcon className="h-4 w-4 mr-2" />
-                      Uredi
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleDelete(object.id)} 
-                      disabled={isLoading || isAddingOrEditing}
-                    >
-                      <Trash2Icon className="h-4 w-4 mr-2" />
-                      Izbriši
-                    </Button>
-                  </div>
+
+                    <AuthorizedElement 
+                        roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+                        requireOrganizationEdit={false}
+                        orgOwnerUserId={params.id.toString()}
+                      >
+                        {({ userData }) => (
+                          <div className="flex justify-end space-x-2 mt-4 w-full">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleEdit(object)} 
+                            disabled={isLoading || isAddingOrEditing}
+                          >
+                            <PencilIcon className="h-4 w-4 mr-2" />
+                            Uredi
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleDelete(object.id)} 
+                            disabled={isLoading || isAddingOrEditing}
+                          >
+                            <Trash2Icon className="h-4 w-4 mr-2" />
+                            Izbriši
+                          </Button>
+                        </div>
+                        )}
+                  </AuthorizedElement>
                 </CardFooter>
               </Card>
             ))
@@ -287,7 +276,7 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
         </div>
         <AuthorizedElement 
               roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-              requireOrganizationEdit={false} // teo: zasto tu false a na org profile page stranici je true???
+              requireOrganizationEdit={false} 
               orgOwnerUserId={params.id.toString()}
             >
               {({ userData }) => (

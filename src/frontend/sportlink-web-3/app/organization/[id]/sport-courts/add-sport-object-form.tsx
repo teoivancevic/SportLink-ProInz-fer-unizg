@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SportObject, WorkTime, SportCourt } from "../../../../types/sport-courtes"
+import { SportObject, WorkTime, SportCourt } from "../../../../types/sportObject"
 import { Trash2Icon, PencilIcon, Check, ChevronDown } from 'lucide-react'
 import { LocationInput } from '@/components/location-input' 
 import { getSportsResponse, Sport } from '@/types/sport'
@@ -28,14 +28,10 @@ const allDaysOfWeek: Record<number, string> = {
   7: 'Nedjelja'
 };
 
-const formatTime = (time: string) => {
-  const [hours, minutes] = time.split(':');
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-}
-
 export default function AddSportObjectForm({ onClose, onSubmit, initialData, isLoading = false }: AddSportObjectFormProps) {
-  const [formData, setFormData] = useState<Omit<SportObject, 'id'>>(
+  const [formData, setFormData] = useState<SportObject>(
     initialData || {
+      id: 0,
       name: '',
       description: '',
       location: '',
@@ -44,7 +40,7 @@ export default function AddSportObjectForm({ onClose, onSubmit, initialData, isL
     }
   )
   const [showSportCourtForm, setShowSportCourtForm] = useState(false)
-  const [currentSportCourt, setCurrentSportCourt] = useState<Omit<SportCourt, 'id'>>({ name: '', maxHourlyPrice: 0, availableCourts: 1, sportName: '' })
+  const [currentSportCourt, setCurrentSportCourt] = useState<SportCourt>({ id: 0, sportsObjectId: 0 , sportId: 0, maxHourlyPrice: 0, availableCourts: 1, sportName: '' })
   const [editingSportCourtId, setEditingSportCourtId] = useState<number | null>(null);
   const [sports, setSports] = useState<Sport[]>([]);
 
@@ -94,9 +90,36 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
     }))
   }
 
+  const validateSportObject = (sportObject: SportObject) => {
+    const errors: { [key: string]: string } = {};
+
+    sportObject.workTimes.forEach((workTime) => {
+      const { openFrom, openTo } = workTime;
+      if (openFrom >= openTo) {
+        errors[`workTimes`] = `Početak radnog vremena mora biti manji od kraja radnog vremena.`;
+      }
+    });
+  
+    sportObject.sportCourts.forEach((sportCourt) => {
+      const { availableCourts, maxHourlyPrice } = sportCourt;
+      if (availableCourts <+ 0) {
+        errors[`availableCourts`] = `Broj dostupnih terena mora biti veći od nule.`;
+      }
+      if (maxHourlyPrice < 0) {
+        errors[`maxHourlyPrice`] = `Maksimalna cijena po satu mora biti veća od nule.`;
+      }
+    });
+  
+    return errors;
+  };
+  
+
   const handleSportCourtChange = (field: keyof Omit<SportCourt, 'id'>, value: string | number) => {
-    setCurrentSportCourt(prev => ({ ...prev, [field]: field === 'maxHourlyPrice' || field === 'availableCourts' ? Number(value) : value }))
-  }
+    setCurrentSportCourt(prev => ({
+      ...prev,
+      [field]: field === 'availableCourts' || field == 'maxHourlyPrice' ? Number(value) : value
+    }));
+  };
 
   const handleSportSelection = (sportId: number) => {
     const selectedSport = sports.find(sport => sport.id === sportId)
@@ -120,6 +143,11 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
   };
 
   const addSportCourt = () => {
+    if (!currentSportCourt.sportId || !currentSportCourt.sportName) {
+      alert('Molimo odaberite sport prije dodavanja sportskog terena');
+      return;
+    }
+
     setFormData(prevData => {
       if (editingSportCourtId) {
         return {
@@ -135,7 +163,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
         };
       }
     });
-    setCurrentSportCourt({ name: '', maxHourlyPrice: 0, availableCourts: 1, sportName: '' });
+    setCurrentSportCourt({ id: 0, sportsObjectId: 0, maxHourlyPrice: 0, availableCourts: 1, sportName: '', sportId: 0 });
     setShowSportCourtForm(false);
     setEditingSportCourtId(null);
   };
@@ -147,12 +175,20 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
     }))
   }
 
-  // const availableDays = Object.values(allDaysOfWeek).filter(day => !formData.workTimes.some(wt => wt.dayOfWeek === day));
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!isLoading) {
-      onSubmit(formData)
+      const validationErrors = validateSportObject(formData);
+        if (Object.keys(validationErrors).length > 0) {
+            alert(Object.values(validationErrors).join('\n')); 
+            return;
+        }
+      const formattedWorkTimes = formData.workTimes.map(wt => ({
+        ...wt,
+        openFrom: wt.openFrom.slice(0, 5),
+        openTo: wt.openTo.slice(0, 5),  
+      }));
+      onSubmit({ ...formData, workTimes: formattedWorkTimes });
     }
   }
 
@@ -183,66 +219,66 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
           <div>
             <div><Label>Radno vrijeme</Label></div>
             {formData.workTimes.map((wt, index) => (
-  <div key={index} className="flex gap-2 mt-2 items-center">
-    <select
-      value={wt.dayOfWeek}
-      onChange={(e) => handleWorkTimeChange(index, 'dayOfWeek', e.target.value)}
-      className="w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      {Object.entries(allDaysOfWeek)
-        .filter(([id, name]) => !formData.workTimes.some(wt => wt.dayOfWeek === Number(id)) || wt.dayOfWeek === Number(id))
-        .map(([id, name]) => (
-          <option key={id} value={id}>{name}</option>
-        ))}
-    </select>
-    <Input
-      type="time" 
-      value={formatTime(wt.openFrom)}
-      onChange={(e) => handleWorkTimeChange(index, 'openFrom', e.target.value)}
-      required
-    />
-    <Input
-      type="time" 
-      value={formatTime(wt.openTo)}
-      onChange={(e) => handleWorkTimeChange(index, 'openTo', e.target.value)}
-      required
-    />
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      onClick={() => handleDeleteWorkTime(index)}
-    >
-      <Trash2Icon className="h-4 w-4" />
-    </Button>
-  </div>
-))}
-{Object.keys(allDaysOfWeek).length > formData.workTimes.length && (
-  <Button
-    type="button"
-    variant="default"
-    size="sm"
-    className="mt-2 bg-[#228be6] hover:bg-[#1e7bbf] text-white"
-    onClick={() => {
-      const availableId = Object.keys(allDaysOfWeek).find(
-        id => !formData.workTimes.some(wt => wt.dayOfWeek === Number(id))
-      ) || '1';
-      setFormData(prev => ({ 
-        ...prev, 
-        workTimes: [...prev.workTimes, { dayOfWeek: Number(availableId), openFrom: '', openTo: '' }] 
-      }))
-    }}
-  >
-    Dodaj radno vrijeme
-  </Button>
-)}
+              <div key={index} className="flex gap-2 mt-2 items-center">
+                <select
+                  value={wt.dayOfWeek}
+                  onChange={(e) => handleWorkTimeChange(index, 'dayOfWeek', e.target.value)}
+                  className="w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {Object.entries(allDaysOfWeek)
+                    .filter(([id, name]) => !formData.workTimes.some(wt => wt.dayOfWeek === Number(id)) || wt.dayOfWeek === Number(id))
+                    .map(([id, name]) => (
+                      <option key={id} value={id}>{name}</option>
+                    ))}
+                </select>
+                <Input 
+                  type="time" 
+                  value={wt.openFrom.slice(0, 5)} 
+                  onChange={(e) => handleWorkTimeChange(index, 'openFrom', e.target.value)}
+                  required
+                />
+                <Input 
+                  type="time" 
+                  value={wt.openTo.slice(0, 5)}
+                  onChange={(e) => handleWorkTimeChange(index, 'openTo', e.target.value)}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDeleteWorkTime(index)}
+                >
+                  <Trash2Icon className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+              {Object.keys(allDaysOfWeek).length > formData.workTimes.length && (
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  className="mt-2 bg-[#228be6] hover:bg-[#1e7bbf] text-white"
+                  onClick={() => {
+                    const availableId = Object.keys(allDaysOfWeek).find(
+                      id => !formData.workTimes.some(wt => wt.dayOfWeek === Number(id))
+                    ) || '1';
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      workTimes: [...prev.workTimes, { id: 0, dayOfWeek: Number(availableId), openFrom: '', openTo: '', isWorking: true, sportsObjectId: 0 }] 
+                    }))
+                  }}
+                >
+                  Dodaj radno vrijeme
+                </Button>
+              )}
           </div>
           
           <div>
             <div><Label>Sportski tereni</Label></div>
             {formData.sportCourts.map((sc) => (
               <div key={sc.id} className="flex flex-wrap justify-between items-start mt-2 gap-2">
-                <span className="flex-grow max-w-[calc(100%-100px)] break-words">{sc.name} ({sc.availableCourts}x) - {sc.sportName} (max {sc.maxHourlyPrice} €/h)</span>
+                <span className="flex-grow max-w-[calc(100%-100px)] break-words">Teren ({sc.availableCourts}x) - {sc.sportName} (max {sc.maxHourlyPrice} €/h)</span>
                 <div className="flex-shrink-0 ml-auto">
                   <Button type="button" variant="ghost" size="sm" onClick={() => handleEditSportCourt(sc.id)}>
                     <PencilIcon className="h-4 w-4" />
@@ -255,16 +291,6 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
             ))}
             {showSportCourtForm ? (
               <div className="grid grid-cols-1 gap-2 mt-2">
-                <Input 
-                  placeholder="Ime terena"
-                  value={currentSportCourt.name} 
-                  onChange={(e) => handleSportCourtChange('name', e.target.value)} 
-                />
-                {/* <Input 
-                  placeholder="Sport"
-                  value={currentSportCourt.sportName} 
-                  onChange={(e) => handleSportCourtChange('sportName', e.target.value)} 
-                /> */}
                 <div>
                   <Label htmlFor="sport">Sport</Label>
                   <DropdownMenu>
@@ -294,6 +320,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
                     type="number" 
                     value={currentSportCourt.maxHourlyPrice} 
                     onChange={(e) => handleSportCourtChange('maxHourlyPrice', e.target.value)} 
+                    required
                   />
                 </div>
                 <div>
@@ -303,6 +330,7 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
                     type="number" 
                     value={currentSportCourt.availableCourts} 
                     onChange={(e) => handleSportCourtChange('availableCourts', e.target.value)} 
+                    required
                   />
                 </div>
                 <Button type="button" onClick={addSportCourt}>

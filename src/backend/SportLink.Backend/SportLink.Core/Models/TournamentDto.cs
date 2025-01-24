@@ -27,7 +27,8 @@ namespace SportLink.Core.Models
             RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.");
             RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required.");
             RuleFor(x => x.Location).NotEmpty().WithMessage("Location is required.");
-            RuleFor(x => x.EntryFee).NotEmpty().WithMessage("Entry fee is required.");
+            RuleFor(x => x.EntryFee).NotNull().WithMessage("Entry fee cannot be null.").NotEmpty().WithMessage("Entry fee is required.")
+                                    .Must(fee => decimal.TryParse(fee.ToString(), out _)).WithMessage("Entry fee must be a valid number."); ;
             RuleFor(x => x.SportId).NotEmpty().WithMessage("Sport is required.");
             RuleFor(x => x.TimeFrom).NotEmpty().WithMessage("Time from is required.");
             RuleFor(x => x.TimeTo).NotEmpty().WithMessage("Time to is required.");
@@ -35,9 +36,6 @@ namespace SportLink.Core.Models
             RuleFor(x => x.TimeFrom).LessThan(x => x.TimeTo).WithMessage("TimeTo must be later than TimeFrom.");
             RuleFor(x => x.TimeFrom).GreaterThan(DateTime.Now).WithMessage("TimeFrom must be later than current time.");
             RuleFor(x => x.TimeTo).GreaterThan(DateTime.Now).WithMessage("TimeTo must be later than current time.");
-            // RuleFor(x => x)
-            //         .Must(x => IsTimeRangeValid(x.TimeFrom, x.TimeTo))
-            //         .WithMessage("TimeTo must be later than TimeFrom.");
         }
 
         // private static bool IsTimeRangeValid(DateTime? timeFrom, DateTime? timeTo)

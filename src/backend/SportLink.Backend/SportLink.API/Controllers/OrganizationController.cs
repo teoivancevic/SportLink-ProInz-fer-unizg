@@ -80,7 +80,7 @@ namespace SportLink.API.Controllers
         /// Return my organizations
         /// </summary>
         /// <returns></returns>
-        [HttpGet, Authorize(Roles = "OrganizationOwner", Policy = "jwt_policy")]
+        [HttpGet, Authorize(Roles = "OrganizationOwner, User", Policy = "jwt_policy")]
         [Route("myOrganizations")]
         public async Task<ActionResult<List<OrganizationDto>>> GetMyOrganizations()
         {

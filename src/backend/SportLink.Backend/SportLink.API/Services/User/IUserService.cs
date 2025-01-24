@@ -12,4 +12,5 @@ public interface IUserService
     Task<List<UserDetailedDto>> GetAllUsers();
     Task<UserDetailedDto> CreateUnverifiedUser(RegisterUserDto createUserDto, RolesEnum role);
     Task<UserDetailedDto> CreateExternalUser(string email, string externalId, string firstName, string lastName, string roleName);
+    Task<UserDetailedDto> UpdateUser(int id, RegisterUserDto registerUserDto, RolesEnum role);
 }
