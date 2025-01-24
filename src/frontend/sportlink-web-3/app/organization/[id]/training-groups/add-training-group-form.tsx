@@ -106,7 +106,9 @@ export function AddTrainingGroup({ loading, group, onSubmit, onCancel }: AddTrai
       return;
     }
 
-    
+    if(formData.trainingSchedules.length === 0){
+      alert("Molimo dodajte vrijeme treninga");
+    } 
     onSubmit(formData)
   }
   
