@@ -77,7 +77,8 @@ export default function EditProfilePopup({
                       <FormControl>
                         <Input
                           placeholder="Acme Corp"
-                          {...field} 
+                          {...field}
+                          required 
                         />
                       </FormControl>
                       <FormMessage />
@@ -95,6 +96,7 @@ export default function EditProfilePopup({
                           placeholder="Tell us about your organization"
                           className="resize-none"
                           {...field} 
+                          required
                         />
                       </FormControl>
                       <FormMessage />
@@ -112,6 +114,7 @@ export default function EditProfilePopup({
                           type="email"
                           placeholder="contact@acmecorp.com"
                           {...field} 
+                          required
                         />
                       </FormControl>
                       <FormMessage />
@@ -129,6 +132,7 @@ export default function EditProfilePopup({
                           international
                           defaultCountry="HR"
                           value={field.value}
+                          required
                           onChange={(value) => {
                             form.setValue('contactPhoneNumber', value || '')
                           }}

@@ -259,27 +259,35 @@ export default function SportCourtsContent({ params }: { params: { id: number } 
                       </ul>
                     </>
                   ) : null}
-                  
-                  <div className="flex justify-end space-x-2 mt-4 w-full">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleEdit(object)} 
-                      disabled={isLoading || isAddingOrEditing}
-                    >
-                      <PencilIcon className="h-4 w-4 mr-2" />
-                      Uredi
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleDelete(object.id)} 
-                      disabled={isLoading || isAddingOrEditing}
-                    >
-                      <Trash2Icon className="h-4 w-4 mr-2" />
-                      Izbriši
-                    </Button>
-                  </div>
+
+                    <AuthorizedElement 
+                        roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
+                        requireOrganizationEdit={false} // teo: wtf tu false a na org profile page stranici je true???
+                        orgOwnerUserId={params.id.toString()}
+                      >
+                        {({ userData }) => (
+                          <div className="flex justify-end space-x-2 mt-4 w-full">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleEdit(object)} 
+                            disabled={isLoading || isAddingOrEditing}
+                          >
+                            <PencilIcon className="h-4 w-4 mr-2" />
+                            Uredi
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleDelete(object.id)} 
+                            disabled={isLoading || isAddingOrEditing}
+                          >
+                            <Trash2Icon className="h-4 w-4 mr-2" />
+                            Izbriši
+                          </Button>
+                        </div>
+                        )}
+                  </AuthorizedElement>
                 </CardFooter>
               </Card>
             ))
