@@ -127,9 +127,9 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         const tournaments: getTournamentsResponse = await tournamentService.getTournaments(params.id)
         console.log(tournaments)
         setCompetitions(tournaments.data)
-      } catch (error: any) {
-        if (error.errors) {
-          const errorMessages = Object.values(error.errors).flat().join(", ")
+      } catch (error: unknown) {
+        if (error instanceof Error && error) {
+          const errorMessages = Object.values(error).flat().join(", ")
       
           toast({
             title: "Validation Error",
@@ -152,9 +152,9 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         const tournaments: getTournamentsResponse = await tournamentService.getTournaments(params.id)
         console.log(tournaments)
         setCompetitions(tournaments.data)
-      } catch (error: any) {
-        if (error.errors) {
-          const errorMessages = Object.values(error.errors).flat().join(", ")
+      } catch (error: unknown) {
+        if (error instanceof Error && error) {
+          const errorMessages = Object.values(error).flat().join(", ")
       
           toast({
             title: "Validation Error",
