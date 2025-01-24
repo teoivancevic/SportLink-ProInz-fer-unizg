@@ -13,7 +13,9 @@ https://webapp-sportlink-prod-nextjs-03.azurewebsites.net/
 - AppAdmin demo korisnik (administrator aplikacije)
   - Email: andrija.jozefinovic@gmail.com
   - Šifra: Teo12345!
+  
 Za lokalno pokretanje frontenda upute se nalaze u: src/frontend/sportlink-web-3.  
+
 Za lokalno pokretanje backenda upute se nalaze u: src/backend/SportLink.Backend.  
 
 
