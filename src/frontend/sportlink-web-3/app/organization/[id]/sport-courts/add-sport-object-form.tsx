@@ -99,6 +99,14 @@ const handleWorkTimeChange = (index: number, field: keyof WorkTime, value: strin
         errors[`workTimes`] = `Početak radnog vremena mora biti manji od kraja radnog vremena.`;
       }
     });
+
+    if(formData.sportCourts.length === 0){
+      errors[`sportCourtes`] = `Molimo dodajte barem jedan teren`;
+    } 
+
+    if(formData.workTimes.length === 0){
+      errors[`workTimes`] = `Molimo dodajte radno vrijeme`;
+    }
   
     sportObject.sportCourts.forEach((sportCourt) => {
       const { availableCourts, maxHourlyPrice } = sportCourt;
