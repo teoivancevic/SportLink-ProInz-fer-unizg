@@ -7,7 +7,7 @@ import { CalendarIcon, MapPinIcon, ActivityIcon, EuroIcon, PlusIcon, XIcon, Penc
 import AddTournamentForm from './add-tournament-form'
 import NavMenu from '@/components/nav-org-profile'
 import { getTournamentsResponse, Tournament} from "@/types/tournaments"
-import { tournamentService } from '@/lib/services/api'
+import { orgService, tournamentService } from '@/lib/services/api'
 import AuthorizedElement from '@/components/auth/authorized-element'
 import { UserRole } from '@/types/roles'
 import { useToast } from "@/hooks/use-toast"
@@ -16,7 +16,7 @@ import { boolean } from 'zod'
 // Mock data for competitions
 const initialCompetitions: Tournament[] = [];
 
-function CompetitionCard({ orgId, competition, onEdit, onDelete, popupOpened }: { orgId: number; competition: Tournament; onEdit: (tournament: Tournament) => void; onDelete: (id: number) => void, popupOpened : boolean }) {
+function CompetitionCard({ ownerId: ownerId, competition, onEdit, onDelete, popupOpened }: { ownerId: number; competition: Tournament; onEdit: (tournament: Tournament) => void; onDelete: (id: number) => void, popupOpened : boolean }) {
   return (
     <Card className="max-h-[320px] min-w-[200px]">
       <CardHeader>
@@ -47,9 +47,9 @@ function CompetitionCard({ orgId, competition, onEdit, onDelete, popupOpened }: 
         <div className="flex justify-end space-x-2 mt-4">
 
         <AuthorizedElement 
-            roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-            requireOrganizationEdit = {false}
-            orgOwnerUserId={orgId.toString()}
+            roles={[UserRole.OrganizationOwner]}
+            requireOrganizationEdit = {true}
+            orgOwnerUserId={ownerId.toString()}
           >
             {(userData) => (
               <>
@@ -84,6 +84,17 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast()
 
+  const [ownerId, setOwnerId] = useState<number>(0)
+
+  useEffect(() => {
+  const fetchOwnerId = async () => {
+    const response = await orgService.getOrganization(params.id)
+    console.log("OWNER ID: ", response.data.owner.id)
+    setOwnerId(response.data.owner.id)
+  }
+  fetchOwnerId()
+  }, [params.id])
+
   const fetchTournaments = async () => {
       try {
         const response: getTournamentsResponse = await tournamentService.getTournaments(params.id)
@@ -93,7 +104,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         console.error('Error fetching tournaments:', error)
       } 
   }
-  useEffect(() => { fetchTournaments() }, [])
+  useEffect(() => { fetchTournaments() }, [params.id])
 
   const toggleAddTournament = () => {
     setIsAddingTournament(!isAddingTournament)
@@ -181,9 +192,9 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         <h1 className="text-3xl font-bold">Natjecanja</h1>
 
         <AuthorizedElement 
-            roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-            requireOrganizationEdit = {false}
-            orgOwnerUserId={params.id.toString()}
+            roles={[UserRole.OrganizationOwner]}
+            requireOrganizationEdit = {true}
+            orgOwnerUserId={ownerId.toString()}
           >
             {(userData) => (
               <Button onClick={toggleAddTournament} className="bg-[#228be6] hover:bg-[#1e7bbf] text-white">
@@ -203,7 +214,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
             competitions.map((competition) => (
               <CompetitionCard 
                 key={competition.id} 
-                orgId={params.id}
+                ownerId={ownerId}
                 competition={competition} 
                 onEdit={handleEditTournament}
                 onDelete={handleDeleteTournament}

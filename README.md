@@ -61,7 +61,7 @@ NF-5.1. | Korisničko iskustvo treba biti dosljedno na različitim preglednicima
 NF-5.2. | Aplikacija treba biti responzivna i funkcionalna na računalima i mobilnim uređajima. | VISOK 
 
 # Tehnologije i Alati
-> - Frontend: React.js, Vite, TypeScript, Mantine UI component library
+> - Frontend: Next.js, React, TypeScript, Tailwind, shadcn
 > - Backend: .NET, Entity Framework
 > - Dizajn: Figma, Pretine 7 (Mantine UI design base)
 > - DB: PostgreSQL
