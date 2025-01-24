@@ -7,7 +7,7 @@ import { CalendarIcon, MapPinIcon, ActivityIcon, EuroIcon, PlusIcon, XIcon, Penc
 import AddTournamentForm from './add-tournament-form'
 import NavMenu from '@/components/nav-org-profile'
 import { getTournamentsResponse, Tournament} from "@/types/tournaments"
-import { tournamentService } from '@/lib/services/api'
+import { orgService, tournamentService } from '@/lib/services/api'
 import AuthorizedElement from '@/components/auth/authorized-element'
 import { UserRole } from '@/types/roles'
 import { useToast } from "@/hooks/use-toast"
@@ -84,6 +84,17 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast()
 
+  const [ownerId, setOwnerId] = useState<number>(0)
+
+  useEffect(() => {
+  const fetchOwnerId = async () => {
+    const response = await orgService.getOrganization(params.id)
+    console.log("OWNER ID: ", response.data.owner.id)
+    setOwnerId(response.data.owner.id)
+  }
+  fetchOwnerId()
+  }, [params.id])
+
   const fetchTournaments = async () => {
       try {
         const response: getTournamentsResponse = await tournamentService.getTournaments(params.id)
@@ -93,7 +104,7 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
         console.error('Error fetching tournaments:', error)
       } 
   }
-  useEffect(() => { fetchTournaments() }, [])
+  useEffect(() => { fetchTournaments() }, [params.id])
 
   const toggleAddTournament = () => {
     setIsAddingTournament(!isAddingTournament)
@@ -182,8 +193,8 @@ export default function NatjecanjaContent({ params }: { params: { id: number } }
 
         <AuthorizedElement 
             roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-            requireOrganizationEdit = {false}
-            orgOwnerUserId={params.id.toString()}
+            requireOrganizationEdit = {true}
+            orgOwnerUserId={ownerId.toString()}
           >
             {(userData) => (
               <Button onClick={toggleAddTournament} className="bg-[#228be6] hover:bg-[#1e7bbf] text-white">

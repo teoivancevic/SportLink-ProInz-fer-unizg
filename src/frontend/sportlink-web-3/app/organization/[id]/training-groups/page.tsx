@@ -7,7 +7,7 @@ import { CalendarDays, Clock, Plus, PencilIcon, Trash2Icon } from 'lucide-react'
 import { AddTrainingGroup, reverseDayOfWeekMapping } from './add-training-group-form'
 import { getTrainingGroupsResponse, TrainingGroup } from "../../../../types/training-groups"
 import NavMenu from "@/components/nav-org-profile"
-import { trainingGroupService } from '@/lib/services/api'
+import { orgService, trainingGroupService } from '@/lib/services/api'
 import { useEffect, useState } from "react"
 import AuthorizedElement from "@/components/auth/authorized-element"
 import { UserRole } from "@/types/roles"
@@ -23,6 +23,17 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast()
 
+  const [ownerId, setOwnerId] = useState<number>(0)
+
+  useEffect(() => {
+  const fetchOwnerId = async () => {
+    const response = await orgService.getOrganization(params.id)
+    console.log("OWNER ID: ", response.data.owner.id)
+    setOwnerId(response.data.owner.id)
+  }
+  fetchOwnerId()
+  }, [params.id])
+
   const fetchTrainingGroups = async () => {
       try {
         const response: getTrainingGroupsResponse = await trainingGroupService.getTrainingGroups(params.id)
@@ -32,7 +43,7 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
         console.error('Error fetching tournaments:', error)
       } 
   }
-  useEffect(() => { fetchTrainingGroups() }, [])
+  useEffect(() => { fetchTrainingGroups() }, [params.id])
 
   const handleSubmit = async (newGroup: TrainingGroup) => {
     setIsSubmitting(true); 
@@ -105,8 +116,8 @@ export default function TrainingGroups({ params }: { params: { id: number } }) {
 
         <AuthorizedElement 
             roles={[UserRole.OrganizationOwner, UserRole.AppAdmin]}
-            requireOrganizationEdit = {false}
-            orgOwnerUserId={params.id.toString()}>
+            requireOrganizationEdit = {true}
+            orgOwnerUserId={ownerId.toString()}>
             {(userData) => (
               <Button
               onClick={() => setShowForm(true)}
